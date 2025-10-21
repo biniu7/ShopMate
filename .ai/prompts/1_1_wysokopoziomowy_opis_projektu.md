@@ -1,11 +1,11 @@
-# Aplikacja - GroceryList (MVP)
+# Aplikacja - ShopMate (MVP)
 Utworzenie listy zakupów na podstawie przepisów kulinarnych przyporządkowanych do poszczególnych dni i posiłków (śniadanie, obiad, kolacja).
 ## Główny problem
 
 ## Najmniejszy zestaw funkcjonalności
 Zapisywanie, odczytywanie, przeglądanie i usuwanie przepisów w formie tekstowej
 Stworzenie funkcjonalnego, cyklicznego kalendarza tygodniowego, który umożliwia przypisywanie konkretnych przepisów lub potraw do każdej kombinacji dnia tygodnia (Poniedziałek - Niedziela) i typu posiłku (Śniadanie, Drugie śniadanie, Obiad, Kolacja).
-podczas zapisu przepisu kulinarnego automatyczne tworzenie listy składników
+podczas zapisu przepisu kulinarnego automatyczne tworzenie listy składników (możliwość edycji recznej)
 Prosty system kont użytkowników do powiązania użytkownika z własnymi przepisami i listami zakupów
 Tworzenie listy zakupów na podstawie znaczonych przepisów kulinarnych lub dni/posiłków
 Zapis listy zakupów w bazie danych

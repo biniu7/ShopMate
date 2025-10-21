@@ -3,7 +3,7 @@ Jesteś doświadczonym menedżerem produktu, którego zadaniem jest pomoc w stwo
 Prosimy o uważne zapoznanie się z poniższymi informacjami:
 
 <project_description>
-{{project-highlevel}} <- przekopiuj wysokopoziomowy opis projektu
+@.ai\doc\1_wysokopoziomowy_opis_projektu.md
 </project_description>
 
 Przeanalizuj dostarczone informacje, koncentrując się na aspektach istotnych dla tworzenia PRD. Rozważ następujące kwestie:
@@ -38,3 +38,5 @@ Kontynuuj ten proces, generując nowe pytania i rekomendacje w oparciu o odpowie
 Pamiętaj, aby skupić się na jasności, trafności i dokładności wyników. Nie dołączaj żadnych dodatkowych komentarzy ani wyjaśnień poza określonym formatem wyjściowym.
 
 Pracę analityczną należy przeprowadzić w bloku myślenia. Końcowe dane wyjściowe powinny składać się wyłącznie z pytań i zaleceń i nie powinny powielać ani powtarzać żadnej pracy wykonanej w sekcji prd_analysis.
+
+Końcowe dane wyjściowe zapisz do pliku .ai/doc/2_asystent-planowania-prd.md
