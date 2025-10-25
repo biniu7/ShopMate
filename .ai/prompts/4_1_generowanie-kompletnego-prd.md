@@ -7,6 +7,9 @@ Jesteś doświadczonym menedżerem produktu, którego zadaniem jest stworzenie k
 <project_details>
 @.ai\doc\3_podsumowanie-sesji-planowania-prd.md
 </project_details>
+<prd>
+@.ai\doc\prd.md
+</prd>
 
 Wykonaj następujące kroki, aby stworzyć kompleksowy i dobrze zorganizowany dokument:
 
@@ -64,3 +67,4 @@ Przygotuj PRD z następującą strukturą:
 Pamiętaj, aby wypełnić każdą sekcję szczegółowymi, istotnymi informacjami w oparciu o opis projektu i nasze pytania wyjaśniające. Upewnij się, że PRD jest wyczerpujący, jasny i zawiera wszystkie istotne informacje potrzebne do dalszej pracy nad produktem.
 
 Ostateczny wynik powinien składać się wyłącznie z PRD zgodnego ze wskazanym formatem w markdown, który zapiszesz w pliku .ai\doc\4_prd.md
+max ilość line 1000
