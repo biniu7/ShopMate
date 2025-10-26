@@ -16,6 +16,8 @@
 | **Shopping Lists** | `shopping_lists` | Saved shopping lists (snapshot pattern) |
 | **Shopping List Items** | `shopping_list_items` | Individual items in shopping lists with AI categories |
 
+**Note:** Authentication is handled by Supabase Auth directly from the client. No custom auth endpoints are needed.
+
 ---
 
 ## 2. Endpoints
