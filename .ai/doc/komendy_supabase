@@ -1,4 +1,5 @@
 supabase init
 supabase start
+npm install @supabase/supabase-js
 supabase gen types typescript --local > src/db/database.types.ts
 supabase status -o env
