@@ -10,7 +10,6 @@ ShopMate is an MVP web application for creating grocery shopping lists based on 
 
 **Value**: Time savings, waste reduction, convenience, organization.
 
-
 ## Tech Stack
 
 **Frontend**: Astro 5, React 18 (use `.astro` by default, `.tsx` only for interactivity), TypeScript 5, Tailwind CSS 4, Shadcn/ui (WCAG AA)
@@ -25,7 +24,6 @@ ShopMate is an MVP web application for creating grocery shopping lists based on 
 
 **Monitoring**: Sentry, Plausible/GA4
 
-
 ## Development Commands
 
 `npm run dev` (port 3000) | `npm run build` | `npm run preview` | `npm run lint` | `npm run lint:fix` | `npm run format`
@@ -35,6 +33,7 @@ Git hooks: husky + lint-staged configured
 ## Project Structure
 
 `src/layouts/` `src/pages/` (routes) | `src/pages/api/` (prerender=false) | `src/middleware/` | `src/db/` | `src/types.ts` | `src/components/` (Astro & React) | `src/components/ui/` (Shadcn) | `src/components/hooks/` | `src/lib/` (services) | `src/lib/utils.ts` (cn()) | `src/styles/` | `src/assets/` | `public/`
+
 ## Architecture Patterns
 
 **Components**: `.astro` by default (static), `.tsx` only for interactivity. Use `client:load|idle|visible`. Never "use client".
@@ -89,7 +88,6 @@ Git hooks: husky + lint-staged configured
 
 **Out of Scope**: Recipe imports (JPG/PDF/DOCX), native mobile apps, recipe sharing, external integrations, multi-language (Polish only), advanced planning (templates, drag-drop), notifications, diet/allergy mgmt, 2FA, unit conversion, price tracking, social features
 
-
 ## Best Practices
 
 **Development**: Execute up to 3 actions, ask for approval. Clear variable names, explanatory comments, full implementations, defensive coding, simpler solutions first, explain root causes.
@@ -127,4 +125,3 @@ Git hooks: husky + lint-staged configured
 **Component** (`src/components/ShoppingListExport.tsx`): React useState for loading. Buttons: "Eksportuj PDF" (with loading state), "Eksportuj TXT" (outline variant). Filename format: `${list.name.replace(/\s+/g, '-').toLowerCase()}-${date}.pdf|txt`. Error handling with console.error + alert.
 
 **Category Order**: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne (always in this order)
-

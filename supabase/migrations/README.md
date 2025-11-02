@@ -155,28 +155,28 @@ RETURNING created_at, updated_at;
 
 ```typescript
 // Test w aplikacji TypeScript
-const { data, error } = await supabase.rpc('generate_shopping_list', {
-    p_name: 'Test Shopping List',
-    p_week_start_date: '2025-01-20',
-    p_items: [
-        {
-            ingredient_name: 'mleko',
-            quantity: 2,
-            unit: 'l',
-            category: 'Nabiał',
-            sort_order: 0
-        },
-        {
-            ingredient_name: 'chleb',
-            quantity: 1,
-            unit: 'szt',
-            category: 'Pieczywo',
-            sort_order: 1
-        }
-    ]
+const { data, error } = await supabase.rpc("generate_shopping_list", {
+  p_name: "Test Shopping List",
+  p_week_start_date: "2025-01-20",
+  p_items: [
+    {
+      ingredient_name: "mleko",
+      quantity: 2,
+      unit: "l",
+      category: "Nabiał",
+      sort_order: 0,
+    },
+    {
+      ingredient_name: "chleb",
+      quantity: 1,
+      unit: "szt",
+      category: "Pieczywo",
+      sort_order: 1,
+    },
+  ],
 });
 
-console.log('Created shopping list ID:', data);
+console.log("Created shopping list ID:", data);
 ```
 
 ---
@@ -225,12 +225,14 @@ DROP TABLE IF EXISTS recipes CASCADE;
 Przed wdrożeniem na produkcję:
 
 ### Przed uruchomieniem migracji
+
 - [ ] Backup bazy danych (Supabase automatic backup aktywny)
 - [ ] Review wszystkich migracji przez tech lead
 - [ ] Testy migracji na lokalnym środowisku
 - [ ] Testy migracji na staging environment
 
 ### Po uruchomieniu migracji
+
 - [ ] Weryfikacja struktury tabel (`\d+ table_name`)
 - [ ] Test RLS policies (multi-user scenarios)
 - [ ] Test indeksów (EXPLAIN ANALYZE)
@@ -240,6 +242,7 @@ Przed wdrożeniem na produkcję:
 - [ ] Integration tests (Vitest + Supabase client)
 
 ### Security audit
+
 - [ ] RLS włączone na wszystkich tabelach
 - [ ] Polityki RLS pokrywają wszystkie operacje (SELECT/INSERT/UPDATE/DELETE)
 - [ ] Test izolacji użytkowników (User A nie widzi danych User B)
@@ -247,6 +250,7 @@ Przed wdrożeniem na produkcję:
 - [ ] SQL injection testing (parametryzowane zapytania)
 
 ### Performance baseline
+
 - [ ] Query latency <100ms (p95) dla głównych zapytań
 - [ ] EXPLAIN ANALYZE dla krytycznych queries
 - [ ] Index usage verification (pg_stat_user_indexes)
@@ -269,19 +273,19 @@ supabase gen types typescript --local > src/db/database.types.ts
 Przykład użycia w aplikacji:
 
 ```typescript
-import { Database } from '@/db/database.types';
+import { Database } from "@/db/database.types";
 
-type Recipe = Database['public']['Tables']['recipes']['Row'];
-type RecipeInsert = Database['public']['Tables']['recipes']['Insert'];
-type RecipeUpdate = Database['public']['Tables']['recipes']['Update'];
+type Recipe = Database["public"]["Tables"]["recipes"]["Row"];
+type RecipeInsert = Database["public"]["Tables"]["recipes"]["Insert"];
+type RecipeUpdate = Database["public"]["Tables"]["recipes"]["Update"];
 
 const recipe: Recipe = {
-    id: '...',
-    user_id: '...',
-    name: 'Omlet',
-    instructions: 'Rozbij jajka...',
-    created_at: '2025-01-23T10:00:00Z',
-    updated_at: '2025-01-23T10:00:00Z'
+  id: "...",
+  user_id: "...",
+  name: "Omlet",
+  instructions: "Rozbij jajka...",
+  created_at: "2025-01-23T10:00:00Z",
+  updated_at: "2025-01-23T10:00:00Z",
 };
 ```
 
@@ -313,6 +317,7 @@ INSERT INTO ingredients (recipe_id, name, quantity, unit, sort_order) VALUES
 ## Monitoring i Maintenance
 
 ### Supabase Dashboard
+
 - Database → Tables: sprawdź strukturę
 - Database → Roles & Policies: weryfikuj RLS
 - Database → Indexes: monitor index usage
@@ -361,6 +366,7 @@ LIMIT 20;
 ### Problem: Migracja nie wykonuje się
 
 **Rozwiązanie:**
+
 ```bash
 # Sprawdź logi Supabase
 supabase status
@@ -375,6 +381,7 @@ psql -h localhost -U postgres -d postgres -f migrations/20250123100000_create_re
 ### Problem: RLS blokuje zapytania
 
 **Rozwiązanie:**
+
 ```sql
 -- Tymczasowo wyłącz RLS (TYLKO na development!)
 ALTER TABLE recipes DISABLE ROW LEVEL SECURITY;
@@ -389,6 +396,7 @@ SELECT * FROM pg_policies WHERE tablename = 'recipes';
 ### Problem: Duplikaty w meal_plan
 
 **Rozwiązanie:**
+
 - UNIQUE index `idx_meal_plan_unique_assignment` powinien zapobiegać duplikatom
 - Sprawdź czy index istnieje: `\d+ meal_plan`
 - Jeśli brak indexu, uruchom ponownie migrację 4

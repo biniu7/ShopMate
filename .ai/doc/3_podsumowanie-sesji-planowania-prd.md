@@ -129,6 +129,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 ### A. Główne wymagania funkcjonalne produktu
 
 **1. Zarządzanie przepisami kulinarnymi (CRUD+)**
+
 - Dodawanie przepisu przez strukturalny formularz z trzema sekcjami: nazwa, składniki (dynamiczna lista), instrukcje
 - Wyświetlanie szczegółów przepisu z możliwością edycji wszystkich pól
 - Lista wszystkich przepisów użytkownika z wyszukiwaniem po nazwie (substring matching)
@@ -137,6 +138,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 - Każdy składnik to rekord z polami: nazwa (wymagane), ilość (opcjonalne), jednostka (opcjonalne)
 
 **2. Kalendarz tygodniowy posiłków**
+
 - Wizualizacja 7 dni (Poniedziałek-Niedziela) × 4 posiłki (Śniadanie, Drugie śniadanie, Obiad, Kolacja) = 28 komórek
 - Przypisywanie przepisów przez przycisk "Przypisz przepis" otwierający listę przepisów
 - Jeden przepis na komórkę w MVP (ograniczenie architektury)
@@ -145,6 +147,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 - Responsywny layout: desktop - tabela 7×4, tablet - scrollowalny poziomo, mobile - accordion vertically stacked
 
 **3. System autoryzacji i kont użytkowników**
+
 - Rejestracja: email + hasło (Supabase Auth)
 - Logowanie: email + hasło
 - Reset hasła: email z linkiem resetującym
@@ -153,6 +156,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 - Row Level Security (RLS) na wszystkich tabelach - użytkownik widzi tylko swoje dane
 
 **4. Generowanie i zarządzanie listami zakupów**
+
 - **Dwa tryby generowania:**
   - Z kalendarza: zaznacz dni/posiłki (checkboxy lub date range picker) → generuj
   - Z przepisów: lista przepisów z checkboxami → generuj
@@ -172,6 +176,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 - Historia list zakupów: wszystkie wygenerowane listy z datą utworzenia
 
 **5. Eksport list zakupów**
+
 - **Format PDF:**
   - Biblioteka: @react-pdf/renderer (client-side)
   - Layout: A4 pionowy, standardowy font Helvetica
@@ -185,6 +190,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
   - Bezpośredni download bez preview
 
 **6. Responsywny interfejs użytkownika**
+
 - **Breakpointy:**
   - Desktop: ≥1024px
   - Tablet: 768-1023px
@@ -205,9 +211,10 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 
 **User Story 1: Nowy użytkownik planuje pierwszy tydzień**
 
-*Jako nowy użytkownik chcę zaplanować posiłki na nadchodzący tydzień i wygenerować listę zakupów, aby zaoszczędzić czas na zakupach.*
+_Jako nowy użytkownik chcę zaplanować posiłki na nadchodzący tydzień i wygenerować listę zakupów, aby zaoszczędzić czas na zakupach._
 
 **Ścieżka:**
+
 1. Rejestracja: email + hasło → konto utworzone
 2. Logowanie: email + hasło → dashboard
 3. Dodanie przepisu #1:
@@ -245,9 +252,10 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 
 **User Story 2: Powracający użytkownik edytuje przepis**
 
-*Jako powracający użytkownik chcę poprawić przepis, który był niedokładny, aby moje przyszłe listy zakupów były prawidłowe.*
+_Jako powracający użytkownik chcę poprawić przepis, który był niedokładny, aby moje przyszłe listy zakupów były prawidłowe._
 
 **Ścieżka:**
+
 1. Logowanie: email + hasło → dashboard
 2. Nawigacja do przepisów: klik "Przepisy" w menu
 3. Wyszukanie przepisu: wpisanie "Owsianka" w search bar
@@ -266,9 +274,10 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 
 **User Story 3: Użytkownik generuje listę z wybranych przepisów (bez kalendarza)**
 
-*Jako użytkownik chcę wygenerować listę zakupów tylko dla 2-3 przepisów na weekend, bez planowania całego tygodnia.*
+_Jako użytkownik chcę wygenerować listę zakupów tylko dla 2-3 przepisów na weekend, bez planowania całego tygodnia._
 
 **Ścieżka:**
+
 1. Logowanie → dashboard
 2. Klik "Generuj listę zakupów"
 3. Wybór trybu: "Z wybranych przepisów"
@@ -285,9 +294,10 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 
 **User Story 4: Użytkownik usuwa przepis przypisany w kalendarzu**
 
-*Jako użytkownik chcę usunąć przepis, którego już nie gotuję, ale system powinien mnie ostrzec jeśli jest używany.*
+_Jako użytkownik chcę usunąć przepis, którego już nie gotuję, ale system powinien mnie ostrzec jeśli jest używany._
 
 **Ścieżka:**
+
 1. Logowanie → przepisy
 2. Klik "Usuń" przy przepisie "Owsianka z bananami"
 3. System wykrywa 3 przypisania w kalendarzu
@@ -303,9 +313,10 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 
 **User Story 5: AI kategoryzacja nie działa - fallback flow**
 
-*Jako użytkownik chcę wygenerować listę zakupów nawet gdy serwis AI jest niedostępny.*
+_Jako użytkownik chcę wygenerować listę zakupów nawet gdy serwis AI jest niedostępny._
 
 **Ścieżka:**
+
 1. Użytkownik generuje listę zakupów
 2. System wysyła request do OpenAI API
 3. Timeout po 10s (brak odpowiedzi)
@@ -325,41 +336,41 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 
 **1. Kryteria funkcjonalne:**
 
-| Kryterium | Sposób mierzenia | Docelowa wartość |
-|-----------|------------------|------------------|
-| Utworzenie konta i logowanie | Test manualny podczas UAT | 100% success rate (5-10 użytkowników) |
-| Dodanie 5+ przepisów | Test manualny podczas UAT | 100% użytkowników UAT (5-10 osób) |
-| Dokładność AI kategoryzacji | Manual review 50 składników z różnych kategorii | >80% trafność |
-| Czas generowania listy zakupów | Performance monitoring (Web Vitals) | <3 sekundy (p95) |
-| Poprawność formatowania PDF | Manual review PDF na 5 urządzeniach (iOS, Android, Windows, Mac, Linux) | 100% czytelność |
+| Kryterium                      | Sposób mierzenia                                                        | Docelowa wartość                      |
+| ------------------------------ | ----------------------------------------------------------------------- | ------------------------------------- |
+| Utworzenie konta i logowanie   | Test manualny podczas UAT                                               | 100% success rate (5-10 użytkowników) |
+| Dodanie 5+ przepisów           | Test manualny podczas UAT                                               | 100% użytkowników UAT (5-10 osób)     |
+| Dokładność AI kategoryzacji    | Manual review 50 składników z różnych kategorii                         | >80% trafność                         |
+| Czas generowania listy zakupów | Performance monitoring (Web Vitals)                                     | <3 sekundy (p95)                      |
+| Poprawność formatowania PDF    | Manual review PDF na 5 urządzeniach (iOS, Android, Windows, Mac, Linux) | 100% czytelność                       |
 
 **2. Kryteria UX:**
 
-| Kryterium | Sposób mierzenia | Docelowa wartość |
-|-----------|------------------|------------------|
-| Czas planowania tygodnia | Nagranie sesji UAT + timer | <10 minut (dla nowego użytkownika) |
-| Płynność na mobile i desktop | Manual testing + Lighthouse Performance score | >90/100 Lighthouse, brak lagów |
-| Liczba kliknięć do akcji | Analiza ścieżek użytkownika (user flow mapping) | ≤3 kliknięcia dla kluczowych akcji |
-| Satysfakcja użytkownika | Ankieta SUS (System Usability Scale) | SUS score ≥68 (above average) |
+| Kryterium                    | Sposób mierzenia                                | Docelowa wartość                   |
+| ---------------------------- | ----------------------------------------------- | ---------------------------------- |
+| Czas planowania tygodnia     | Nagranie sesji UAT + timer                      | <10 minut (dla nowego użytkownika) |
+| Płynność na mobile i desktop | Manual testing + Lighthouse Performance score   | >90/100 Lighthouse, brak lagów     |
+| Liczba kliknięć do akcji     | Analiza ścieżek użytkownika (user flow mapping) | ≤3 kliknięcia dla kluczowych akcji |
+| Satysfakcja użytkownika      | Ankieta SUS (System Usability Scale)            | SUS score ≥68 (above average)      |
 
 **3. Kryteria techniczne:**
 
-| Kryterium | Sposób mierzenia | Docelowa wartość |
-|-----------|------------------|------------------|
-| Stabilność (brak krytycznych błędów) | Sentry error tracking | 0 critical errors w UAT |
-| Czas ładowania strony | Lighthouse Performance + Web Vitals | LCP <2.5s, FID <100ms, CLS <0.1 |
-| Responsywność | Manual testing + BrowserStack | Działa na urządzeniach od 320px |
-| Bezpieczeństwo danych | Code review RLS policies + penetration testing | 100% izolacja danych użytkowników |
-| API rate limiting | Load testing (k6 lub Artillery) | Max 100 req/min/user bez 429 errors |
+| Kryterium                            | Sposób mierzenia                               | Docelowa wartość                    |
+| ------------------------------------ | ---------------------------------------------- | ----------------------------------- |
+| Stabilność (brak krytycznych błędów) | Sentry error tracking                          | 0 critical errors w UAT             |
+| Czas ładowania strony                | Lighthouse Performance + Web Vitals            | LCP <2.5s, FID <100ms, CLS <0.1     |
+| Responsywność                        | Manual testing + BrowserStack                  | Działa na urządzeniach od 320px     |
+| Bezpieczeństwo danych                | Code review RLS policies + penetration testing | 100% izolacja danych użytkowników   |
+| API rate limiting                    | Load testing (k6 lub Artillery)                | Max 100 req/min/user bez 429 errors |
 
 **4. Kryteria biznesowe:**
 
-| Kryterium | Sposób mierzenia | Docelowa wartość |
-|-----------|------------------|------------------|
-| Potwierdzenie wartości | Ankieta UAT: "Czy użyłbyś tej aplikacji regularnie?" | ≥80% odpowiedzi "Tak" (8-10/10 użytkowników) |
-| Rozwiązanie głównego problemu | Ankieta UAT: pytanie otwarte + analiza tematyczna | ≥70% użytkowników potwierdza oszczędność czasu |
-| Gotowość do skalowania | Code review architektury + load testing | Obsługa 100 concurrent users bez degradacji |
-| Net Promoter Score (NPS) | Ankieta UAT: "Czy polecisz tę aplikację?" (0-10) | NPS ≥0 (more promoters than detractors) |
+| Kryterium                     | Sposób mierzenia                                     | Docelowa wartość                               |
+| ----------------------------- | ---------------------------------------------------- | ---------------------------------------------- |
+| Potwierdzenie wartości        | Ankieta UAT: "Czy użyłbyś tej aplikacji regularnie?" | ≥80% odpowiedzi "Tak" (8-10/10 użytkowników)   |
+| Rozwiązanie głównego problemu | Ankieta UAT: pytanie otwarte + analiza tematyczna    | ≥70% użytkowników potwierdza oszczędność czasu |
+| Gotowość do skalowania        | Code review architektury + load testing              | Obsługa 100 concurrent users bez degradacji    |
+| Net Promoter Score (NPS)      | Ankieta UAT: "Czy polecisz tę aplikację?" (0-10)     | NPS ≥0 (more promoters than detractors)        |
 
 **5. Tracking i monitoring w produkcji:**
 
@@ -388,6 +399,7 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 **1. Stack technologiczny:**
 
 **Frontend:**
+
 - Astro 5: meta-framework z partial hydration (interactive islands)
 - React 19: komponenty interaktywne (formularze, kalendarz, modały)
 - TypeScript 5: type safety, better DX, auto-completion
@@ -395,15 +407,18 @@ Najistotniejsze rekomendacje dopasowane do rozmowy:
 - Shadcn/ui: accessible component library (WCAG AA compliant)
 
 **Backend:**
+
 - Supabase: PostgreSQL database + Auth + Row Level Security
 - OpenAI API: GPT-4o mini dla AI kategoryzacji składników
 
 **Libraries:**
+
 - @react-pdf/renderer: client-side PDF generation
 - Zod: schema validation dla formularzy
 - TanStack Query: data fetching, caching, synchronization (opcjonalne)
 
 **Infrastruktura:**
+
 - Vercel/Netlify: hosting aplikacji webowej (darmowy tier wystarczy)
 - Sentry: error tracking i monitoring (5K errors/month darmowy)
 - Plausible / Google Analytics 4: user analytics
@@ -516,6 +531,7 @@ CREATE POLICY "Users can delete own shopping list items" ON shopping_list_items 
 **3. AI Integration - OpenAI GPT-4o mini:**
 
 **Prompt template:**
+
 ```
 Kategoryzuj poniższe składniki do jednej z kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne.
 
@@ -537,6 +553,7 @@ Zwróć odpowiedź w formacie JSON:
 ```
 
 **Implementation details:**
+
 - Batch processing: jeden request dla wszystkich składników (oszczędność API calls)
 - Timeout: 10 sekund
 - Retry logic: max 2 próby z exponential backoff (1s, 2s)
@@ -548,23 +565,28 @@ Zwróć odpowiedź w formacie JSON:
 **4. Walidacja i error handling:**
 
 **Zod schemas:**
+
 ```typescript
 const RecipeSchema = z.object({
-  name: z.string()
-    .min(3, "Nazwa przepisu musi mieć min. 3 znaki")
-    .max(100, "Nazwa przepisu może mieć max. 100 znaków"),
-  instructions: z.string()
+  name: z.string().min(3, "Nazwa przepisu musi mieć min. 3 znaki").max(100, "Nazwa przepisu może mieć max. 100 znaków"),
+  instructions: z
+    .string()
     .min(10, "Instrukcje muszą mieć min. 10 znaków")
     .max(5000, "Instrukcje mogą mieć max. 5000 znaków"),
-  ingredients: z.array(z.object({
-    name: z.string().min(1, "Nazwa składnika jest wymagana"),
-    quantity: z.number().optional(),
-    unit: z.string().optional()
-  })).min(1, "Przepis musi mieć przynajmniej 1 składnik")
+  ingredients: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Nazwa składnika jest wymagana"),
+        quantity: z.number().optional(),
+        unit: z.string().optional(),
+      })
+    )
+    .min(1, "Przepis musi mieć przynajmniej 1 składnik"),
 });
 ```
 
 **Error handling:**
+
 - Form validation errors: inline messages pod polami (czerwony tekst)
 - API errors: toast notifications z retry button
 - Network errors: toast "⚠️ Brak połączenia. Sprawdź internet i spróbuj ponownie."
@@ -588,6 +610,7 @@ const RecipeSchema = z.object({
 ### E. Harmonogram realizacji (6 tygodni)
 
 **Tydzień 1: Setup + Auth**
+
 - Setup Astro 5 + React 19 + TypeScript + Tailwind CSS 4
 - Konfiguracja Supabase (projekt, baza danych, RLS policies)
 - Instalacja Shadcn/ui components
@@ -598,6 +621,7 @@ const RecipeSchema = z.object({
 - Routing: /login, /register, /reset-password, /dashboard
 
 **Tydzień 2: CRUD Przepisów**
+
 - Formularz dodawania przepisu:
   - Input: nazwa przepisu (validation: 3-100 znaków)
   - Textarea: instrukcje (validation: 10-5000 znaków)
@@ -621,6 +645,7 @@ const RecipeSchema = z.object({
   - Cascade delete: recipes → ingredients + meal_plan assignments
 
 **Tydzień 3: Kalendarz tygodniowy**
+
 - Widok kalendarza 7 dni × 4 posiłki:
   - Desktop (≥1024px): tabela 7 kolumn × 4 wiersze
   - Tablet (768-1023px): scrollowalny poziomo
@@ -641,6 +666,7 @@ const RecipeSchema = z.object({
   - Klik na nazwę → widok szczegółów przepisu (side panel lub modal)
 
 **Tydzień 4: Generowanie list zakupów + AI kategoryzacja**
+
 - Interfejs generowania listy:
   - Tryb "Z kalendarza":
     - Checkboxy: zaznacz dni (Pon-Niedz) + posiłki (Śniadanie-Kolacja)
@@ -683,6 +709,7 @@ const RecipeSchema = z.object({
   - Direct download bez preview
 
 **Tydzień 5: Responsywność + UI polish + Feedback**
+
 - Responsywność mobile:
   - Test na BrowserStack (iOS Safari, Android Chrome, różne rozdzielczości)
   - Poprawki layoutu kalendarza (accordion na mobile)
@@ -720,6 +747,7 @@ const RecipeSchema = z.object({
   - Link do ankiety w email do użytkowników UAT
 
 **Tydzień 6: Testy + UAT + Bug fixes → Launch**
+
 - Testy wewnętrzne (wszystkie user flows):
   - Happy path: rejestracja → dodanie przepisów → kalendarz → lista zakupów → eksport PDF
   - Edge cases: puste listy, brak internetu, timeout AI, błędy walidacji
@@ -768,6 +796,7 @@ const RecipeSchema = z.object({
 ### F. Post-launch i iteracja
 
 **Monitorowanie (pierwsze 2 tygodnie):**
+
 - Daily check Sentry errors (zero tolerance dla critical errors)
 - Weekly review Google Analytics / Plausible:
   - Liczba nowych rejestracji
@@ -782,25 +811,16 @@ const RecipeSchema = z.object({
 **Roadmap v1.1 (kolejne 4-6 tygodni po launch):**
 
 Wysokopriorytowe features (based on original document + session decisions):
+
 1. **Import przepisów z pliku** (JPG, PDF, DOCX) - wymaga OCR API (np. Google Cloud Vision)
 2. **Szablony tygodniowe** - zapisz tydzień jako szablon, ponowne użycie jednym klikiem
 3. **Drag-and-drop w kalendarzu** - enhancement UX dla power users
 4. **PWA + offline support** - Service Worker, cache recipes + meal plan, sync on reconnect
 5. **Wyszukiwanie po składnikach** - "Pokaż przepisy z kurczakiem" → lista filtered recipes
 
-Średniopriorytowe features:
-6. **OAuth social login** - Google / Facebook authentication
-7. **Weryfikacja email** - confirm email po rejestracji
-8. **Obsługa wielu przepisów na komórkę** - np. zupa + drugie danie na obiad
-9. **Tagi i kategorie przepisów** - "Śniadania", "Desery", "Wegetariańskie"
-10. **Planowanie na wiele tygodni** - scrollowalny kalendarz 4-8 tygodni
+Średniopriorytowe features: 6. **OAuth social login** - Google / Facebook authentication 7. **Weryfikacja email** - confirm email po rejestracji 8. **Obsługa wielu przepisów na komórkę** - np. zupa + drugie danie na obiad 9. **Tagi i kategorie przepisów** - "Śniadania", "Desery", "Wegetariańskie" 10. **Planowanie na wiele tygodni** - scrollowalny kalendarz 4-8 tygodni
 
-Długoterminowe (v2.0+):
-11. **Udostępnianie przepisów** - funkcje społecznościowe, profile publiczne
-12. **Integracje zakupowe** - Frisco, Carrefour API (automatic order from list)
-13. **Obsługa diet i alergii** - profile dietetyczne, filtrowanie przepisów
-14. **Aplikacje mobilne natywne** - iOS + Android (React Native lub Flutter)
-15. **Analityka i raporty** - statystyki użycia, szacowanie kosztów zakupów
+Długoterminowe (v2.0+): 11. **Udostępnianie przepisów** - funkcje społecznościowe, profile publiczne 12. **Integracje zakupowe** - Frisco, Carrefour API (automatic order from list) 13. **Obsługa diet i alergii** - profile dietetyczne, filtrowanie przepisów 14. **Aplikacje mobilne natywne** - iOS + Android (React Native lub Flutter) 15. **Analityka i raporty** - statystyki użycia, szacowanie kosztów zakupów
 
 ---
 
@@ -845,10 +865,12 @@ Batch processing: wszystkie składniki w jednym request.
 Pierwotny dokument wspomina "brak jednostek miar" jako ograniczenie MVP. Decyzja z sesji: prosty model tekstowy bez automatycznej konwersji. Pozostaje pytanie:
 
 **Co z różnymi jednostkami tego samego składnika?**
+
 - Przykład: "2 łyżki mąki" + "500g mąki" = dwie osobne pozycje na liście zakupów
 - Użytkownik może to uznać za suboptimal experience
 
 **Rekomendacja dla post-MVP (v1.1):**
+
 - Dodaj opcjonalną konwersję jednostek dla podstawowych składników
 - Tabela konwersji: 1 łyżka mąki = 10g, 1 szklanka mleka = 250ml, etc.
 - Użytkownik może włączyć/wyłączyć auto-konwersję w ustawieniach
@@ -858,10 +880,12 @@ Pierwotny dokument wspomina "brak jednostek miar" jako ograniczenie MVP. Decyzja
 **3. Handling bardzo długich list zakupów (>100 składników)**
 
 Nie dyskutowano edge case: co się dzieje gdy użytkownik generuje listę z 20+ przepisów?
+
 - AI request może przekroczyć token limit OpenAI (~4096 tokens dla GPT-4o mini input)
 - PDF może być wielostronicowy i nieczytelny
 
 **Rekomendacja:**
+
 - Limit w UI: max 20 przepisów na jedną listę zakupów
 - Jeśli użytkownik próbuje więcej: toast "Zbyt wiele przepisów. Wybierz maksymalnie 20."
 - Alternatywnie: chunk AI requests (po 50 składników) i merge wyniki
@@ -872,10 +896,12 @@ Nie dyskutowano edge case: co się dzieje gdy użytkownik generuje listę z 20+ 
 **4. Współdzielenie konta (rodziny, współlokatorzy) - poza MVP**
 
 Pierwotny dokument wspomina "konta rodzinne" jako zaawansowaną funkcję poza MVP. Nie omówiono:
+
 - Czy użytkownicy będą prosić o tę funkcję od razu?
 - Czy to kluczowy pain point dla grupy docelowej (osoby planujące dla rodziny)?
 
 **Rekomendacja:**
+
 - Monitoruj feedback podczas UAT i po launch
 - Jeśli ≥30% użytkowników pyta o sharing: priorytetyzuj w v1.1
 - Implementacja: invite system (email invite → shared access do przepisów + kalendarza)
@@ -886,10 +912,12 @@ Pierwotny dokument wspomina "konta rodzinne" jako zaawansowaną funkcję poza MV
 **5. Performance przy dużej liczbie przepisów (scalability)**
 
 Nie dyskutowano: co się dzieje gdy użytkownik ma 500+ przepisów?
+
 - Lista przepisów może być wolna (large table rendering)
 - Wyszukiwanie może być wolne (full scan w bazie danych)
 
 **Rekomendacja:**
+
 - Pagination lub infinite scroll dla listy przepisów (ładuj 20 naraz)
 - Full-text search w PostgreSQL (GIN index na recipes.name)
 - Lazy loading ingredientów (nie fetch all na liście, tylko on-demand w details view)
@@ -900,10 +928,12 @@ Nie dyskutowano: co się dzieje gdy użytkownik ma 500+ przepisów?
 **6. Backup i export danych użytkownika (GDPR compliance)**
 
 Nie dyskutowano compliance z GDPR/RODO:
+
 - Użytkownik ma prawo do exportu wszystkich swoich danych
 - Użytkownik ma prawo do usunięcia konta (right to be forgotten)
 
 **Rekomendacja dla MVP:**
+
 - Funkcja "Usuń konto" w ustawieniach → cascade delete wszystkich danych użytkownika
 - Post-MVP (przed publicznym launch w EU): funkcja "Eksportuj dane" → JSON/CSV ze wszystkimi przepisami, listami, planem posiłków
 
@@ -912,12 +942,14 @@ Nie dyskutowano compliance z GDPR/RODO:
 **7. Koszt AI kategoryzacji przy skali - ekonomia jednostkowa**
 
 Założenie: $0.0001 za listę 10 składników. Ale:
+
 - Przy 1000 użytkownikach generujących 5 list/miesiąc = 5000 list/miesiąc = $0.50/miesiąc (ok)
 - Przy 10,000 użytkownikach = $5/miesiąc (ok)
 - Przy 100,000 użytkowników = $50/miesiąc (ok)
 - **Przy 1,000,000 użytkowników = $500/miesiąc (czy to sustainable w freemium model?)**
 
 **Rekomendacja:**
+
 - Monitor koszty OpenAI API miesięcznie
 - Jeśli koszt >$100/miesiąc: rozważ optymalizacje
   - Cache AI results dla popularnych składników (np. "mleko" zawsze → "Nabiał")
@@ -938,6 +970,7 @@ Założenie: $0.0001 za listę 10 składników. Ale:
 ## Następne kroki
 
 Dokument podsumowujący sesję planowania PRD został stworzony. Zawiera:
+
 1. ✅ 30 podjętych decyzji projektowych (3 rundy)
 2. ✅ 15 najistotniejszych dopasowanych rekomendacji
 3. ✅ Szczegółowe podsumowanie z user stories, kryteriami sukcesu, architekturą techniczną

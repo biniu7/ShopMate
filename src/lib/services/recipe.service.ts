@@ -150,13 +150,21 @@ export async function getRecipesList(
   }
 
   // Transform data to DTOs
-  const recipes: RecipeListItemDto[] = (data || []).map((recipe: any) => ({
-    id: recipe.id,
-    name: recipe.name,
-    ingredients_count: recipe.ingredients?.[0]?.count ?? 0,
-    created_at: recipe.created_at,
-    updated_at: recipe.updated_at,
-  }));
+  const recipes: RecipeListItemDto[] = (data || []).map(
+    (recipe: {
+      id: string;
+      name: string;
+      created_at: string;
+      updated_at: string;
+      ingredients: { count: number }[];
+    }) => ({
+      id: recipe.id,
+      name: recipe.name,
+      ingredients_count: recipe.ingredients?.[0]?.count ?? 0,
+      created_at: recipe.created_at,
+      updated_at: recipe.updated_at,
+    })
+  );
 
   // Calculate pagination metadata
   const total = count ?? 0;
@@ -172,6 +180,70 @@ export async function getRecipesList(
   return {
     data: recipes,
     pagination,
+  };
+}
+
+/**
+ * Get a single recipe by ID with all ingredients and meal plan assignments count
+ *
+ * This function:
+ * 1. Fetches the recipe (with user_id verification for authorization)
+ * 2. Fetches all ingredients sorted by sort_order
+ * 3. Counts meal plan assignments for the recipe
+ * 4. Returns complete RecipeResponseDto or null if not found
+ *
+ * @param supabase - Authenticated Supabase client
+ * @param recipeId - UUID of the recipe to fetch
+ * @param userId - User ID from auth session (for authorization)
+ * @returns RecipeResponseDto with ingredients and meal_plan_assignments, or null if not found
+ * @throws Error if database operation fails (except for "not found")
+ */
+export async function getRecipeById(
+  supabase: SupabaseClientType,
+  recipeId: string,
+  userId: string
+): Promise<RecipeResponseDto | null> {
+  // Step 1: Fetch recipe with user_id verification
+  const { data: recipe, error: recipeError } = await supabase
+    .from("recipes")
+    .select("*")
+    .eq("id", recipeId)
+    .eq("user_id", userId)
+    .single();
+
+  // If recipe not found or doesn't belong to user, return null
+  if (recipeError || !recipe) {
+    return null;
+  }
+
+  // Step 2: Fetch ingredients sorted by sort_order
+  const { data: ingredients, error: ingredientsError } = await supabase
+    .from("ingredients")
+    .select("*")
+    .eq("recipe_id", recipeId)
+    .order("sort_order", { ascending: true });
+
+  if (ingredientsError) {
+    console.error("Failed to fetch ingredients:", ingredientsError);
+    throw new Error(`Failed to fetch ingredients: ${ingredientsError.message}`);
+  }
+
+  // Step 3: Count meal plan assignments
+  const { count, error: countError } = await supabase
+    .from("meal_plan")
+    .select("*", { count: "exact", head: true })
+    .eq("recipe_id", recipeId);
+
+  if (countError) {
+    console.error("Failed to count meal plan assignments:", countError);
+    // Don't throw - this is an optional field, continue with count = 0
+  }
+
+  // Step 4: Compose RecipeResponseDto
+  return {
+    ...recipe,
+    ingredients: ingredients || [],
+    meal_plan_assignments: count ?? 0,
   };
 }
 

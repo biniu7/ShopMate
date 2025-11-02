@@ -5,6 +5,7 @@ This document contains test payloads for manually testing the POST /api/recipes 
 ## Prerequisites
 
 1. **Start the dev server:**
+
    ```bash
    npm run dev
    ```
@@ -28,6 +29,7 @@ This document contains test payloads for manually testing the POST /api/recipes 
 **Description:** Valid recipe with 5 ingredients
 
 **cURL Command:**
+
 ```bash
 curl -X POST http://localhost:3000/api/recipes \
   -H "Content-Type: application/json" \
@@ -71,10 +73,12 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `201 Created`
 - Body: Complete recipe with generated IDs and timestamps
 
 **JSON Payload (copy-paste friendly):**
+
 ```json
 {
   "name": "Spaghetti Carbonara",
@@ -121,6 +125,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** Recipe name is only 2 characters (minimum is 3)
 
 **JSON Payload:**
+
 ```json
 {
   "name": "AB",
@@ -137,8 +142,10 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `400 Bad Request`
 - Body:
+
 ```json
 {
   "error": "Validation failed",
@@ -155,6 +162,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** Instructions are only 5 characters (minimum is 10)
 
 **JSON Payload:**
+
 ```json
 {
   "name": "Test Recipe",
@@ -171,8 +179,10 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `400 Bad Request`
 - Body:
+
 ```json
 {
   "error": "Validation failed",
@@ -189,6 +199,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** Empty ingredients array
 
 **JSON Payload:**
+
 ```json
 {
   "name": "Test Recipe",
@@ -198,8 +209,10 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `400 Bad Request`
 - Body:
+
 ```json
 {
   "error": "Validation failed",
@@ -218,8 +231,10 @@ curl -X POST http://localhost:3000/api/recipes \
 **Note:** Generate payload with 51 ingredients programmatically or manually.
 
 **Expected Response:**
+
 - Status: `400 Bad Request`
 - Body:
+
 ```json
 {
   "error": "Validation failed",
@@ -238,6 +253,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Note:** This payload is large. Generate it programmatically if needed.
 
 **Expected Response:**
+
 - Status: `201 Created`
 - Body: Complete recipe with 50 ingredients
 
@@ -248,6 +264,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** No authentication cookie provided
 
 **cURL Command:**
+
 ```bash
 curl -X POST http://localhost:3000/api/recipes \
   -H "Content-Type: application/json" \
@@ -266,8 +283,10 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `401 Unauthorized`
 - Body:
+
 ```json
 {
   "error": "Authentication required"
@@ -281,6 +300,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** Some ingredients without quantity/unit (like spices)
 
 **JSON Payload:**
+
 ```json
 {
   "name": "Simple Pasta",
@@ -315,6 +335,7 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `201 Created`
 - Body: Complete recipe with null values preserved
 
@@ -325,6 +346,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** Negative quantity (must be positive)
 
 **JSON Payload:**
+
 ```json
 {
   "name": "Invalid Recipe",
@@ -341,8 +363,10 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `400 Bad Request`
 - Body:
+
 ```json
 {
   "error": "Validation failed",
@@ -359,6 +383,7 @@ curl -X POST http://localhost:3000/api/recipes \
 **Description:** Unit exceeds 50 characters
 
 **JSON Payload:**
+
 ```json
 {
   "name": "Test Recipe",
@@ -375,8 +400,10 @@ curl -X POST http://localhost:3000/api/recipes \
 ```
 
 **Expected Response:**
+
 - Status: `400 Bad Request`
 - Body:
+
 ```json
 {
   "error": "Validation failed",
@@ -408,6 +435,7 @@ After successful creation (201 response):
    - `recipe_id` matches parent recipe's `id`
 
 3. **Verify database state (Supabase Dashboard):**
+
    ```sql
    -- Check recipe was created
    SELECT * FROM recipes WHERE id = '<recipe_id_from_response>';

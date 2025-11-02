@@ -209,6 +209,7 @@ curl -X POST http://localhost:3000/api/recipes \
 
 - **Cause:** Missing environment variables or dependencies
 - **Fix:**
+
   ```bash
   # Install dependencies
   npm install
@@ -228,6 +229,7 @@ curl -X POST http://localhost:3000/api/recipes \
 For comprehensive testing, see: `.ai/doc/18_POST-recipes-test-data.md`
 
 Contains 10 detailed test cases covering:
+
 - ✅ Success scenarios
 - ❌ Validation errors
 - ❌ Authentication errors
@@ -237,15 +239,15 @@ Contains 10 detailed test cases covering:
 
 **Quick Reference:**
 
-| Test | Method | Expected Status | Description |
-|------|--------|----------------|-------------|
-| Success | POST | 201 | Valid recipe created |
-| Invalid name | POST | 400 | Name < 3 or > 100 chars |
-| Invalid instructions | POST | 400 | Instructions < 10 or > 5000 chars |
-| No ingredients | POST | 400 | Empty ingredients array |
-| Too many ingredients | POST | 400 | More than 50 ingredients |
-| No auth | POST | 401 | Missing auth cookie |
-| Server error | POST | 500 | Database/unexpected error |
+| Test                 | Method | Expected Status | Description                       |
+| -------------------- | ------ | --------------- | --------------------------------- |
+| Success              | POST   | 201             | Valid recipe created              |
+| Invalid name         | POST   | 400             | Name < 3 or > 100 chars           |
+| Invalid instructions | POST   | 400             | Instructions < 10 or > 5000 chars |
+| No ingredients       | POST   | 400             | Empty ingredients array           |
+| Too many ingredients | POST   | 400             | More than 50 ingredients          |
+| No auth              | POST   | 401             | Missing auth cookie               |
+| Server error         | POST   | 500             | Database/unexpected error         |
 
 ---
 

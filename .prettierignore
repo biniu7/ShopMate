@@ -1,0 +1,11 @@
+# Auto-generated files
+src/db/database.types.ts
+
+# Dependencies
+node_modules/
+.astro/
+dist/
+
+# Build outputs
+build/
+.vercel/

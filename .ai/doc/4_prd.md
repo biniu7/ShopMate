@@ -3,17 +3,21 @@
 ## 1. Przegląd produktu
 
 ### 1.1 Nazwa produktu
+
 ShopMate - Inteligentny planer posiłków i list zakupów
 
 ### 1.2 Wersja dokumentu
+
 Wersja: 1.0 MVP
 Data utworzenia: 2025-01-23
 Autor: Product Management Team
 
 ### 1.3 Streszczenie wykonawcze
+
 ShopMate to aplikacja webowa umożliwiająca tworzenie list zakupów na podstawie przepisów kulinarnych przyporządkowanych do poszczególnych dni i posiłków w kalendarzu tygodniowym. Aplikacja automatyzuje proces planowania posiłków i generowania list zakupów z wykorzystaniem sztucznej inteligencji do kategoryzacji składników.
 
 ### 1.4 Cele produktu
+
 - Umożliwienie użytkownikom zaplanowania tygodnia posiłków w czasie krótszym niż 10 minut
 - Automatyzacja procesu tworzenia list zakupów z agregacją składników
 - Oszczędność czasu użytkowników przy zakupach spożywczych
@@ -23,18 +27,21 @@ ShopMate to aplikacja webowa umożliwiająca tworzenie list zakupów na podstawi
 ### 1.5 Grupa docelowa
 
 Główni użytkownicy:
+
 - Osoby planujące posiłki dla rodziny
 - Osoby żyjące samodzielnie i organizujące zakupy
 - Użytkownicy dbający o redukcję marnotrawstwa żywności
 - Osoby poszukujące oszczędności czasu i pieniędzy
 
 Charakterystyka:
+
 - Wiek: 25-55 lat
 - Posiadają smartfon lub komputer
 - Robią zakupy spożywcze minimum raz w tygodniu
 - Mają podstawową wiedzę o korzystaniu z aplikacji webowych
 
 ### 1.6 Kluczowe cechy produktu (MVP)
+
 - Zarządzanie przepisami kulinarnymi (CRUD)
 - Kalendarz tygodniowy z przypisywaniem przepisów (7 dni × 4 posiłki)
 - System autoryzacji użytkowników (Supabase Auth)
@@ -45,6 +52,7 @@ Charakterystyka:
 - Row Level Security dla pełnej izolacji danych użytkowników
 
 ### 1.7 Stack technologiczny
+
 - Frontend: Astro 5, React 19, TypeScript 5, Tailwind CSS 4, Shadcn/ui
 - Backend: Supabase (PostgreSQL, Auth, RLS)
 - AI: OpenAI API (GPT-4o mini)
@@ -59,21 +67,25 @@ Charakterystyka:
 Użytkownicy napotykają następujące trudności:
 
 Planowanie posiłków na cały tydzień:
+
 - Brak systematycznego podejścia do organizacji menu
 - Trudność w zapamiętaniu co i kiedy ugotować
 - Chaos w codziennym podejmowaniu decyzji "co na obiad"
 
 Tworzenie kompletnych list zakupów:
+
 - Zapominanie o składnikach przy tworzeniu ręcznych list
 - Wielokrotne wizyty w sklepie z powodu brakujących produktów
 - Kupowanie niepotrzebnych produktów (duplikaty)
 
 Koordynacja składników z wielu przepisów:
+
 - Czasochłonne ręczne zbieranie informacji z różnych źródeł
 - Trudność w śledzeniu jakie składniki są potrzebne w danym tygodniu
 - Brak centralnego miejsca przechowywania przepisów
 
 Optymalizacja zakupów:
+
 - Trudność w agregacji składników z wielu przepisów
 - Brak automatycznego sumowania powtarzających się składników
 - Nieczytelne, chaotyczne listy zakupów
@@ -81,6 +93,7 @@ Optymalizacja zakupów:
 ### 2.2 Wpływ problemu
 
 Konsekwencje dla użytkowników:
+
 - Strata czasu: średnio 2-3 godziny tygodniowo na planowanie i zakupy
 - Marnotrawstwo żywności: kupowanie składników które już posiadają
 - Stres: codzienne podejmowanie decyzji "co ugotować"
@@ -90,6 +103,7 @@ Konsekwencje dla użytkowników:
 ### 2.3 Rozwiązanie oferowane przez ShopMate
 
 ShopMate rozwiązuje te problemy poprzez:
+
 - Centralizację przepisów w jednym miejscu
 - Wizualne planowanie posiłków w kalendarzu tygodniowym
 - Automatyczne generowanie zagregowanych list zakupów
@@ -97,6 +111,7 @@ ShopMate rozwiązuje te problemy poprzez:
 - Eksport list do formatu PDF/TXT gotowego do użycia
 
 Korzyści dla użytkowników:
+
 - Oszczędność czasu: planowanie tygodnia w mniej niż 10 minut
 - Redukcja marnotrawstwa: tylko potrzebne składniki na liście
 - Organizacja: wszystkie przepisy i plany w jednym miejscu
@@ -107,6 +122,7 @@ Korzyści dla użytkowników:
 ### 3.1 Zarządzanie przepisami kulinarnymi
 
 FR-001: Dodawanie przepisu
+
 - Użytkownik może utworzyć nowy przepis poprzez strukturalny formularz
 - Pola formularza: nazwa (3-100 znaków), składniki (dynamiczna lista), instrukcje (10-5000 znaków)
 - Każdy składnik zawiera: nazwę (wymagane), ilość (opcjonalne), jednostkę (opcjonalne)
@@ -115,6 +131,7 @@ FR-001: Dodawanie przepisu
 - Zapisanie przepisu tworzy nowy rekord w bazie danych z powiązanymi składnikami
 
 FR-002: Przeglądanie przepisów
+
 - Wyświetlanie listy wszystkich przepisów użytkownika
 - Wyszukiwanie po nazwie przepisu (case-insensitive substring matching)
 - Sortowanie: alfabetyczne (A-Z, Z-A), według daty dodania
@@ -122,12 +139,14 @@ FR-002: Przeglądanie przepisów
 - Responsywny layout: karty na desktop, lista na mobile
 
 FR-003: Wyświetlanie szczegółów przepisu
+
 - Widok pojedynczego przepisu z pełnymi informacjami
 - Wyświetlanie: nazwa, lista składników (ilość, jednostka, nazwa), instrukcje
 - Informacja o liczbie przypisań w kalendarzu (jeśli istnieją)
 - Przyciski akcji: Edytuj, Usuń, Powrót do listy
 
 FR-004: Edycja przepisu
+
 - Użytkownik może modyfikować wszystkie pola istniejącego przepisu
 - Ten sam formularz co przy dodawaniu, wypełniony aktualnymi danymi
 - Możliwość dodawania, usuwania i modyfikacji składników
@@ -135,6 +154,7 @@ FR-004: Edycja przepisu
 - Snapshot pattern: wcześniej wygenerowane listy zakupów pozostają niezmienione
 
 FR-005: Usuwanie przepisu
+
 - Przycisk "Usuń" w widoku szczegółów przepisu
 - Dialog potwierdzenia jeśli przepis jest przypisany w kalendarzu
 - Komunikat: liczba przypisań które zostaną usunięte
@@ -142,6 +162,7 @@ FR-005: Usuwanie przepisu
 - Cascade delete: usunięcie przepisu usuwa składniki i przypisania w kalendarzu
 
 FR-006: Walidacja przepisów
+
 - Nazwa: 3-100 znaków, wymagane
 - Instrukcje: 10-5000 znaków, wymagane
 - Składniki: minimum 1, maksimum 50 na przepis
@@ -153,6 +174,7 @@ FR-006: Walidacja przepisów
 ### 3.2 Kalendarz tygodniowy posiłków
 
 FR-007: Wyświetlanie kalendarza tygodniowego
+
 - Wizualizacja 7 dni (Poniedziałek-Niedziela) × 4 posiłki dziennie
 - Typy posiłków: Śniadanie, Drugie śniadanie, Obiad, Kolacja
 - Struktura: 28 komórek (7 dni × 4 posiłki)
@@ -160,12 +182,14 @@ FR-007: Wyświetlanie kalendarza tygodniowego
 - Wyświetlanie bieżącego tygodnia przy pierwszym wejściu
 
 FR-008: Nawigacja między tygodniami
+
 - Przyciski: "Poprzedni tydzień", "Bieżący tydzień", "Następny tydzień"
 - Przechowywanie danych wszystkich tygodni w bazie danych
 - URL zawiera parametr week_start_date dla deep linking
 - Automatyczne obliczanie początku tygodnia (poniedziałek)
 
 FR-009: Przypisywanie przepisu do komórki kalendarza
+
 - Przycisk "Przypisz przepis" w każdej pustej komórce
 - Kliknięcie otwiera modal z listą przepisów użytkownika
 - Modal zawiera: search bar, lista przepisów (infinite scroll)
@@ -174,6 +198,7 @@ FR-009: Przypisywanie przepisu do komórki kalendarza
 - Zapisanie przypisania: user_id, recipe_id, date, meal_type
 
 FR-010: Wyświetlanie przypisanego przepisu
+
 - Komórka z przypisanym przepisem wyświetla nazwę przepisu
 - Truncate nazwy po 30 znakach z "..."
 - Hover: tooltip z pełną nazwą przepisu
@@ -181,6 +206,7 @@ FR-010: Wyświetlanie przypisanego przepisu
 - Kliknięcie na nazwę: podgląd szczegółów przepisu (modal lub side panel)
 
 FR-011: Usuwanie przypisania
+
 - Przycisk "×" widoczny przy każdym przypisanym przepisie
 - Natychmiastowe usunięcie bez dialog potwierdzenia (szybka akcja)
 - Komórka wraca do stanu pustego z przyciskiem "Przypisz przepis"
@@ -189,6 +215,7 @@ FR-011: Usuwanie przypisania
 ### 3.3 System autoryzacji użytkowników
 
 FR-012: Rejestracja użytkownika
+
 - Formularz rejestracji: email, hasło, potwierdzenie hasła
 - Walidacja email: format email, lowercase, trim
 - Walidacja hasła: 8-100 znaków, minimum 1 wielka litera, 1 cyfra
@@ -198,6 +225,7 @@ FR-012: Rejestracja użytkownika
 - Przekierowanie do dashboard po udanej rejestracji
 
 FR-013: Logowanie użytkownika
+
 - Formularz logowania: email, hasło
 - Przycisk "Zaloguj się"
 - Link "Nie pamiętam hasła" → reset hasła
@@ -206,6 +234,7 @@ FR-013: Logowanie użytkownika
 - Przekierowanie do dashboard po udanym logowaniu
 
 FR-014: Reset hasła
+
 - Formularz reset hasła: email
 - Wysłanie email z linkiem resetującym (Supabase magic link)
 - Strona resetowania: nowe hasło, potwierdzenie hasła
@@ -213,12 +242,14 @@ FR-014: Reset hasła
 - Toast notification: "Hasło zostało zmienione"
 
 FR-015: Wylogowanie
+
 - Przycisk "Wyloguj" w nawigacji
 - Usunięcie sesji z cookies
 - Przekierowanie do strony logowania
 - Toast notification: "Zostałeś wylogowany"
 
 FR-016: Ochrona tras (route guards)
+
 - Middleware sprawdza sesję użytkownika dla chronionych tras
 - Chronione trasy: /dashboard, /recipes, /calendar, /shopping-lists
 - Publiczne trasy: /login, /register, /reset-password, landing page
@@ -227,6 +258,7 @@ FR-016: Ochrona tras (route guards)
 ### 3.4 Generowanie list zakupów
 
 FR-017: Interfejs wyboru źródła listy zakupów
+
 - Dwa tryby generowania: "Z kalendarza" lub "Z przepisów"
 - Tryb "Z kalendarza": checkboxy dla dni (Pon-Niedz) i posiłków (4 typy)
 - Shortcut "Cały tydzień": zaznacza wszystkie checkboxy
@@ -235,6 +267,7 @@ FR-017: Interfejs wyboru źródła listy zakupów
 - Przycisk "Generuj listę zakupów" (disabled jeśli nic nie zaznaczone)
 
 FR-018: Agregacja składników
+
 - Fetch składników z zaznaczonych przepisów/dni-posiłków
 - Normalizacja przed agregacją: trim wielokrotnych spacji, lowercase
 - Grupowanie: case-insensitive matching (nazwa + jednostka)
@@ -243,6 +276,7 @@ FR-018: Agregacja składników
 - Przykład: "200g mąki" + "300G Mąki" = "500g mąki"
 
 FR-019: AI kategoryzacja składników
+
 - Batch request do OpenAI GPT-4o mini ze wszystkimi składnikami
 - 7 kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne
 - Prompt: lista składników numerowana → JSON mapping index→kategoria
@@ -253,6 +287,7 @@ FR-019: AI kategoryzacja składników
 - Optimistic UI: użytkownik może edytować listę podczas pracy AI
 
 FR-020: Edycja wygenerowanej listy zakupów
+
 - Preview listy: składniki pogrupowane po kategoriach
 - Każdy składnik: checkbox (niezaznaczony), ilość, jednostka, nazwa
 - Dropdown przy każdym składniku: zmiana kategorii ręcznie
@@ -261,6 +296,7 @@ FR-020: Edycja wygenerowanej listy zakupów
 - Drag-and-drop składników między kategoriami (opcjonalne w MVP)
 
 FR-021: Zapis listy zakupów
+
 - Przycisk "Zapisz listę"
 - Prompt: pole "Nazwa listy" (opcjonalnie, default: "Lista zakupów - [data]")
 - Zapis do tabeli shopping_lists + shopping_list_items
@@ -269,6 +305,7 @@ FR-021: Zapis listy zakupów
 - Toast notification: "Lista zakupów zapisana"
 
 FR-022: Historia list zakupów
+
 - Wyświetlanie wszystkich zapisanych list użytkownika
 - Sortowanie: według daty utworzenia (najnowsze pierwsze)
 - Każda pozycja: nazwa listy, data utworzenia, zakres dat (jeśli z kalendarza)
@@ -276,6 +313,7 @@ FR-022: Historia list zakupów
 - Przycisk "Usuń" przy każdej liście (z dialog potwierdzenia)
 
 FR-023: Obsługa pustych wyborów
+
 - Jeśli wszystkie wybrane komórki kalendarza puste: komunikat błędu "Wybrane posiłki nie mają przypisanych przepisów"
 - Jeśli żaden przepis nie zaznaczony: przycisk "Generuj" disabled
 - Pomijanie pustych komórek bez ostrzeżenia jeśli przynajmniej jedna niepusta
@@ -283,6 +321,7 @@ FR-023: Obsługa pustych wyborów
 ### 3.5 Eksport list zakupów
 
 FR-024: Eksport do PDF
+
 - Przycisk "Eksportuj PDF" w widoku listy zakupów
 - Biblioteka: @react-pdf/renderer (client-side generation)
 - Layout: A4 pionowy, standardowy font Helvetica
@@ -293,6 +332,7 @@ FR-024: Eksport do PDF
 - Filename: [nazwa-listy]-[data].pdf (lowercase, spacje → myślniki)
 
 FR-025: Eksport do TXT
+
 - Przycisk "Eksportuj TXT" w widoku listy zakupów
 - Format: plaintext linijka po linijce bez checkboxów
 - Struktura: nagłówek (50x =), kategorie (uppercase), składniki, stopka
@@ -301,6 +341,7 @@ FR-025: Eksport do TXT
 - Filename: [nazwa-listy]-[data].txt (lowercase, spacje → myślniki)
 
 FR-026: Kolejność kategorii w eksporcie
+
 - Zawsze stała kolejność: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne
 - Pominięcie pustych kategorii (bez składników)
 - Składniki w kategorii: sortowanie alfabetyczne
@@ -308,12 +349,14 @@ FR-026: Kolejność kategorii w eksporcie
 ### 3.6 Responsywny interfejs użytkownika
 
 FR-027: Breakpointy i layout
+
 - Desktop: ≥1024px - pełny layout z sidebarami
 - Tablet: 768-1023px - zredukowany layout, scrollowalny poziomo kalendarz
 - Mobile: <768px (minimum 320px) - accordion, vertically stacked, hamburger menu
 - Mobile-first approach: optymalizacja dla smartfonów jako główny use case
 
 FR-028: Accessibility (a11y)
+
 - WCAG AA compliance przez Shadcn/ui + Tailwind
 - Keyboard navigation: tab, enter, escape, strzałki
 - ARIA labels dla wszystkich interactive elements
@@ -323,6 +366,7 @@ FR-028: Accessibility (a11y)
 - Cel: Lighthouse Accessibility score ≥90/100
 
 FR-029: Touch-friendly UI na mobile
+
 - Minimum 44px tap targets dla wszystkich przycisków
 - Spacing między elementami: minimum 8px
 - Większe pola formularzy na mobile
@@ -330,6 +374,7 @@ FR-029: Touch-friendly UI na mobile
 - Bottom navigation bar z kluczowymi akcjami
 
 FR-030: Loading states i feedback
+
 - Spinners dla długotrwałych operacji (>500ms)
 - Skeleton screens dla ładowania list przepisów/kalendarza
 - Toast notifications dla komunikatów sukcesu/błędu
@@ -341,6 +386,7 @@ FR-030: Loading states i feedback
 ### 4.1 Funkcjonalności wykluczone z MVP
 
 Funkcje odłożone do wersji 1.1:
+
 - Import przepisów z pliku (JPG, PDF, DOCX) - wymaga OCR i zaawansowanego parsowania
 - Aplikacje mobilne natywne (iOS, Android) - na początek tylko aplikacja webowa
 - Drag-and-drop w kalendarzu - na MVP przycisk "Przypisz przepis"
@@ -348,18 +394,21 @@ Funkcje odłożone do wersji 1.1:
 - Wyszukiwanie po składnikach - "Pokaż przepisy z kurczakiem"
 
 Funkcje społecznościowe:
+
 - Udostępnianie przepisów dla innych użytkowników
 - Profile publiczne i followowanie użytkowników
 - Komentarze i oceny przepisów
 - Społeczność i feed aktywności
 
 Integracje zewnętrzne:
+
 - Integracja z zewnętrznymi serwisami zakupowymi (Frisco, Carrefour API)
 - Import przepisów z zewnętrznych stron (web scraping)
 - Integracja z asystentami głosowymi (Alexa, Google Assistant)
 - Integracja z kalendarzem zewnętrznym (Google Calendar, Outlook)
 
 Zaawansowane planowanie posiłków:
+
 - Powtarzające się posiłki (templates)
 - Szablony tygodniowe
 - Kalendarz miesięczny i wielotygodniowy
@@ -367,10 +416,12 @@ Zaawansowane planowanie posiłków:
 - Kopiowanie tygodnia
 
 Wielojęzyczność:
+
 - Obsługa wielu języków - na początek tylko język polski
 - Tłumaczenia automatyczne przepisów
 
 Zaawansowane wyszukiwanie i filtrowanie:
+
 - Filtrowanie po składnikach
 - Filtrowanie po czasie przygotowania
 - Wyszukiwanie pełnotekstowe (full-text search)
@@ -378,17 +429,20 @@ Zaawansowane wyszukiwanie i filtrowanie:
 - Zaawansowane sortowanie
 
 Powiadomienia:
+
 - Email notifications
 - SMS notifications
 - Push notifications
 - Przypomnienia o zakupach
 
 Obsługa diet i alergii:
+
 - Profile dietetyczne (wegetariańska, wegańska, bezglutenowa)
 - Oznaczanie alergenów w przepisach
 - Automatyczne filtrowanie przepisów według diety
 
 Zaawansowane zarządzanie użytkownikami:
+
 - Role i uprawnienia (admin, użytkownik)
 - Konta rodzinne (family sharing)
 - Udostępnianie list między użytkownikami
@@ -397,12 +451,14 @@ Zaawansowane zarządzanie użytkownikami:
 - Szyfrowanie danych end-to-end
 
 Analityka i raporty:
+
 - Statystyki najczęściej używanych przepisów
 - Historia zakupów z analizą trendów
 - Szacowanie kosztów zakupów
 - Raporty dietetyczne (kalorie, makroskładniki)
 
 Zarządzanie zapasami:
+
 - Spiżarnia (pantry management)
 - Tracking dat ważności produktów
 - Automatyczne odejmowanie składników ze spiżarni
@@ -410,6 +466,7 @@ Zarządzanie zapasami:
 ### 4.2 Ograniczenia techniczne MVP
 
 Limity funkcjonalne:
+
 - Jeden przepis na komórkę kalendarza (brak wielu przepisów na posiłek)
 - Maksymalnie 50 składników na przepis
 - Maksymalnie 20 przepisów na jedną listę zakupów
@@ -417,16 +474,19 @@ Limity funkcjonalne:
 - Brak offline support - wymaga aktywnego połączenia internetowego
 
 Rate limiting:
+
 - Supabase default: 100 requests/min na użytkownika
 - OpenAI API: zgodnie z limitem konta
 - Brak globalnych limitów liczby przepisów/list (unlimited w MVP)
 
 Performance:
+
 - Lista przepisów: pagination po 20 (jeśli >100 przepisów)
 - Kalendarz: ładowanie pojedynczego tygodnia (lazy loading)
 - AI kategoryzacja: max 100 składników na request
 
 Bezpieczeństwo:
+
 - Podstawowa autentykacja email + hasło (bez 2FA)
 - Brak szyfrowania end-to-end (dane przechowywane plaintext w Supabase)
 - Row Level Security jako główny mechanizm izolacji danych
@@ -434,17 +494,20 @@ Bezpieczeństwo:
 ### 4.3 Założenia i zależności
 
 Założenia biznesowe:
+
 - Użytkownicy mają dostęp do internetu podczas korzystania z aplikacji
 - Użytkownicy posiadają urządzenia z nowoczesnymi przeglądarkami (Chrome 90+, Safari 14+, Firefox 88+)
 - Grupa docelowa ma podstawową znajomość aplikacji webowych
 
 Zależności zewnętrzne:
+
 - Dostępność Supabase (Auth, Database)
 - Dostępność OpenAI API (GPT-4o mini)
 - Stabilność Vercel/Netlify hosting
 - Poprawne działanie @react-pdf/renderer w przeglądarkach
 
 Zależności wewnętrzne:
+
 - Przepis musi istnieć aby móc go przypisać do kalendarza
 - Przepis musi być przypisany w kalendarzu lub zaznaczony ręcznie aby wygenerować listę
 - Lista zakupów musi być zapisana aby móc ją eksportować
@@ -477,6 +540,7 @@ US-001: Rejestracja nowego użytkownika
 Jako nowy użytkownik, chcę utworzyć konto w aplikacji, aby móc korzystać z funkcji planowania posiłków i list zakupów.
 
 Kryteria akceptacji:
+
 - Użytkownik może otworzyć stronę rejestracji pod adresem /register
 - Formularz zawiera pola: email, hasło, potwierdzenie hasła
 - Walidacja email: sprawdzenie formatu email, lowercase, trim
@@ -493,6 +557,7 @@ US-002: Logowanie użytkownika
 Jako zarejestrowany użytkownik, chcę zalogować się do aplikacji, aby uzyskać dostęp do moich przepisów i planów posiłków.
 
 Kryteria akceptacji:
+
 - Użytkownik może otworzyć stronę logowania pod adresem /login
 - Formularz zawiera pola: email, hasło
 - Przycisk "Zaloguj się"
@@ -507,6 +572,7 @@ US-003: Reset hasła
 Jako użytkownik, który zapomniał hasła, chcę zresetować hasło, aby odzyskać dostęp do konta.
 
 Kryteria akceptacji:
+
 - Strona reset hasła dostępna pod /reset-password
 - Formularz z polem email
 - Po wysłaniu formularza użytkownik otrzymuje email z linkiem resetującym
@@ -521,6 +587,7 @@ US-004: Wylogowanie
 Jako zalogowany użytkownik, chcę wylogować się z aplikacji, aby zakończyć sesję.
 
 Kryteria akceptacji:
+
 - Przycisk "Wyloguj" widoczny w nawigacji dla zalogowanych użytkowników
 - Kliknięcie powoduje usunięcie sesji
 - Przekierowanie do /login
@@ -532,6 +599,7 @@ US-005: Ochrona tras
 Jako system, chcę chronić trasy przed nieautoryzowanym dostępem, aby zapewnić bezpieczeństwo danych użytkowników.
 
 Kryteria akceptacji:
+
 - Middleware sprawdza sesję użytkownika dla tras: /dashboard, /recipes, /calendar, /shopping-lists
 - Niezalogowany użytkownik próbujący dostać się do chronionej trasy jest przekierowywany do /login
 - URL chronionej trasy zapisywany jako redirect parameter: /login?redirect=/calendar
@@ -544,6 +612,7 @@ US-006: Dodawanie nowego przepisu
 Jako użytkownik, chcę dodać nowy przepis do mojej kolekcji, aby móc go później przypisać do kalendarza posiłków.
 
 Kryteria akceptacji:
+
 - Przycisk "Dodaj przepis" widoczny na stronie /recipes i w nawigacji
 - Formularz zawiera: pole nazwa, textarea instrukcje, dynamiczna lista składników
 - Każdy składnik ma pola: ilość (numeryczna, opcjonalna), jednostka (tekstowa, opcjonalna), nazwa (tekstowa, wymagana)
@@ -559,6 +628,7 @@ US-007: Przeglądanie listy przepisów
 Jako użytkownik, chcę przeglądać wszystkie moje przepisy, aby łatwo znaleźć ten którego potrzebuję.
 
 Kryteria akceptacji:
+
 - Strona /recipes wyświetla wszystkie przepisy użytkownika
 - Search bar u góry strony z placeholderem "Szukaj przepisu..."
 - Wyszukiwanie w czasie rzeczywistym (debounce 300ms) po nazwie przepisu
@@ -575,6 +645,7 @@ US-008: Wyświetlanie szczegółów przepisu
 Jako użytkownik, chcę zobaczyć pełne szczegóły przepisu, aby zapoznać się z instrukcjami i składnikami.
 
 Kryteria akceptacji:
+
 - Strona /recipes/[id] wyświetla pojedynczy przepis
 - Sekcja nagłówka: nazwa przepisu, data dodania, data ostatniej edycji
 - Sekcja składniki: lista wszystkich składników (ilość, jednostka, nazwa)
@@ -589,6 +660,7 @@ US-009: Edycja istniejącego przepisu
 Jako użytkownik, chcę edytować przepis, aby poprawić błędy lub zaktualizować informacje.
 
 Kryteria akceptacji:
+
 - Przycisk "Edytuj" w widoku szczegółów przepisu
 - Formularz identyczny jak przy dodawaniu, wypełniony aktualnymi danymi
 - Możliwość modyfikacji wszystkich pól: nazwa, instrukcje, składniki
@@ -607,6 +679,7 @@ US-010: Usuwanie przepisu
 Jako użytkownik, chcę usunąć przepis którego już nie potrzebuję, aby utrzymać porządek w kolekcji.
 
 Kryteria akceptacji:
+
 - Przycisk "Usuń" w widoku szczegółów przepisu
 - Sprawdzenie czy przepis jest przypisany w kalendarzu
 - Jeśli przypisany: dialog "Ten przepis jest przypisany do X posiłków. Usunięcie spowoduje usunięcie przypisań. Kontynuować?"
@@ -622,6 +695,7 @@ US-011: Wyświetlanie kalendarza tygodniowego
 Jako użytkownik, chcę zobaczyć kalendarz tygodniowy z posiłkami, aby planować menu na nadchodzące dni.
 
 Kryteria akceptacji:
+
 - Strona /calendar wyświetla kalendarz 7 dni × 4 posiłki = 28 komórek
 - Dni tygodnia: Poniedziałek, Wtorek, Środa, Czwartek, Piątek, Sobota, Niedziela
 - Typy posiłków: Śniadanie, Drugie śniadanie, Obiad, Kolacja
@@ -636,6 +710,7 @@ US-012: Nawigacja między tygodniami
 Jako użytkownik, chcę nawigować między różnymi tygodniami, aby planować posiłki z wyprzedzeniem lub sprawdzić historyczne plany.
 
 Kryteria akceptacji:
+
 - Przyciski nawigacji: "← Poprzedni tydzień", "Bieżący tydzień", "Następny tydzień →"
 - Kliknięcie "Poprzedni tydzień" ładuje tydzień o 7 dni wcześniej
 - Kliknięcie "Następny tydzień" ładuje tydzień o 7 dni później
@@ -648,6 +723,7 @@ US-013: Przypisywanie przepisu do komórki kalendarza
 Jako użytkownik, chcę przypisać przepis do konkretnego dnia i posiłku, aby zaplanować co będę jeść.
 
 Kryteria akceptacji:
+
 - Kliknięcie "Przypisz przepis" w pustej komórce otwiera modal
 - Modal zawiera: search bar, listę przepisów użytkownika
 - Search bar: wyszukiwanie w czasie rzeczywistym po nazwie przepisu
@@ -665,6 +741,7 @@ US-014: Podgląd przepisu z kalendarza
 Jako użytkownik, chcę szybko podejrzeć szczegóły przypisanego przepisu, aby przypomnieć sobie składniki i instrukcje.
 
 Kryteria akceptacji:
+
 - Kliknięcie na nazwę przypisanego przepisu otwiera podgląd
 - Podgląd jako modal lub side panel
 - Wyświetlanie: nazwa przepisu, składniki, instrukcje
@@ -677,6 +754,7 @@ US-015: Usuwanie przypisania z kalendarza
 Jako użytkownik, chcę usunąć przepis z kalendarza, aby zmienić plan posiłków bez usuwania samego przepisu.
 
 Kryteria akceptacji:
+
 - Przycisk "×" widoczny przy każdym przypisanym przepisie
 - Kliknięcie "×" usuwa przypisanie bez dialog potwierdzenia (szybka akcja)
 - Komórka wraca do stanu pustego z przyciskiem "Przypisz przepis"
@@ -690,6 +768,7 @@ US-016: Wybór trybu generowania listy
 Jako użytkownik, chcę wybrać czy generować listę z kalendarza czy z ręcznie wybranych przepisów, aby mieć elastyczność w planowaniu zakupów.
 
 Kryteria akceptacji:
+
 - Strona /shopping-lists/generate z dwoma trybami
 - Radio buttons: "Z kalendarza" (default) lub "Z przepisów"
 - Tryb "Z kalendarza": checkboxy dla dni (Pon-Niedz) i posiłków (4 typy)
@@ -704,6 +783,7 @@ US-017: Generowanie listy z agregacją składników
 Jako użytkownik, chcę automatycznie wygenerować listę zakupów z zaznaczonych przepisów, aby nie musieć ręcznie zbierać składników.
 
 Kryteria akceptacji:
+
 - Kliknięcie "Generuj listę zakupów" rozpoczyna proces
 - Loading state: spinner + progress bar + komunikat "Pobieram składniki..."
 - Fetch składników z zaznaczonych przepisów/posiłków
@@ -721,6 +801,7 @@ US-018: AI kategoryzacja składników
 Jako użytkownik, chcę aby składniki były automatycznie kategoryzowane, aby łatwiej było robić zakupy w sklepie.
 
 Kryteria akceptacji:
+
 - AI kategoryzacja podczas generowania listy
 - 7 kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne
 - Batch request: wszystkie składniki w jednym API call do OpenAI
@@ -736,6 +817,7 @@ US-019: Edycja wygenerowanej listy zakupów
 Jako użytkownik, chcę edytować wygenerowaną listę przed zapisem, aby dostosować ją do moich potrzeb.
 
 Kryteria akceptacji:
+
 - Preview listy zakupów pogrupowanej po kategoriach
 - Kolejność kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne
 - Każdy składnik: checkbox (niezaznaczony), ilość, jednostka, nazwa
@@ -751,6 +833,7 @@ US-020: Zapisywanie listy zakupów
 Jako użytkownik, chcę zapisać listę zakupów, aby móc do niej wrócić i wyeksportować później.
 
 Kryteria akceptacji:
+
 - Kliknięcie "Zapisz listę" otwiera dialog z polem nazwa
 - Domyślna nazwa: "Lista zakupów - [data]"
 - Użytkownik może zmienić nazwę (max 200 znaków)
@@ -765,6 +848,7 @@ US-021: Przeglądanie historii list zakupów
 Jako użytkownik, chcę zobaczyć wszystkie moje zapisane listy zakupów, aby móc do nich wrócić i porównać zakupy.
 
 Kryteria akceptacji:
+
 - Strona /shopping-lists wyświetla wszystkie listy użytkownika
 - Sortowanie: według daty utworzenia (najnowsze pierwsze)
 - Każda pozycja: nazwa listy, data utworzenia, zakres dat (jeśli z kalendarza), liczba składników
@@ -780,6 +864,7 @@ US-022: Obsługa pustych wyborów przy generowaniu
 Jako użytkownik, chcę otrzymać jasny komunikat gdy próbuję wygenerować listę z pustych komórek kalendarza.
 
 Kryteria akceptacji:
+
 - Jeśli wszystkie zaznaczone komórki kalendarza puste: komunikat błędu
 - Alert: "Wybrane posiłki nie mają przypisanych przepisów. Przypisz przepisy w kalendarzu lub wybierz inne posiłki."
 - Przycisk "Przejdź do kalendarza" kieruje do /calendar
@@ -794,6 +879,7 @@ US-023: Eksport listy do PDF
 Jako użytkownik, chcę wyeksportować listę zakupów do PDF, aby móc ją wydrukować lub mieć na telefonie podczas zakupów.
 
 Kryteria akceptacji:
+
 - Przycisk "Eksportuj PDF" w widoku szczegółów listy /shopping-lists/[id]
 - Kliknięcie otwiera preview modal z renderowanym PDF
 - PDF layout: A4 pionowy, font Helvetica
@@ -812,6 +898,7 @@ US-024: Eksport listy do TXT
 Jako użytkownik, chcę wyeksportować listę do TXT, aby móc ją łatwo udostępnić przez wiadomość lub email.
 
 Kryteria akceptacji:
+
 - Przycisk "Eksportuj TXT" w widoku szczegółów listy
 - Kliknięcie natychmiast pobiera plik (bez preview)
 - Format plaintext: nagłówek (50x =), kategorie (uppercase), składniki, stopka
@@ -828,6 +915,7 @@ US-025: Kolejność kategorii w eksporcie
 Jako użytkownik, chcę aby kategorie były zawsze w tej samej kolejności, aby łatwo było znaleźć składniki w sklepie.
 
 Kryteria akceptacji:
+
 - Stała kolejność kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne
 - Zawsze ta sama kolejność w PDF, TXT i UI
 - Pominięcie kategorii bez składników (nie wyświetlane puste sekcje)
@@ -840,6 +928,7 @@ US-026: Responsywny layout na mobile
 Jako użytkownik mobile, chcę aby aplikacja działała płynnie na smartfonie, aby móc planować posiłki w dowolnym miejscu.
 
 Kryteria akceptacji:
+
 - Aplikacja działa poprawnie na urządzeniach od 320px szerokości
 - Breakpoint mobile: <768px
 - Kalendarz na mobile: accordion (każdy dzień osobna sekcja expandable)
@@ -855,6 +944,7 @@ US-027: Accessibility (a11y)
 Jako użytkownik korzystający z keyboard navigation lub screen readera, chcę aby aplikacja była dostępna, aby móc z niej korzystać.
 
 Kryteria akceptacji:
+
 - Keyboard navigation: tab, shift+tab, enter, escape, strzałki
 - Focus indicators: visible outline (Tailwind ring-2 ring-offset-2)
 - Skip to main content link na początku strony
@@ -871,6 +961,7 @@ US-028: Loading states i feedback
 Jako użytkownik, chcę wiedzieć co się dzieje podczas długotrwałych operacji, aby mieć pewność że aplikacja działa.
 
 Kryteria akceptacji:
+
 - Spinner dla operacji >500ms
 - Skeleton screens dla ładowania list przepisów, kalendarza
 - Progress bar dla multi-step operations (generowanie listy: fetch → aggregate → AI → preview)
@@ -885,6 +976,7 @@ US-029: Empty states
 Jako nowy użytkownik, chcę zobaczyć pomocne komunikaty gdy nie mam jeszcze danych, aby wiedzieć co dalej robić.
 
 Kryteria akceptacji:
+
 - Lista przepisów pusta: ilustracja + tekst "Brak przepisów. Dodaj pierwszy przepis!" + przycisk "Dodaj przepis"
 - Kalendarz bez przypisań: tooltip przy pustych komórkach "Kliknij aby przypisać przepis"
 - Historia list zakupów pusta: "Nie masz jeszcze list zakupów. Wygeneruj pierwszą!" + przycisk "Generuj listę"
@@ -895,6 +987,7 @@ US-030: Error handling
 Jako użytkownik, chcę otrzymać jasne komunikaty błędów gdy coś pójdzie nie tak, aby wiedzieć jak rozwiązać problem.
 
 Kryteria akceptacji:
+
 - Błędy walidacji formularzy: inline messages pod polami, czerwony tekst
 - Błędy API: toast notification z retry button jeśli możliwe
 - Network errors: toast "Brak połączenia. Sprawdź internet i spróbuj ponownie."
@@ -1007,24 +1100,28 @@ Priorytet: Średni
 ### 6.5 Tracking i monitoring produkcji
 
 Sentry error tracking:
+
 - Critical errors: 0 tolerance (hotfix within 24h)
 - Non-critical errors: mniej niż 1% użytkowników dotkniętych
 - Alert na email/Slack przy critical error
 - Weekly review wszystkich errors
 
 Google Analytics 4 / Plausible analytics:
+
 - Page views, session duration, bounce rate
 - User flows: przepisy → kalendarz → lista zakupów → eksport
 - Conversion funnel: rejestracja → pierwszy przepis → pierwsze przypisanie → pierwszy eksport
 - Retention: użytkownicy aktywni po 7 dniach, 30 dniach
 
 Web Vitals performance monitoring:
+
 - LCP (Largest Contentful Paint): target mniej niż 2.5s
 - FID (First Input Delay): target mniej niż 100ms
 - CLS (Cumulative Layout Shift): target mniej niż 0.1
 - TTI (Time to Interactive): target mniej niż 3.5s
 
 Custom events:
+
 - Liczba dodanych przepisów na użytkownika (średnia)
 - Liczba wygenerowanych list zakupów na użytkownika (średnia)
 - Średni czas między rejestracją a pierwszym eksportem
@@ -1034,6 +1131,7 @@ Custom events:
 ### 6.6 Definicja sukcesu MVP
 
 MVP uznane za sukces jeśli:
+
 - Wszystkie kryteria funkcjonalne spełnione (rejestracja, dodawanie przepisów, kalendarz, generowanie list, eksport działa)
 - Większe lub równe 80% użytkowników UAT potwierdza wartość produktu (użyłbym regularnie)
 - SUS score większe lub równe 68 (above average usability)
@@ -1042,6 +1140,7 @@ MVP uznane za sukces jeśli:
 - Aplikacja gotowa do dalszego rozwoju (solidne fundamenty architektoniczne)
 
 Następne kroki po MVP:
+
 1. Zebranie feedbacku od użytkowników UAT (ankiety + pytania otwarte)
 2. Analiza metryk i identyfikacja bottlenecków
 3. Priorytetyzacja funkcji do wersji 1.1 (drag-and-drop, PWA, import przepisów, szablony tygodniowe)

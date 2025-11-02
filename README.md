@@ -43,6 +43,7 @@ ShopMate streamlines meal planning and grocery shopping by providing:
 ## Tech Stack
 
 ### Frontend
+
 - **[Astro 5](https://astro.build/)** - Server-side rendered framework with islands architecture
 - **[React 19](https://react.dev/)** - UI library for interactive components
 - **[TypeScript 5](https://www.typescriptlang.org/)** - Type-safe JavaScript
@@ -50,21 +51,25 @@ ShopMate streamlines meal planning and grocery shopping by providing:
 - **[Shadcn/ui](https://ui.shadcn.com/)** - Accessible component library (Radix UI primitives)
 
 ### Backend & Database
+
 - **[Supabase](https://supabase.com/)** - PostgreSQL database, authentication, and Row Level Security
 - **[Zod](https://zod.dev/)** - Schema validation for API inputs and forms
 - **Node.js Adapter** - Standalone server mode
 
 ### AI & Services
+
 - **[OpenAI API](https://openai.com/)** - GPT-4o mini for ingredient categorization
 - **[@react-pdf/renderer](https://react-pdf.org/)** - Client-side PDF generation
 
 ### Development Tools
+
 - **[ESLint](https://eslint.org/)** - Code linting with TypeScript, React, and a11y rules
 - **[Prettier](https://prettier.io/)** - Code formatting with Astro plugin
 - **[Husky](https://typicode.github.io/husky/)** - Git hooks for code quality
 - **[lint-staged](https://github.com/okonet/lint-staged)** - Run linters on staged files
 
 ### Hosting & CI/CD
+
 - **Vercel** - Primary hosting platform (recommended)
 - **GitHub Actions** - Continuous integration and deployment
 - **Sentry** - Error tracking and monitoring
@@ -81,18 +86,21 @@ ShopMate streamlines meal planning and grocery shopping by providing:
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/yourusername/shopmate.git
    cd shopmate
    ```
 
 2. **Install Node.js version**
+
    ```bash
    # If using nvm
    nvm use
    ```
 
 3. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -100,6 +108,7 @@ ShopMate streamlines meal planning and grocery shopping by providing:
 4. **Set up environment variables**
 
    Create a `.env` file in the root directory:
+
    ```env
    # Supabase
    SUPABASE_URL=your_supabase_project_url
@@ -110,12 +119,12 @@ ShopMate streamlines meal planning and grocery shopping by providing:
    ```
 
 5. **Set up Supabase database**
-
    - Create a new Supabase project
    - Run database migrations (SQL schema available in `CLAUDE.md`)
    - Enable Row Level Security policies
 
 6. **Run the development server**
+
    ```bash
    npm run dev
    ```
@@ -126,22 +135,22 @@ ShopMate streamlines meal planning and grocery shopping by providing:
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `SUPABASE_URL` | Your Supabase project URL | ✅ Yes |
-| `SUPABASE_KEY` | Supabase anonymous key (safe for client) | ✅ Yes |
-| `OPENAI_API_KEY` | OpenAI API key (keep server-side only) | ✅ Yes |
+| Variable         | Description                              | Required |
+| ---------------- | ---------------------------------------- | -------- |
+| `SUPABASE_URL`   | Your Supabase project URL                | ✅ Yes   |
+| `SUPABASE_KEY`   | Supabase anonymous key (safe for client) | ✅ Yes   |
+| `OPENAI_API_KEY` | OpenAI API key (keep server-side only)   | ✅ Yes   |
 
 ## Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server on port 4321 |
-| `npm run build` | Build production-ready application |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint to check code quality |
-| `npm run lint:fix` | Automatically fix ESLint issues |
-| `npm run format` | Format code with Prettier |
+| Command            | Description                           |
+| ------------------ | ------------------------------------- |
+| `npm run dev`      | Start development server on port 4321 |
+| `npm run build`    | Build production-ready application    |
+| `npm run preview`  | Preview production build locally      |
+| `npm run lint`     | Run ESLint to check code quality      |
+| `npm run lint:fix` | Automatically fix ESLint issues       |
+| `npm run format`   | Format code with Prettier             |
 
 ### Git Hooks
 
@@ -222,6 +231,7 @@ The project uses Husky and lint-staged to ensure code quality:
 **Version**: 0.0.1 (MVP Development Phase)
 
 ### Current Status
+
 - ✅ Project setup and architecture planning complete
 - ✅ Tech stack finalized (Astro 5 + React 19 + Supabase)
 - ✅ Database schema designed with RLS policies
@@ -230,6 +240,7 @@ The project uses Husky and lint-staged to ensure code quality:
 - 📋 Planned: Testing, deployment, and user feedback
 
 ### Performance Targets (MVP)
+
 - **LCP** (Largest Contentful Paint): <2.5s
 - **FID** (First Input Delay): <100ms
 - **CLS** (Cumulative Layout Shift): <0.1
@@ -237,6 +248,7 @@ The project uses Husky and lint-staged to ensure code quality:
 - **Bundle Size**: <100KB initial JavaScript
 
 ### Scalability Targets
+
 - **MVP**: 1,000-10,000 users
 - **Infrastructure**: Supabase Pro tier + Vercel
 - **Cost**: <$100/month for 10,000 users
@@ -244,6 +256,7 @@ The project uses Husky and lint-staged to ensure code quality:
 ### Roadmap
 
 **v0.1 (MVP)** - Current Focus
+
 - Recipe CRUD operations
 - Weekly calendar
 - AI categorization
@@ -252,12 +265,14 @@ The project uses Husky and lint-staged to ensure code quality:
 - Basic authentication
 
 **v0.2** - Post-MVP Enhancements
+
 - Drag-and-drop calendar interactions
 - Recipe templates
 - OAuth social login (Google, Facebook)
 - Enhanced mobile UX
 
 **v1.0** - Production Release
+
 - Performance optimizations
 - Security audit
 - Comprehensive testing

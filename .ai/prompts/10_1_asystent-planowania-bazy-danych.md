@@ -36,6 +36,7 @@ Dane wyjściowe powinny mieć następującą strukturę:
 Wymień tutaj swoje pytania i zalecenia, ponumerowane dla przejrzystości:
 
 Na przykład:
+
 1. Czy encja „użytkownicy" powinna mieć powiązanie z „postami"?
 
 Rekomendacja: Tak, encja „użytkownicy" powinna mieć powiązanie z „postami", ponieważ użytkownicy mogą tworzyć posty.

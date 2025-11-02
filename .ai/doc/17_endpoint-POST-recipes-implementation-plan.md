@@ -57,7 +57,7 @@ Cookie: sb-<project-ref>-auth-token (Supabase session cookie)
 **Request Body (Required):**
 
 | Field          | Type   | Required | Constraints        | Description              |
-|----------------|--------|----------|--------------------|--------------------------|
+| -------------- | ------ | -------- | ------------------ | ------------------------ |
 | `name`         | string | Yes      | 3-100 characters   | Recipe name              |
 | `instructions` | string | Yes      | 10-5000 characters | Preparation instructions |
 | `ingredients`  | array  | Yes      | 1-50 items         | List of ingredients      |
@@ -65,7 +65,7 @@ Cookie: sb-<project-ref>-auth-token (Supabase session cookie)
 **Ingredient Object Structure:**
 
 | Field        | Type           | Required | Constraints               | Description               |
-|--------------|----------------|----------|---------------------------|---------------------------|
+| ------------ | -------------- | -------- | ------------------------- | ------------------------- |
 | `name`       | string         | Yes      | 1-100 characters          | Ingredient name           |
 | `quantity`   | number \| null | No       | Positive number or null   | Amount of ingredient      |
 | `unit`       | string \| null | No       | Max 50 characters or null | Unit of measurement       |
@@ -188,8 +188,8 @@ ErrorResponseDto;
 
 ```typescript
 // From database.types.ts (used internally in service)
-RecipeInsert = Database['public']['Tables']['recipes']['Insert']
-IngredientInsert = Database['public']['Tables']['ingredients']['Insert']
+RecipeInsert = Database["public"]["Tables"]["recipes"]["Insert"];
+IngredientInsert = Database["public"]["Tables"]["ingredients"]["Insert"];
 ```
 
 ---
@@ -250,15 +250,9 @@ Content-Type: application/json
 {
   "error": "Validation failed",
   "details": {
-    "name": [
-      "Name must be between 3 and 100 characters"
-    ],
-    "instructions": [
-      "Instructions must be between 10 and 5000 characters"
-    ],
-    "ingredients": [
-      "At least 1 ingredient required, maximum 50"
-    ]
+    "name": ["Name must be between 3 and 100 characters"],
+    "instructions": ["Instructions must be between 10 and 5000 characters"],
+    "ingredients": ["At least 1 ingredient required, maximum 50"]
   }
 }
 ```
@@ -341,12 +335,15 @@ Client Request
 #### Step 2: Authentication
 
 ```typescript
-const { data: { user }, error } = await locals.supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await locals.supabase.auth.getUser();
 
 if (error || !user) {
-  return new Response(JSON.stringify({ error: 'Authentication required' }), {
+  return new Response(JSON.stringify({ error: "Authentication required" }), {
     status: 401,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { "Content-Type": "application/json" },
   });
 }
 ```
@@ -362,13 +359,16 @@ const body = await request.json();
 const validation = RecipeSchema.safeParse(body);
 
 if (!validation.success) {
-  return new Response(JSON.stringify({
-    error: 'Validation failed',
-    details: validation.error.flatten().fieldErrors
-  }), {
-    status: 400,
-    headers: { 'Content-Type': 'application/json' }
-  });
+  return new Response(
+    JSON.stringify({
+      error: "Validation failed",
+      details: validation.error.flatten().fieldErrors,
+    }),
+    {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
 
 const validatedData = validation.data;
@@ -382,52 +382,50 @@ const validatedData = validation.data;
 #### Step 4: Business Logic (Service Layer)
 
 ```typescript
-const recipe = await createRecipe(
-  locals.supabase,
-  user.id,
-  validatedData
-);
+const recipe = await createRecipe(locals.supabase, user.id, validatedData);
 ```
 
 Service performs:
 
 1. **Insert Recipe:**
+
    ```typescript
    const { data: recipeData, error: recipeError } = await supabase
-     .from('recipes')
+     .from("recipes")
      .insert({
        user_id: userId,
        name: validatedData.name,
-       instructions: validatedData.instructions
+       instructions: validatedData.instructions,
      })
      .select()
      .single();
    ```
 
 2. **Insert Ingredients (Bulk):**
+
    ```typescript
-   const ingredientsToInsert = validatedData.ingredients.map(ing => ({
+   const ingredientsToInsert = validatedData.ingredients.map((ing) => ({
      recipe_id: recipeData.id,
      name: ing.name,
      quantity: ing.quantity,
      unit: ing.unit,
-     sort_order: ing.sort_order
+     sort_order: ing.sort_order,
    }));
 
-   const { error: ingredientsError } = await supabase
-     .from('ingredients')
-     .insert(ingredientsToInsert);
+   const { error: ingredientsError } = await supabase.from("ingredients").insert(ingredientsToInsert);
    ```
 
 3. **Fetch Complete Recipe:**
    ```typescript
    const { data: completeRecipe } = await supabase
-     .from('recipes')
-     .select(`
+     .from("recipes")
+     .select(
+       `
        *,
        ingredients (*)
-     `)
-     .eq('id', recipeData.id)
+     `
+     )
+     .eq("id", recipeData.id)
      .single();
    ```
 
@@ -436,7 +434,7 @@ Service performs:
 ```typescript
 return new Response(JSON.stringify(completeRecipe), {
   status: 201,
-  headers: { 'Content-Type': 'application/json' }
+  headers: { "Content-Type": "application/json" },
 });
 ```
 
@@ -474,7 +472,10 @@ return new Response(JSON.stringify(completeRecipe), {
 **Implementation:**
 
 ```typescript
-const { data: { user }, error } = await locals.supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await locals.supabase.auth.getUser();
 ```
 
 **Security Guarantees:**
@@ -513,13 +514,13 @@ const IngredientInputSchema = z.object({
   name: z.string().min(1).max(100),
   quantity: z.number().positive().nullable(),
   unit: z.string().max(50).nullable(),
-  sort_order: z.number().int().min(0)
+  sort_order: z.number().int().min(0),
 });
 
 const RecipeSchema = z.object({
   name: z.string().min(3).max(100),
   instructions: z.string().min(10).max(5000),
-  ingredients: z.array(IngredientInputSchema).min(1).max(50)
+  ingredients: z.array(IngredientInputSchema).min(1).max(50),
 });
 ```
 
@@ -581,7 +582,10 @@ const RecipeSchema = z.object({
 **Detection:**
 
 ```typescript
-const { data: { user }, error } = await locals.supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await locals.supabase.auth.getUser();
 if (error || !user) {
   // Handle authentication error
 }
@@ -628,15 +632,9 @@ if (!validation.success) {
 {
   "error": "Validation failed",
   "details": {
-    "name": [
-      "Name must be between 3 and 100 characters"
-    ],
-    "ingredients": [
-      "At least 1 ingredient required"
-    ],
-    "ingredients.0.name": [
-      "Ingredient name is required"
-    ]
+    "name": ["Name must be between 3 and 100 characters"],
+    "ingredients": ["At least 1 ingredient required"],
+    "ingredients.0.name": ["Ingredient name is required"]
   }
 }
 ```
@@ -648,7 +646,7 @@ if (!validation.success) {
 **Examples of Validation Errors:**
 
 | Input Error                   | Validation Message                                    |
-|-------------------------------|-------------------------------------------------------|
+| ----------------------------- | ----------------------------------------------------- |
 | `name: "AB"`                  | "Name must be between 3 and 100 characters"           |
 | `instructions: "Too short"`   | "Instructions must be between 10 and 5000 characters" |
 | `ingredients: []`             | "At least 1 ingredient required"                      |
@@ -694,24 +692,24 @@ if (error) {
 **Logging:**
 
 ```typescript
-console.error('Recipe creation failed:', {
+console.error("Recipe creation failed:", {
   error: error.message,
   code: error.code,
   user_id: user.id,
-  timestamp: new Date().toISOString()
+  timestamp: new Date().toISOString(),
 });
 
 // Sentry logging
 Sentry.captureException(error, {
-  tags: { endpoint: 'POST /api/recipes' },
-  user: { id: user.id }
+  tags: { endpoint: "POST /api/recipes" },
+  user: { id: user.id },
 });
 ```
 
 **Common Database Errors:**
 
 | Error Code         | Cause                       | Mitigation                         |
-|--------------------|-----------------------------|------------------------------------|
+| ------------------ | --------------------------- | ---------------------------------- |
 | `23505`            | Unique constraint violation | Check for duplicates before insert |
 | `23503`            | Foreign key violation       | Validate user_id exists            |
 | `23514`            | Check constraint violation  | Ensure data meets DB constraints   |
@@ -735,15 +733,18 @@ Sentry.captureException(error, {
 try {
   // ... endpoint logic
 } catch (error) {
-  console.error('Unexpected error:', error);
+  console.error("Unexpected error:", error);
   // Log to Sentry
-  return new Response(JSON.stringify({
-    error: 'Internal server error',
-    message: 'Something went wrong. Our team has been notified.'
-  }), {
-    status: 500,
-    headers: { 'Content-Type': 'application/json' }
-  });
+  return new Response(
+    JSON.stringify({
+      error: "Internal server error",
+      message: "Something went wrong. Our team has been notified.",
+    }),
+    {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
 ```
 
@@ -782,10 +783,10 @@ Authentication Check
 **Development (console.error):**
 
 ```typescript
-console.error('Recipe creation failed:', {
+console.error("Recipe creation failed:", {
   error: error.message,
   user_id: user.id,
-  recipe_name: validatedData.name
+  recipe_name: validatedData.name,
 });
 ```
 
@@ -794,16 +795,16 @@ console.error('Recipe creation failed:', {
 ```typescript
 Sentry.captureException(error, {
   tags: {
-    endpoint: 'POST /api/recipes',
-    operation: 'create_recipe'
+    endpoint: "POST /api/recipes",
+    operation: "create_recipe",
   },
   user: {
-    id: user.id
+    id: user.id,
   },
   extra: {
     recipe_name: validatedData.name,
-    ingredients_count: validatedData.ingredients.length
-  }
+    ingredients_count: validatedData.ingredients.length,
+  },
 });
 ```
 
@@ -833,7 +834,7 @@ Sentry.captureException(error, {
 **Current Mitigation:** Use Supabase bulk insert
 
 ```typescript
-await supabase.from('ingredients').insert(ingredientsArray);
+await supabase.from("ingredients").insert(ingredientsArray);
 ```
 
 **Performance Impact:**
@@ -853,12 +854,14 @@ await supabase.from('ingredients').insert(ingredientsArray);
 
 ```typescript
 const { data } = await supabase
-  .from('recipes')
-  .select(`
+  .from("recipes")
+  .select(
+    `
     *,
     ingredients (*)
-  `)
-  .eq('id', recipeId)
+  `
+  )
+  .eq("id", recipeId)
   .single();
 ```
 
@@ -1001,18 +1004,18 @@ WHERE recipe_id = $1;
 **Metrics to Track:**
 
 1. **Response Time:**
-    - p50, p95, p99 latencies
-    - Target: p95 <400ms
+   - p50, p95, p99 latencies
+   - Target: p95 <400ms
 
 2. **Error Rate:**
-    - 4xx errors (validation failures)
-    - 5xx errors (server issues)
-    - Target: 5xx <0.1%
+   - 4xx errors (validation failures)
+   - 5xx errors (server issues)
+   - Target: 5xx <0.1%
 
 3. **Database Performance:**
-    - Query execution time
-    - Connection pool usage
-    - Index hit rate
+   - Query execution time
+   - Connection pool usage
+   - Index hit rate
 
 **Tools:**
 
@@ -1035,41 +1038,31 @@ WHERE recipe_id = $1;
 **File:** `src/lib/validation/recipe.schema.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 export const IngredientInputSchema = z.object({
-  name: z.string()
-    .min(1, 'Ingredient name is required')
-    .max(100, 'Ingredient name must not exceed 100 characters'),
+  name: z.string().min(1, "Ingredient name is required").max(100, "Ingredient name must not exceed 100 characters"),
 
-  quantity: z.number()
-    .positive('Quantity must be a positive number')
-    .nullable(),
+  quantity: z.number().positive("Quantity must be a positive number").nullable(),
 
-  unit: z.string()
-    .max(50, 'Unit must not exceed 50 characters')
-    .nullable(),
+  unit: z.string().max(50, "Unit must not exceed 50 characters").nullable(),
 
-  sort_order: z.number()
-    .int('Sort order must be an integer')
-    .min(0, 'Sort order must be non-negative')
-    .default(0)
+  sort_order: z.number().int("Sort order must be an integer").min(0, "Sort order must be non-negative").default(0),
 });
 
 export const RecipeSchema = z.object({
-  name: z.string()
-    .min(3, 'Name must be at least 3 characters')
-    .max(100, 'Name must not exceed 100 characters')
+  name: z.string().min(3, "Name must be at least 3 characters").max(100, "Name must not exceed 100 characters").trim(),
+
+  instructions: z
+    .string()
+    .min(10, "Instructions must be at least 10 characters")
+    .max(5000, "Instructions must not exceed 5000 characters")
     .trim(),
 
-  instructions: z.string()
-    .min(10, 'Instructions must be at least 10 characters')
-    .max(5000, 'Instructions must not exceed 5000 characters')
-    .trim(),
-
-  ingredients: z.array(IngredientInputSchema)
-    .min(1, 'At least 1 ingredient required')
-    .max(50, 'Maximum 50 ingredients allowed')
+  ingredients: z
+    .array(IngredientInputSchema)
+    .min(1, "At least 1 ingredient required")
+    .max(50, "Maximum 50 ingredients allowed"),
 });
 
 export type RecipeSchemaType = z.infer<typeof RecipeSchema>;
@@ -1082,7 +1075,7 @@ export type IngredientInputSchemaType = z.infer<typeof IngredientInputSchema>;
 - Test schema with sample data:
   ```typescript
   const result = RecipeSchema.safeParse(sampleData);
-  console.log(result.success ? 'Valid' : result.error);
+  console.log(result.success ? "Valid" : result.error);
   ```
 
 ---
@@ -1092,9 +1085,9 @@ export type IngredientInputSchemaType = z.infer<typeof IngredientInputSchema>;
 **File:** `src/lib/services/recipe.service.ts`
 
 ```typescript
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@/db/database.types';
-import type { CreateRecipeDto, RecipeResponseDto } from '@/types';
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/db/database.types";
+import type { CreateRecipeDto, RecipeResponseDto } from "@/types";
 
 type SupabaseClientType = SupabaseClient<Database>;
 
@@ -1114,67 +1107,65 @@ export async function createRecipe(
 ): Promise<RecipeResponseDto> {
   // Step 1: Insert recipe
   const { data: recipe, error: recipeError } = await supabase
-    .from('recipes')
+    .from("recipes")
     .insert({
       user_id: userId,
       name: recipeData.name,
-      instructions: recipeData.instructions
+      instructions: recipeData.instructions,
     })
     .select()
     .single();
 
   if (recipeError) {
-    console.error('Failed to create recipe:', recipeError);
-    throw new Error('Failed to create recipe');
+    console.error("Failed to create recipe:", recipeError);
+    throw new Error("Failed to create recipe");
   }
 
   // Step 2: Prepare ingredients for bulk insert
-  const ingredientsToInsert = recipeData.ingredients.map(ingredient => ({
+  const ingredientsToInsert = recipeData.ingredients.map((ingredient) => ({
     recipe_id: recipe.id,
     name: ingredient.name,
     quantity: ingredient.quantity,
     unit: ingredient.unit,
-    sort_order: ingredient.sort_order
+    sort_order: ingredient.sort_order,
   }));
 
   // Step 3: Bulk insert ingredients
-  const { error: ingredientsError } = await supabase
-    .from('ingredients')
-    .insert(ingredientsToInsert);
+  const { error: ingredientsError } = await supabase.from("ingredients").insert(ingredientsToInsert);
 
   if (ingredientsError) {
-    console.error('Failed to create ingredients:', ingredientsError);
+    console.error("Failed to create ingredients:", ingredientsError);
 
     // Cleanup: Delete the orphaned recipe
-    await supabase.from('recipes').delete().eq('id', recipe.id);
+    await supabase.from("recipes").delete().eq("id", recipe.id);
 
-    throw new Error('Failed to create ingredients');
+    throw new Error("Failed to create ingredients");
   }
 
   // Step 4: Fetch complete recipe with ingredients
   const { data: completeRecipe, error: fetchError } = await supabase
-    .from('recipes')
-    .select(`
+    .from("recipes")
+    .select(
+      `
       *,
       ingredients (*)
-    `)
-    .eq('id', recipe.id)
+    `
+    )
+    .eq("id", recipe.id)
     .single();
 
   if (fetchError || !completeRecipe) {
-    console.error('Failed to fetch created recipe:', fetchError);
-    throw new Error('Failed to fetch created recipe');
+    console.error("Failed to fetch created recipe:", fetchError);
+    throw new Error("Failed to fetch created recipe");
   }
 
   // Step 5: Sort ingredients by sort_order
-  const sortedIngredients = [...completeRecipe.ingredients].sort(
-    (a, b) => a.sort_order - b.sort_order
-  );
+  const sortedIngredients = [...completeRecipe.ingredients].sort((a, b) => a.sort_order - b.sort_order);
 
   return {
     ...completeRecipe,
     ingredients: sortedIngredients,
-    meal_plan_assignments: 0 // Newly created recipe has no assignments
+    meal_plan_assignments: 0, // Newly created recipe has no assignments
   };
 }
 ```
@@ -1194,22 +1185,22 @@ export async function createRecipe(
 ```typescript
 export const prerender = false;
 
-import type { APIRoute } from 'astro';
-import { RecipeSchema } from '@/lib/validation/recipe.schema';
-import { createRecipe } from '@/lib/services/recipe.service';
+import type { APIRoute } from "astro";
+import { RecipeSchema } from "@/lib/validation/recipe.schema";
+import { createRecipe } from "@/lib/services/recipe.service";
 
 export const POST: APIRoute = async ({ request, locals }) => {
   // Step 1: Authentication check
-  const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await locals.supabase.auth.getUser();
 
   if (authError || !user) {
-    return new Response(
-      JSON.stringify({ error: 'Authentication required' }),
-      {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   try {
@@ -1222,35 +1213,27 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!validation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Validation failed',
-          details: validation.error.flatten().fieldErrors
+          error: "Validation failed",
+          details: validation.error.flatten().fieldErrors,
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
 
     // Step 4: Create recipe via service
-    const recipe = await createRecipe(
-      locals.supabase,
-      user.id,
-      validation.data
-    );
+    const recipe = await createRecipe(locals.supabase, user.id, validation.data);
 
     // Step 5: Return success response
-    return new Response(
-      JSON.stringify(recipe),
-      {
-        status: 201,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
-
+    return new Response(JSON.stringify(recipe), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     // Step 6: Error handling
-    console.error('Recipe creation error:', error);
+    console.error("Recipe creation error:", error);
 
     // TODO: Add Sentry logging
     // Sentry.captureException(error, {
@@ -1260,12 +1243,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: 'Something went wrong. Our team has been notified.'
+        error: "Internal server error",
+        message: "Something went wrong. Our team has been notified.",
       }),
       {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -1363,44 +1346,44 @@ curl -X POST http://localhost:3000/api/recipes \
 **File:** `src/tests/api/recipes.test.ts`
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-import { createRecipe } from '@/lib/services/recipe.service';
+import { describe, it, expect, beforeEach } from "vitest";
+import { createRecipe } from "@/lib/services/recipe.service";
 
-describe('POST /api/recipes', () => {
+describe("POST /api/recipes", () => {
   let supabase: any; // Mock Supabase client
   let userId: string;
 
   beforeEach(() => {
     // Setup mock Supabase client
-    userId = 'test-user-id';
+    userId = "test-user-id";
   });
 
-  it('should create recipe with ingredients', async () => {
+  it("should create recipe with ingredients", async () => {
     const recipeData = {
-      name: 'Test Recipe',
-      instructions: 'Test instructions for recipe',
+      name: "Test Recipe",
+      instructions: "Test instructions for recipe",
       ingredients: [
         {
-          name: 'ingredient 1',
+          name: "ingredient 1",
           quantity: 100,
-          unit: 'g',
-          sort_order: 0
-        }
-      ]
+          unit: "g",
+          sort_order: 0,
+        },
+      ],
     };
 
     const result = await createRecipe(supabase, userId, recipeData);
 
-    expect(result).toHaveProperty('id');
-    expect(result.name).toBe('Test Recipe');
+    expect(result).toHaveProperty("id");
+    expect(result.name).toBe("Test Recipe");
     expect(result.ingredients).toHaveLength(1);
   });
 
-  it('should handle validation errors', async () => {
+  it("should handle validation errors", async () => {
     const invalidData = {
-      name: 'AB', // Too short
-      instructions: 'Short', // Too short
-      ingredients: []
+      name: "AB", // Too short
+      instructions: "Short", // Too short
+      ingredients: [],
     };
 
     // Test validation
@@ -1453,10 +1436,10 @@ WHERE id = 'recipe-id';
 **Development:**
 
 ```typescript
-console.log('Request body:', JSON.stringify(body, null, 2));
-console.log('Validation result:', validation.success);
-console.log('User ID:', user.id);
-console.log('Created recipe ID:', recipe.id);
+console.log("Request body:", JSON.stringify(body, null, 2));
+console.log("Validation result:", validation.success);
+console.log("User ID:", user.id);
+console.log("Created recipe ID:", recipe.id);
 ```
 
 **Production:**
@@ -1468,7 +1451,7 @@ console.log('Created recipe ID:', recipe.id);
 #### Common Issues & Solutions
 
 | Issue            | Symptom                     | Solution                                      |
-|------------------|-----------------------------|-----------------------------------------------|
+| ---------------- | --------------------------- | --------------------------------------------- |
 | 401 error        | "Authentication required"   | Check cookie is sent, verify session is valid |
 | 400 error        | Validation fails            | Review Zod schema, check input format         |
 | 500 error        | Internal server error       | Check Supabase logs, verify RLS policies      |

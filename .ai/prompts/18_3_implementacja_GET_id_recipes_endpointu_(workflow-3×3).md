@@ -3,7 +3,7 @@ Twoim zadaniem jest wdrożenie endpointa interfejsu API REST w oparciu o podany 
 Najpierw dokładnie przejrzyj dostarczony plan wdrożenia:
 
 <implementation_plan>
-@.ai\doc\17_endpoint-POST-recipes-implementation-plan.md
+@.ai/doc/17_3_endpoint-GET-id-recipes-implementation-plan.md
 </implementation_plan>
 
 <types>

@@ -8,13 +8,13 @@
 
 ## 1. Resources
 
-| Resource | Database Table | Description |
-|----------|---------------|-------------|
-| **Recipes** | `recipes` | User's recipe collection with name and instructions |
-| **Ingredients** | `ingredients` | Recipe ingredients with quantity, unit, and name |
-| **Meal Plan** | `meal_plan` | Weekly calendar assignments of recipes to days and meals |
-| **Shopping Lists** | `shopping_lists` | Saved shopping lists (snapshot pattern) |
-| **Shopping List Items** | `shopping_list_items` | Individual items in shopping lists with AI categories |
+| Resource                | Database Table        | Description                                              |
+| ----------------------- | --------------------- | -------------------------------------------------------- |
+| **Recipes**             | `recipes`             | User's recipe collection with name and instructions      |
+| **Ingredients**         | `ingredients`         | Recipe ingredients with quantity, unit, and name         |
+| **Meal Plan**           | `meal_plan`           | Weekly calendar assignments of recipes to days and meals |
+| **Shopping Lists**      | `shopping_lists`      | Saved shopping lists (snapshot pattern)                  |
+| **Shopping List Items** | `shopping_list_items` | Individual items in shopping lists with AI categories    |
 
 **Note:** Authentication is handled by Supabase Auth directly from the client. No custom auth endpoints are needed.
 
@@ -31,6 +31,7 @@
 **Description:** Create a new recipe with ingredients
 
 **Request Body:**
+
 ```json
 {
   "name": "Spaghetti Carbonara",
@@ -71,6 +72,7 @@
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -94,6 +96,7 @@
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Validation error
   ```json
   {
@@ -121,17 +124,20 @@
 **Description:** Get user's recipes with optional search and sorting
 
 **Query Parameters:**
+
 - `search` (optional): Case-insensitive substring match on recipe name
 - `sort` (optional): `name_asc` | `name_desc` | `created_asc` | `created_desc` (default: `created_desc`)
 - `page` (optional): Page number for pagination (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 
 **Example Request:**
+
 ```
 GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "data": [
@@ -154,6 +160,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 
 ---
@@ -165,6 +172,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 **Description:** Get single recipe with all ingredients
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -189,6 +197,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Recipe not found or doesn't belong to user
   ```json
@@ -206,6 +215,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 **Description:** Update recipe and ingredients (full replacement)
 
 **Request Body:**
+
 ```json
 {
   "name": "Spaghetti Carbonara (Updated)",
@@ -223,6 +233,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -238,6 +249,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Validation error
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Recipe not found or doesn't belong to user
@@ -253,6 +265,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 **Description:** Delete recipe, ingredients, and meal plan assignments (CASCADE)
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Recipe deleted successfully",
@@ -261,6 +274,7 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Recipe not found or doesn't belong to user
 
@@ -275,14 +289,17 @@ GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
 **Description:** Get meal plan assignments for a specific week
 
 **Query Parameters:**
+
 - `week_start_date` (required): ISO date string for Monday of the week (YYYY-MM-DD)
 
 **Example Request:**
+
 ```
 GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "week_start_date": "2025-01-20",
@@ -310,6 +327,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Invalid date format
   ```json
   {
@@ -327,6 +345,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Assign recipe to a specific day and meal type
 
 **Request Body:**
+
 ```json
 {
   "recipe_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -337,6 +356,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "750e8400-e29b-41d4-a716-446655440002",
@@ -351,6 +371,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Validation error or duplicate assignment
   ```json
   {
@@ -370,6 +391,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 - `404 Not Found` - Recipe not found or doesn't belong to user
 
 **Validation:**
+
 - `day_of_week`: 1-7 (1 = Monday, 7 = Sunday)
 - `meal_type`: `breakfast` | `second_breakfast` | `lunch` | `dinner`
 - `week_start_date`: ISO date string (YYYY-MM-DD), must be Monday
@@ -384,6 +406,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Remove recipe from calendar (does NOT delete recipe itself)
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Assignment removed successfully"
@@ -391,6 +414,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Assignment not found or doesn't belong to user
 
@@ -405,6 +429,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Generate shopping list preview with aggregated ingredients and AI categorization
 
 **Request Body (Mode 1: From Calendar):**
+
 ```json
 {
   "source": "calendar",
@@ -424,17 +449,16 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Request Body (Mode 2: From Recipes):**
+
 ```json
 {
   "source": "recipes",
-  "recipe_ids": [
-    "550e8400-e29b-41d4-a716-446655440000",
-    "550e8400-e29b-41d4-a716-446655440001"
-  ]
+  "recipe_ids": ["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"]
 }
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "items": [
@@ -486,6 +510,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Validation error or no recipes selected
   ```json
   {
@@ -514,6 +539,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
   ```
 
 **Business Logic:**
+
 1. Fetch ingredients from selected recipes/meals
 2. Normalize ingredient names: trim, lowercase for comparison
 3. Aggregate identical ingredients: group by (name + unit), sum quantities
@@ -525,6 +551,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 6. Return preview (NOT saved yet)
 
 **Categories (Polish):**
+
 - Nabiał (Dairy)
 - Warzywa (Vegetables)
 - Owoce (Fruits)
@@ -542,6 +569,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Save shopping list as immutable snapshot (after user edits preview)
 
 **Request Body:**
+
 ```json
 {
   "name": "Lista zakupów - Tydzień 20-26 stycznia",
@@ -560,6 +588,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "850e8400-e29b-41d4-a716-446655440000",
@@ -585,6 +614,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Validation error
   ```json
   {
@@ -598,6 +628,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 - `401 Unauthorized` - User not authenticated
 
 **Validation:**
+
 - `name`: max 200 chars, default "Lista zakupów"
 - `week_start_date`: nullable (NULL if generated from "From Recipes" mode)
 - `items`: max 100 items
@@ -616,10 +647,12 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Get user's saved shopping lists (history)
 
 **Query Parameters:**
+
 - `page` (optional): Page number (default: 1)
 - `limit` (optional): Items per page (default: 20, max: 100)
 
 **Response (200 OK):**
+
 ```json
 {
   "data": [
@@ -642,6 +675,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 
 ---
@@ -653,6 +687,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Get single shopping list with all items
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "850e8400-e29b-41d4-a716-446655440000",
@@ -678,11 +713,13 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Items sorted by:**
+
 1. Category (fixed order: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne)
 2. `sort_order` within category
 3. Alphabetically by `ingredient_name` (case-insensitive)
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Shopping list not found or doesn't belong to user
 
@@ -695,6 +732,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Toggle item checked status (mark as purchased)
 
 **Request Body:**
+
 ```json
 {
   "is_checked": true
@@ -702,6 +740,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "950e8400-e29b-41d4-a716-446655440000",
@@ -716,6 +755,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Item or list not found or doesn't belong to user
 
@@ -730,6 +770,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Delete shopping list and all items (CASCADE)
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Shopping list deleted successfully"
@@ -737,6 +778,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 - `404 Not Found` - Shopping list not found or doesn't belong to user
 
@@ -751,6 +793,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Description:** Track PDF/TXT export for analytics (optional, client-side export)
 
 **Request Body:**
+
 ```json
 {
   "shopping_list_id": "850e8400-e29b-41d4-a716-446655440000",
@@ -759,9 +802,11 @@ GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Response (204 No Content):**
+
 - No response body
 
 **Error Responses:**
+
 - `401 Unauthorized` - User not authenticated
 
 **Note:** This is optional. PDF/TXT generation happens client-side with @react-pdf/renderer. This endpoint is only for tracking.
@@ -776,6 +821,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Method:** JWT-based session with httpOnly cookies
 
 **Flow:**
+
 1. User registers/logs in via Supabase Auth SDK (client-side)
 2. Supabase returns JWT access token + refresh token
 3. Tokens stored in httpOnly cookies (secure, immune to XSS)
@@ -785,10 +831,11 @@ GET /api/meal-plan?week_start_date=2025-01-20
 **Implementation Details:**
 
 **Middleware (Astro):**
+
 ```typescript
 // src/middleware/index.ts
-import { defineMiddleware } from 'astro:middleware';
-import { supabaseClient } from '../db/supabase.client';
+import { defineMiddleware } from "astro:middleware";
+import { supabaseClient } from "../db/supabase.client";
 
 export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.supabase = supabaseClient;
@@ -797,29 +844,31 @@ export const onRequest = defineMiddleware(async (context, next) => {
 ```
 
 **Protected API Endpoint Example:**
+
 ```typescript
 // src/pages/api/recipes.ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async ({ locals }) => {
   // Check authentication
-  const { data: { user }, error } = await locals.supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await locals.supabase.auth.getUser();
 
   if (error || !user) {
-    return new Response(JSON.stringify({ error: 'Authentication required' }), {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   // User is authenticated, proceed with query
-  const { data: recipes } = await locals.supabase
-    .from('recipes')
-    .select('*');
+  const { data: recipes } = await locals.supabase.from("recipes").select("*");
 
   return new Response(JSON.stringify({ data: recipes }), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { "Content-Type": "application/json" },
   });
 };
 ```
@@ -829,6 +878,7 @@ export const GET: APIRoute = async ({ locals }) => {
 **Method:** Row Level Security (RLS) at PostgreSQL level
 
 **Key Principles:**
+
 1. All tables have RLS enabled
 2. Users access only their own data via `auth.uid() = user_id`
 3. Ingredients and shopping list items accessed via parent resource ownership
@@ -837,6 +887,7 @@ export const GET: APIRoute = async ({ locals }) => {
 **RLS Policies (Summary):**
 
 **recipes:**
+
 ```sql
 -- Users see only their own recipes
 CREATE POLICY recipes_select ON recipes
@@ -853,6 +904,7 @@ CREATE POLICY recipes_delete ON recipes
 ```
 
 **ingredients:**
+
 ```sql
 -- Users access ingredients only from their own recipes
 CREATE POLICY ingredients_all ON ingredients
@@ -866,6 +918,7 @@ CREATE POLICY ingredients_all ON ingredients
 ```
 
 **meal_plan:**
+
 ```sql
 -- Users access only their own meal plans
 CREATE POLICY meal_plan_all ON meal_plan
@@ -874,6 +927,7 @@ CREATE POLICY meal_plan_all ON meal_plan
 ```
 
 **shopping_lists:**
+
 ```sql
 -- Users access only their own shopping lists
 CREATE POLICY shopping_lists_all ON shopping_lists
@@ -882,6 +936,7 @@ CREATE POLICY shopping_lists_all ON shopping_lists
 ```
 
 **shopping_list_items:**
+
 ```sql
 -- Users access items only from their own shopping lists
 CREATE POLICY shopping_list_items_all ON shopping_list_items
@@ -895,6 +950,7 @@ CREATE POLICY shopping_list_items_all ON shopping_list_items
 ```
 
 **Security Guarantees:**
+
 - **Data Isolation:** User A cannot access User B's data (enforced at database level)
 - **GDPR Compliance:** CASCADE DELETE ensures complete data removal on account deletion
 - **SQL Injection Protection:** Supabase client uses parameterized queries
@@ -911,23 +967,24 @@ All endpoints use **Zod schemas** for validation. Below are the validation rules
 #### Recipe Validation
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const IngredientSchema = z.object({
   name: z.string().min(1).max(100),
   quantity: z.number().positive().nullable(),
   unit: z.string().max(50).nullable(),
-  sort_order: z.number().int().min(0).default(0)
+  sort_order: z.number().int().min(0).default(0),
 });
 
 const RecipeSchema = z.object({
   name: z.string().min(3).max(100),
   instructions: z.string().min(10).max(5000),
-  ingredients: z.array(IngredientSchema).min(1).max(50)
+  ingredients: z.array(IngredientSchema).min(1).max(50),
 });
 ```
 
 **Rules:**
+
 - `name`: 3-100 characters, required
 - `instructions`: 10-5000 characters, required
 - `ingredients`: minimum 1, maximum 50 items
@@ -943,11 +1000,12 @@ const MealPlanSchema = z.object({
   recipe_id: z.string().uuid(),
   week_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   day_of_week: z.number().int().min(1).max(7),
-  meal_type: z.enum(['breakfast', 'second_breakfast', 'lunch', 'dinner'])
+  meal_type: z.enum(["breakfast", "second_breakfast", "lunch", "dinner"]),
 });
 ```
 
 **Rules:**
+
 - `recipe_id`: valid UUID
 - `week_start_date`: ISO date format (YYYY-MM-DD), must be Monday
 - `day_of_week`: 1-7 (1 = Monday, 7 = Sunday)
@@ -961,18 +1019,22 @@ const ShoppingListItemSchema = z.object({
   ingredient_name: z.string().min(1).max(100),
   quantity: z.number().positive().nullable(),
   unit: z.string().max(50).nullable(),
-  category: z.enum(['Nabiał', 'Warzywa', 'Owoce', 'Mięso', 'Pieczywo', 'Przyprawy', 'Inne']).default('Inne'),
-  sort_order: z.number().int().min(0).default(0)
+  category: z.enum(["Nabiał", "Warzywa", "Owoce", "Mięso", "Pieczywo", "Przyprawy", "Inne"]).default("Inne"),
+  sort_order: z.number().int().min(0).default(0),
 });
 
 const ShoppingListSchema = z.object({
-  name: z.string().max(200).default('Lista zakupów'),
-  week_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
-  items: z.array(ShoppingListItemSchema).max(100)
+  name: z.string().max(200).default("Lista zakupów"),
+  week_start_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable(),
+  items: z.array(ShoppingListItemSchema).max(100),
 });
 ```
 
 **Rules:**
+
 - `name`: max 200 characters, default "Lista zakupów"
 - `week_start_date`: ISO date or null (null if "From Recipes" mode)
 - `items`: maximum 100 items
@@ -985,6 +1047,7 @@ const ShoppingListSchema = z.object({
 #### Recipe Management
 
 **Create/Update Recipe:**
+
 1. Validate request body with RecipeSchema (Zod)
 2. Insert recipe into `recipes` table
 3. Bulk insert ingredients into `ingredients` table
@@ -992,6 +1055,7 @@ const ShoppingListSchema = z.object({
 5. For update: DELETE existing ingredients, INSERT new ones (full replacement)
 
 **Delete Recipe:**
+
 1. Check if recipe exists and belongs to user (RLS handles this)
 2. Count meal plan assignments for user feedback
 3. DELETE recipe (CASCADE deletes ingredients and meal plan assignments)
@@ -1000,18 +1064,21 @@ const ShoppingListSchema = z.object({
 #### Meal Plan Calendar
 
 **Get Week Calendar:**
+
 1. Validate `week_start_date` (must be Monday)
 2. Query `meal_plan` JOIN `recipes` WHERE week_start_date = param
 3. Return assignments sorted by day_of_week, then meal_type order
 4. Frontend receives 0-28 assignments (28 = full week)
 
 **Create Assignment:**
+
 1. Validate request (recipe exists, valid day/meal)
 2. Check UNIQUE constraint (no duplicate assignment)
 3. INSERT meal_plan record
 4. Return assignment with recipe name
 
 **Delete Assignment:**
+
 1. Verify assignment belongs to user (RLS)
 2. DELETE assignment (recipe remains in user's collection)
 
@@ -1033,6 +1100,7 @@ const ShoppingListSchema = z.object({
 3. **AI Categorization:**
    - Prepare batch request with all unique ingredient names
    - Call OpenAI GPT-4o mini with prompt:
+
      ```
      Categorize the following ingredients into categories:
      Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne
@@ -1045,6 +1113,7 @@ const ShoppingListSchema = z.object({
      3. parmesan cheese
      ...
      ```
+
    - Timeout: 10 seconds
    - Retry: 2 times with exponential backoff (1s, 2s)
    - Fallback: If AI fails, set all categories to "Inne"
@@ -1076,6 +1145,7 @@ const ShoppingListSchema = z.object({
 4. Fetch and return complete saved list with items
 
 **Update Item (PATCH /api/shopping-lists/:list_id/items/:item_id):**
+
 1. Validate request (only `is_checked` field allowed)
 2. UPDATE shopping_list_items SET is_checked = value
 3. Update parent `shopping_lists.updated_at` trigger fires automatically
@@ -1084,6 +1154,7 @@ const ShoppingListSchema = z.object({
 #### Error Handling
 
 **Validation Errors (400):**
+
 ```json
 {
   "error": "Validation failed",
@@ -1094,6 +1165,7 @@ const ShoppingListSchema = z.object({
 ```
 
 **Authentication Errors (401):**
+
 ```json
 {
   "error": "Authentication required"
@@ -1101,6 +1173,7 @@ const ShoppingListSchema = z.object({
 ```
 
 **Not Found (404):**
+
 ```json
 {
   "error": "Resource not found"
@@ -1108,6 +1181,7 @@ const ShoppingListSchema = z.object({
 ```
 
 **AI Categorization Failure (422):**
+
 ```json
 {
   "items": [...],
@@ -1117,16 +1191,19 @@ const ShoppingListSchema = z.object({
   }
 }
 ```
+
 - All items have category "Inne"
 - User can manually edit categories in preview
 
 **Server Errors (500):**
+
 ```json
 {
   "error": "Internal server error",
   "message": "Something went wrong. Our team has been notified."
 }
 ```
+
 - Log error to Sentry
 - Return generic message to user
 - Never expose internal details
@@ -1134,11 +1211,13 @@ const ShoppingListSchema = z.object({
 #### Rate Limiting
 
 **Supabase Default:**
+
 - 100 requests/minute per user
 - Applied automatically by Supabase
 - Returns 429 Too Many Requests if exceeded
 
 **OpenAI API:**
+
 - Subject to OpenAI account limits
 - Implement timeout (10s) to prevent hanging requests
 - Graceful fallback to "Inne" category
@@ -1146,16 +1225,19 @@ const ShoppingListSchema = z.object({
 #### Performance Optimizations
 
 **Database:**
+
 - Indexes on user_id, recipe_id, week_start_date, shopping_list_id
 - Compound index on (user_id, week_start_date) for calendar queries
 - Connection pooling via PgBouncer (Supabase automatic)
 
 **API:**
+
 - Pagination: default 20 items, max 100
-- Select only needed columns (avoid SELECT *)
+- Select only needed columns (avoid SELECT \*)
 - Use JOIN for related data (reduce N+1 queries)
 
 **Caching (Future):**
+
 - Cache common ingredient categories (e.g., "eggs" → "Nabiał")
 - Reduce OpenAI API calls by ~30-50%
 - Implement with Redis or in-memory cache
@@ -1169,6 +1251,7 @@ const ShoppingListSchema = z.object({
 All endpoints are implemented as Astro API routes in `src/pages/api/` with `prerender = false`.
 
 **Example Structure:**
+
 ```
 src/pages/api/
 ├── recipes/
@@ -1187,32 +1270,36 @@ src/pages/api/
 ```
 
 **Endpoint Pattern:**
+
 ```typescript
 // src/pages/api/recipes/index.ts
 export const prerender = false;
 
-import type { APIRoute } from 'astro';
-import { RecipeSchema } from '@/lib/validation/recipe.schema';
+import type { APIRoute } from "astro";
+import { RecipeSchema } from "@/lib/validation/recipe.schema";
 
 export const GET: APIRoute = async ({ locals, url }) => {
   // Auth check
-  const { data: { user }, error } = await locals.supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await locals.supabase.auth.getUser();
   if (error || !user) {
-    return new Response(JSON.stringify({ error: 'Authentication required' }), {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   // Query params
-  const search = url.searchParams.get('search');
-  const sort = url.searchParams.get('sort') || 'created_desc';
+  const search = url.searchParams.get("search");
+  const sort = url.searchParams.get("sort") || "created_desc";
 
   // Business logic
-  let query = locals.supabase.from('recipes').select('*');
+  let query = locals.supabase.from("recipes").select("*");
 
   if (search) {
-    query = query.ilike('name', `%${search}%`);
+    query = query.ilike("name", `%${search}%`);
   }
 
   // ... sorting, pagination, etc.
@@ -1220,26 +1307,29 @@ export const GET: APIRoute = async ({ locals, url }) => {
   const { data, error: dbError } = await query;
 
   if (dbError) {
-    console.error('Database error:', dbError);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+    console.error("Database error:", dbError);
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   return new Response(JSON.stringify({ data }), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { "Content-Type": "application/json" },
   });
 };
 
 export const POST: APIRoute = async ({ request, locals }) => {
   // Auth check
-  const { data: { user }, error } = await locals.supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await locals.supabase.auth.getUser();
   if (error || !user) {
-    return new Response(JSON.stringify({ error: 'Authentication required' }), {
+    return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -1248,13 +1338,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const validation = RecipeSchema.safeParse(body);
 
   if (!validation.success) {
-    return new Response(JSON.stringify({
-      error: 'Validation failed',
-      details: validation.error.flatten().fieldErrors
-    }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Validation failed",
+        details: validation.error.flatten().fieldErrors,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
   // Business logic (create recipe)
@@ -1262,7 +1355,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   return new Response(JSON.stringify(result), {
     status: 201,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { "Content-Type": "application/json" },
   });
 };
 ```
@@ -1280,53 +1373,53 @@ src/lib/services/
 ```
 
 **Example Service:**
+
 ```typescript
 // src/lib/services/ai-categorization.service.ts
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: import.meta.env.OPENAI_API_KEY
+  apiKey: import.meta.env.OPENAI_API_KEY,
 });
 
-export async function categorizeIngredientsWithRetry(
-  ingredients: string[]
-): Promise<Record<string, string>> {
+export async function categorizeIngredientsWithRetry(ingredients: string[]): Promise<Record<string, string>> {
   const maxRetries = 2;
   const backoffMs = [1000, 2000];
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        temperature: 0,
-        max_tokens: 500,
-        messages: [
-          {
-            role: 'system',
-            content: 'Categorize ingredients into: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne. Return JSON object mapping index to category.'
-          },
-          {
-            role: 'user',
-            content: ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')
-          }
-        ]
-      }, {
-        timeout: 10000 // 10 seconds
-      });
+      const response = await openai.chat.completions.create(
+        {
+          model: "gpt-4o-mini",
+          temperature: 0,
+          max_tokens: 500,
+          messages: [
+            {
+              role: "system",
+              content:
+                "Categorize ingredients into: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne. Return JSON object mapping index to category.",
+            },
+            {
+              role: "user",
+              content: ingredients.map((ing, i) => `${i + 1}. ${ing}`).join("\n"),
+            },
+          ],
+        },
+        {
+          timeout: 10000, // 10 seconds
+        }
+      );
 
       const result = JSON.parse(response.choices[0].message.content);
       return result;
-
     } catch (error) {
       console.error(`AI categorization attempt ${attempt + 1} failed:`, error);
 
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, backoffMs[attempt]));
+        await new Promise((resolve) => setTimeout(resolve, backoffMs[attempt]));
       } else {
         // Final fallback: all items to "Inne"
-        return Object.fromEntries(
-          ingredients.map((_, i) => [(i + 1).toString(), 'Inne'])
-        );
+        return Object.fromEntries(ingredients.map((_, i) => [(i + 1).toString(), "Inne"]));
       }
     }
   }
@@ -1339,20 +1432,20 @@ export async function categorizeIngredientsWithRetry(
 
 ```typescript
 // src/components/hooks/useRecipes.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useRecipes(search?: string, sort?: string) {
   return useQuery({
-    queryKey: ['recipes', search, sort],
+    queryKey: ["recipes", search, sort],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (search) params.set('search', search);
-      if (sort) params.set('sort', sort);
+      if (search) params.set("search", search);
+      if (sort) params.set("sort", sort);
 
       const response = await fetch(`/api/recipes?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch recipes');
+      if (!response.ok) throw new Error("Failed to fetch recipes");
       return response.json();
-    }
+    },
   });
 }
 
@@ -1361,22 +1454,22 @@ export function useCreateRecipe() {
 
   return useMutation({
     mutationFn: async (recipe: CreateRecipeDto) => {
-      const response = await fetch('/api/recipes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(recipe)
+      const response = await fetch("/api/recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(recipe),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || 'Failed to create recipe');
+        throw new Error(error.message || "Failed to create recipe");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['recipes'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["recipes"] });
+    },
   });
 }
 ```
@@ -1384,21 +1477,25 @@ export function useCreateRecipe() {
 ### 5.4 Testing Checklist
 
 **Unit Tests:**
+
 - [ ] Zod validation schemas
 - [ ] Service functions (AI categorization, aggregation logic)
 - [ ] Date utilities (week start calculation)
 
 **Integration Tests:**
+
 - [ ] All API endpoints with valid/invalid inputs
 - [ ] RLS policies (user A cannot access user B's data)
 - [ ] CASCADE DELETE behavior
 - [ ] AI categorization with mocked OpenAI responses
 
 **E2E Tests:**
+
 - [ ] Complete user flow: Register → Add recipe → Assign to calendar → Generate list → Export PDF
 - [ ] Error scenarios: Network failures, AI timeout, validation errors
 
 **Security Tests:**
+
 - [ ] RLS bypass attempts
 - [ ] SQL injection attempts (Supabase should handle)
 - [ ] XSS in recipe names/instructions
@@ -1409,6 +1506,7 @@ export function useCreateRecipe() {
 ## 6. Deployment Considerations
 
 **Environment Variables:**
+
 ```env
 # Supabase
 SUPABASE_URL=https://xxxxx.supabase.co
@@ -1423,16 +1521,19 @@ SENTRY_DSN=https://xxxxx@sentry.io/xxxxx
 ```
 
 **Vercel Deployment:**
+
 1. Connect GitHub repository
 2. Set environment variables in Vercel dashboard
 3. Automatic deployments on push to main
 4. Preview deployments for PRs
 
 **Database Migrations:**
+
 - Use `supabase/migrations/` for version-controlled schema changes
 - Run migrations with `supabase db push` or via CI/CD
 
 **Monitoring:**
+
 - Sentry for error tracking
 - Vercel Analytics for performance
 - Supabase Dashboard for database metrics

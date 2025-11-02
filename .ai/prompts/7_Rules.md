@@ -20,6 +20,7 @@ Your task is to improve the CLAUDE.md file by applying best practices for prompt
 When improving the CLAUDE.md file, follow these best practices:
 
 **For Regular Expressions:**
+
 - Use clear, readable patterns with proper escaping
 - Include comments explaining complex regex patterns
 - Use named capture groups where appropriate
@@ -28,6 +29,7 @@ When improving the CLAUDE.md file, follow these best practices:
 - Consider edge cases and validation scenarios
 
 **For Prompt Engineering:**
+
 - Write clear, specific instructions
 - Use consistent formatting and structure
 - Include relevant examples and context
@@ -37,6 +39,7 @@ When improving the CLAUDE.md file, follow these best practices:
 - Make instructions actionable and unambiguous
 
 **Integration Guidelines:**
+
 - Ensure compatibility with the specified tech stack
 - Align improvements with PRD requirements and goals
 - Consider the target audience and use cases

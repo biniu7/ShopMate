@@ -1,12 +1,14 @@
 # Aplikacja - ShopMate (MVP)
 
 ## Streszczenie projektu
+
 ShopMate to aplikacja webowa umożliwiająca tworzenie list zakupów na podstawie przepisów kulinarnych przyporządkowanych do poszczególnych dni i posiłków (śniadanie, drugie śniadanie, obiad, kolacja).
 Aplikacja automatyzuje proces planowania posiłków i generowania list zakupów, oszczędzając czas użytkowników i redukując marnotrawstwo żywności.
 
 ## Główny problem
 
 Użytkownicy napotykają trudności w:
+
 - **Planowaniu posiłków na cały tydzień** - brak systematycznego podejścia do organizacji menu
 - **Tworzeniu kompletnych list zakupów** - zapominanie o składnikach, wielokrotne wizyty w sklepie
 - **Koordynacji składników z wielu przepisów** - czasochłonne ręczne zbieranie informacji z różnych źródeł
@@ -17,6 +19,7 @@ ShopMate rozwiązuje te problemy poprzez centralizację przepisów, wizualne pla
 ## Najmniejszy zestaw funkcjonalności (MVP)
 
 ### 1. Zarządzanie przepisami kulinarnymi
+
 - **Zapisywanie przepisów** - tworzenie nowych przepisów w formie tekstowej
 - **Odczytywanie przepisów** - wyświetlanie szczegółów zapisanych przepisów
 - **Przeglądanie przepisów** - lista wszystkich przepisów użytkownika z podstawowym wyszukiwaniem
@@ -24,6 +27,7 @@ ShopMate rozwiązuje te problemy poprzez centralizację przepisów, wizualne pla
 - **Automatyczne tworzenie listy składników** - podczas zapisu przepisu system automatycznie ekstrahuje składniki z treści przepisu (z możliwością ręcznej edycji)
 
 ### 2. Kalendarz tygodniowy posiłków
+
 - **Cykliczny kalendarz tygodniowy** - wizualizacja 7 dni tygodnia (Poniedziałek - Niedziela)
 - **Typy posiłków** - cztery kategorie posiłków dziennie:
   - Śniadanie
@@ -34,10 +38,11 @@ ShopMate rozwiązuje te problemy poprzez centralizację przepisów, wizualne pla
 - **Funkcjonalność drag-and-drop** - intuicyjne przenoszenie przepisów do komórek kalendarza (opcjonalne w MVP)
 
 ### 3. System kont użytkowników
--  wykorzystanie sytemu supabase 
 
+- wykorzystanie sytemu supabase
 
 ### 4. Generowanie list zakupów
+
 - **Wybór źródła** - tworzenie listy na podstawie:
   - Zaznaczonych pojedynczych przepisów
   - Wybranych dni i posiłków z kalendarza
@@ -47,11 +52,13 @@ ShopMate rozwiązuje te problemy poprzez centralizację przepisów, wizualne pla
 - **Zapis w bazie danych** - przechowywanie historii list zakupów
 
 ### 5. Eksport list zakupów
+
 - **Format PDF** - czytelny, gotowy do druku dokument
 - **Format TXT** - prosty plik tekstowy do łatwego udostępniania
 - **Pobieranie pliku** - bezpośredni download wygenerowanego pliku
 
 ### 6. Responsywny interfejs użytkownika
+
 - **Obsługa urządzeń mobilnych** - optymalizacja dla smartfonów (iOS, Android)
 - **Obsługa desktop** - pełna funkcjonalność na komputerach
 - **Intuicyjna nawigacja** - prosta struktura menu i przejść między sekcjami
@@ -60,6 +67,7 @@ ShopMate rozwiązuje te problemy poprzez centralizację przepisów, wizualne pla
 ## Co NIE wchodzi w zakres MVP
 
 ### Funkcje postponowane do kolejnych wersji:
+
 - **Import przepisów z pliku** (JPG, PDF, DOCX) - wymaga OCR i zaawansowanego parsowania
 - **Aplikacje mobilne natywne** (iOS, Android) - na początek tylko aplikacja webowa
 - **Udostępnianie przepisów dla innych użytkowników** - funkcje społecznościowe
@@ -99,9 +107,11 @@ ShopMate rozwiązuje te problemy poprzez centralizację przepisów, wizualne pla
 ## Kryteria sukcesu MVP
 
 ### Główny cel:
+
 Użytkownik jest w stanie wygenerować kompletną listę zakupów w formacie PDF na podstawie zaznaczonych przepisów kulinarnych i przypisanych do nich dni/posiłków w kalendarzu tygodniowym.
 
 ### Mierzalne kryteria:
+
 1. **Funkcjonalność**:
    - Użytkownik może utworzyć konto, zalogować się i wylogować
    - Użytkownik może dodać minimum 5 przepisów i przypisać je do kalendarza
@@ -128,12 +138,14 @@ Użytkownik jest w stanie wygenerować kompletną listę zakupów w formacie PDF
 ## Grupa docelowa
 
 **Główni użytkownicy:**
+
 - Osoby planujące posiłki dla rodziny
 - Osoby żyjące samodzielnie i chcące lepiej organizować zakupy
 - Osoby dbające o redukcję marnotrawstwa żywności
 - Osoby poszukujące oszczędności czasu i pieniędzy
 
 **Charakterystyka:**
+
 - Wiek: 25-55 lat
 - Posiadają smartfon lub komputer
 - Robią zakupy spożywcze minimum raz w tygodniu

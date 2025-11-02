@@ -3,6 +3,7 @@ program to aplikacja webowa umożliwiająca użytkownikom tworzenie list zakupó
 </project-idea>
 
 Jestem programistą i analizuje pomysł na projekt, nad którym będę pracował w ramach kursu 10xDevs. Interesuje mnie analiza pod kątem poniższych kryteriów:
+
 1. Czy aplikacja rozwiązuje realny problem?
 2. Czy w aplikacji można skupić się na 1-2 kluczowych funkcjach?
 3. Czy jestem w stanie wdrożyć ten pomysł do 6 tygodni pracując nad nim po godzinach z AI?

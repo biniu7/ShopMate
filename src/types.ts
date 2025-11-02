@@ -444,7 +444,7 @@ export type CreatedResponse<T> = T;
 /**
  * No content response (204)
  */
-export type NoContentResponse = void;
+export type NoContentResponse = Record<string, never>;
 
 /**
  * Message-only response

@@ -1,8 +1,11 @@
 # Aplikacja - ShopMate (MVP)
+
 Utworzenie listy zakupów na podstawie przepisów kulinarnych przyporządkowanych do poszczególnych dni i posiłków (śniadanie, obiad, kolacja).
+
 ## Główny problem
 
 ## Najmniejszy zestaw funkcjonalności
+
 Zapisywanie, odczytywanie, przeglądanie i usuwanie przepisów w formie tekstowej
 Stworzenie funkcjonalnego, cyklicznego kalendarza tygodniowego, który umożliwia przypisywanie konkretnych przepisów lub potraw do każdej kombinacji dnia tygodnia (Poniedziałek - Niedziela) i typu posiłku (Śniadanie, Drugie śniadanie, Obiad, Kolacja).
 podczas zapisu przepisu kulinarnego automatyczne tworzenie listy składników (możliwość edycji recznej)
@@ -11,7 +14,9 @@ Tworzenie listy zakupów na podstawie znaczonych przepisów kulinarnych lub dni/
 Zapis listy zakupów w bazie danych
 Eksport listy zakupów do formatu PDF lub TXT
 Responsywny interfejs użytkownika dostosowany do urządzeń mobilnych i desktop
+
 ## Co NIE wchodzi w zakres MVP
+
 - Import przepisów z pliku (np.JPG, PDF, DOCX)
 - Aplikacje mobilne (na początek tylko web)
 - Udostępnianie przepisów dla innych użytkowników
@@ -25,5 +30,7 @@ Responsywny interfejs użytkownika dostosowany do urządzeń mobilnych i desktop
 - Integracja z kalendarzem (np. Google Calendar)
 - Zaawansowane funkcje zarządzania użytkownikami (np. role, uprawnienia)
 - Zaawansowane funkcje bezpieczeństwa (np. 2FA, szyfrowanie danych)
+
 ## Kryteria sukcesu
+
 Lista zakupów generowana w formacje PDF na podstawie zaznaczonych przepisów kulinarnych i przypisanych do nich dni/posiłków

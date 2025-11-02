@@ -3,12 +3,7 @@ export const prerender = false;
 import type { APIRoute } from "astro";
 import { RecipeSchema, recipeListQuerySchema } from "@/lib/validation/recipe.schema";
 import { createRecipe, getRecipesList } from "@/lib/services/recipe.service";
-import type {
-  PaginatedResponse,
-  RecipeListItemDto,
-  ErrorResponseDto,
-  ValidationErrorResponseDto,
-} from "@/types";
+import type { PaginatedResponse, RecipeListItemDto, ErrorResponseDto, ValidationErrorResponseDto } from "@/types";
 
 /**
  * POST /api/recipes - Create a new recipe

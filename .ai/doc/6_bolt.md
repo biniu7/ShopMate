@@ -9,6 +9,7 @@
 ## INSTRUKCJA DLA GENERATORA
 
 **WAŻNE: Przed rozpoczęciem implementacji:**
+
 1. Przeczytaj poniższy prompt całkowicie
 2. Rozplanuj pracę i przedstaw mi plan do akceptacji
 3. Czekaj na moją akceptację planu zanim zaczniesz tworzyć kod
@@ -19,6 +20,7 @@
 ## KONTEKST PROJEKTU
 
 ShopMate to aplikacja webowa do planowania posiłków i automatycznego generowania list zakupów. Użytkownicy:
+
 1. Dodają przepisy kulinarne ze składnikami
 2. Przypisują przepisy do kalendarza tygodniowego (dni × posiłki)
 3. Generują zagregowaną listę zakupów ze składników
@@ -31,6 +33,7 @@ ShopMate to aplikacja webowa do planowania posiłków i automatycznego generowan
 Zweryfikować **podstawowy flow aplikacji** - od dodania przepisu do wygenerowania listy zakupów.
 
 **Co musi działać w PoC:**
+
 - ✅ Dodawanie przepisu ze składnikami
 - ✅ Wyświetlanie listy przepisów
 - ✅ Wybór przepisów do listy zakupów
@@ -39,6 +42,7 @@ Zweryfikować **podstawowy flow aplikacji** - od dodania przepisu do wygenerowan
 - ✅ Wyświetlenie wygenerowanej listy zakupów
 
 **Czego NIE implementujemy w PoC:**
+
 - ❌ Kalendarz tygodniowy (zbyt złożony dla PoC)
 - ❌ System autoryzacji/kont użytkowników (PoC bez auth)
 - ❌ Eksport do PDF/TXT (tylko wyświetlanie w przeglądarce)
@@ -75,6 +79,7 @@ Hosting:
 ```
 
 **Dlaczego Next.js zamiast Astro dla PoC:**
+
 - Szybsza konfiguracja (zero setup dla API routes)
 - Jeden framework dla frontend + backend
 - Łatwiejsze dla generatorów kodu
@@ -84,6 +89,7 @@ Hosting:
 ## SCHEMAT BAZY DANYCH (uproszczony)
 
 ### Tabela: recipes
+
 ```sql
 CREATE TABLE recipes (
   id SERIAL PRIMARY KEY,
@@ -94,6 +100,7 @@ CREATE TABLE recipes (
 ```
 
 ### Tabela: ingredients
+
 ```sql
 CREATE TABLE ingredients (
   id SERIAL PRIMARY KEY,
@@ -106,6 +113,7 @@ CREATE TABLE ingredients (
 ```
 
 ### Tabela: shopping_lists (opcjonalna dla PoC)
+
 ```sql
 CREATE TABLE shopping_lists (
   id SERIAL PRIMARY KEY,
@@ -115,6 +123,7 @@ CREATE TABLE shopping_lists (
 ```
 
 ### Tabela: shopping_list_items (opcjonalna dla PoC)
+
 ```sql
 CREATE TABLE shopping_list_items (
   id SERIAL PRIMARY KEY,
@@ -137,6 +146,7 @@ CREATE TABLE shopping_list_items (
 ### 1. Strona: Dodawanie przepisu (`/recipes/new`)
 
 **UI:**
+
 - Formularz z polami:
   - Nazwa przepisu (input text)
   - Składniki (dynamiczna lista):
@@ -147,17 +157,20 @@ CREATE TABLE shopping_list_items (
 - Przycisk "Zapisz przepis"
 
 **Walidacja (minimalna):**
+
 - Nazwa przepisu: wymagane, min. 3 znaki
 - Składniki: minimum 1 składnik z wypełnioną nazwą
 - Instrukcje: wymagane, min. 10 znaków
 
 **Backend:**
+
 - API endpoint: `POST /api/recipes`
 - Zapisz przepis do tabeli `recipes`
 - Zapisz składniki do tabeli `ingredients` (bulk insert)
 - Zwróć ID nowego przepisu
 
 **Po zapisie:**
+
 - Przekierowanie do `/recipes` (lista przepisów)
 
 ---
@@ -165,6 +178,7 @@ CREATE TABLE shopping_list_items (
 ### 2. Strona: Lista przepisów (`/recipes`)
 
 **UI:**
+
 - Lista wszystkich przepisów (proste karty lub tabela)
 - Każdy przepis pokazuje:
   - Nazwę
@@ -174,6 +188,7 @@ CREATE TABLE shopping_list_items (
 - Przycisk "Generuj listę zakupów" → przekierowanie do `/shopping-list/generate`
 
 **Backend:**
+
 - API endpoint: `GET /api/recipes`
 - Query: pobierz wszystkie przepisy z liczbą składników
 
@@ -182,6 +197,7 @@ CREATE TABLE shopping_list_items (
 ### 3. Strona: Szczegóły przepisu (`/recipes/[id]`)
 
 **UI:**
+
 - Wyświetl:
   - Nazwę przepisu
   - Listę składników (ilość + jednostka + nazwa)
@@ -189,6 +205,7 @@ CREATE TABLE shopping_list_items (
 - Przycisk "Wróć do listy" → `/recipes`
 
 **Backend:**
+
 - API endpoint: `GET /api/recipes/[id]`
 - Query: pobierz przepis + wszystkie składniki (JOIN)
 
@@ -197,11 +214,13 @@ CREATE TABLE shopping_list_items (
 ### 4. Strona: Generowanie listy zakupów (`/shopping-list/generate`)
 
 **UI - Krok 1: Wybór przepisów**
+
 - Lista wszystkich przepisów z checkboxami
 - Użytkownik zaznacza przepisy które chce uwzględnić
 - Przycisk "Generuj listę" (aktywny gdy ≥1 przepis zaznaczony)
 
 **Backend - Krok 2: Agregacja składników**
+
 - API endpoint: `POST /api/shopping-list/generate`
 - Request body: `{ recipeIds: [1, 2, 3] }`
 - Logika agregacji:
@@ -212,6 +231,7 @@ CREATE TABLE shopping_list_items (
      - Składniki bez ilości → osobne pozycje (nie sumuj)
      - Składniki z różnymi jednostkami → osobne pozycje
   4. Przykład:
+
      ```
      Input:
      - 200g mąka (przepis 1)
@@ -226,6 +246,7 @@ CREATE TABLE shopping_list_items (
 **Backend - Krok 3: AI Kategoryzacja**
 
 **Option A: OpenAI API (jeśli masz klucz)**
+
 ```javascript
 // Przykładowy kod
 const prompt = `Kategoryzuj poniższe składniki do jednej z kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne.
@@ -246,31 +267,34 @@ const response = await openai.chat.completions.create({
 ```
 
 **Option B: Rule-based fallback (jeśli brak API key)**
+
 ```javascript
 const categories = {
-  'Nabiał': ['mleko', 'ser', 'jogurt', 'masło', 'śmietana', 'twaróg', 'jajko'],
-  'Warzywa': ['marchew', 'ziemniak', 'cebula', 'czosnek', 'pomidor', 'papryka', 'sałata'],
-  'Owoce': ['jabłko', 'banan', 'pomarańcza', 'truskawka', 'gruszka'],
-  'Mięso': ['kurczak', 'wołowina', 'wieprzowina', 'ryba', 'szynka', 'kiełbasa'],
-  'Pieczywo': ['chleb', 'bułka', 'bagietka', 'tortilla', 'pita'],
-  'Przyprawy': ['sól', 'pieprz', 'papryka', 'bazylia', 'oregano', 'curry'],
+  Nabiał: ["mleko", "ser", "jogurt", "masło", "śmietana", "twaróg", "jajko"],
+  Warzywa: ["marchew", "ziemniak", "cebula", "czosnek", "pomidor", "papryka", "sałata"],
+  Owoce: ["jabłko", "banan", "pomarańcza", "truskawka", "gruszka"],
+  Mięso: ["kurczak", "wołowina", "wieprzowina", "ryba", "szynka", "kiełbasa"],
+  Pieczywo: ["chleb", "bułka", "bagietka", "tortilla", "pita"],
+  Przyprawy: ["sól", "pieprz", "papryka", "bazylia", "oregano", "curry"],
   // Default: 'Inne'
 };
 
 function categorize(ingredientName) {
   const normalized = ingredientName.toLowerCase();
   for (const [category, keywords] of Object.entries(categories)) {
-    if (keywords.some(keyword => normalized.includes(keyword))) {
+    if (keywords.some((keyword) => normalized.includes(keyword))) {
       return category;
     }
   }
-  return 'Inne';
+  return "Inne";
 }
 ```
 
 **UI - Krok 4: Wyświetlenie listy**
+
 - Pokaż wygenerowaną listę pogrupowaną po kategoriach
 - Format:
+
   ```
   === NABIAŁ ===
   ☐ 500g mleko
@@ -283,6 +307,7 @@ function categorize(ingredientName) {
   === INNE ===
   ☐ sól do smaku
   ```
+
 - Przyciski:
   - "Wróć do przepisów"
   - Opcjonalnie: "Zapisz listę" (jeśli implementujesz persist do DB)
@@ -422,11 +447,11 @@ export interface RecipeWithIngredients extends Recipe {
 }
 
 export interface AggregatedIngredient {
-  name: string;           // normalized name (lowercase)
+  name: string; // normalized name (lowercase)
   quantity: number | null;
   unit: string | null;
-  category?: string;      // Po kategoryzacji
-  originalName: string;   // Original case-sensitive name dla display
+  category?: string; // Po kategoryzacji
+  originalName: string; // Original case-sensitive name dla display
 }
 
 export interface ShoppingListItem {
@@ -454,7 +479,7 @@ export function aggregateIngredients(ingredients: Ingredient[]): AggregatedIngre
 
   for (const ingredient of ingredients) {
     const normalizedName = ingredient.name.toLowerCase().trim();
-    const key = `${normalizedName}|${ingredient.unit || 'no-unit'}`;
+    const key = `${normalizedName}|${ingredient.unit || "no-unit"}`;
 
     if (map.has(key)) {
       const existing = map.get(key)!;
@@ -490,7 +515,7 @@ export function aggregateIngredients(ingredients: Ingredient[]): AggregatedIngre
 
 ```typescript
 // lib/categorize.ts
-import OpenAI from 'openai';
+import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -500,7 +525,7 @@ export async function categorizeWithAI(ingredients: string[]): Promise<{ [key: s
   const prompt = `Kategoryzuj poniższe składniki do jednej z kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne.
 
 Składniki:
-${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join('\n')}
+${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join("\n")}
 
 Zwróć odpowiedź w formacie JSON: {"1": "kategoria", "2": "kategoria", ...}`;
 
@@ -513,9 +538,9 @@ Zwróć odpowiedź w formacie JSON: {"1": "kategoria", "2": "kategoria", ...}`;
     });
 
     const content = response.choices[0].message.content;
-    return JSON.parse(content || '{}');
+    return JSON.parse(content || "{}");
   } catch (error) {
-    console.error('AI categorization failed:', error);
+    console.error("AI categorization failed:", error);
     // Fallback to rule-based
     return categorizeRuleBased(ingredients);
   }
@@ -523,22 +548,22 @@ Zwróć odpowiedź w formacie JSON: {"1": "kategoria", "2": "kategoria", ...}`;
 
 export function categorizeRuleBased(ingredients: string[]): { [key: string]: string } {
   const rules = {
-    'Nabiał': ['mleko', 'ser', 'jogurt', 'masło', 'śmietana', 'twaróg', 'jajko', 'jajka'],
-    'Warzywa': ['marchew', 'ziemniak', 'cebula', 'czosnek', 'pomidor', 'papryka', 'sałata', 'ogórek', 'brokuł'],
-    'Owoce': ['jabłko', 'banan', 'pomarańcza', 'truskawka', 'gruszka', 'winogrona'],
-    'Mięso': ['kurczak', 'wołowina', 'wieprzowina', 'ryba', 'szynka', 'kiełbasa', 'mięso'],
-    'Pieczywo': ['chleb', 'bułka', 'bagietka', 'tortilla', 'pita'],
-    'Przyprawy': ['sól', 'pieprz', 'papryka', 'bazylia', 'oregano', 'curry', 'cukier', 'mąka'],
+    Nabiał: ["mleko", "ser", "jogurt", "masło", "śmietana", "twaróg", "jajko", "jajka"],
+    Warzywa: ["marchew", "ziemniak", "cebula", "czosnek", "pomidor", "papryka", "sałata", "ogórek", "brokuł"],
+    Owoce: ["jabłko", "banan", "pomarańcza", "truskawka", "gruszka", "winogrona"],
+    Mięso: ["kurczak", "wołowina", "wieprzowina", "ryba", "szynka", "kiełbasa", "mięso"],
+    Pieczywo: ["chleb", "bułka", "bagietka", "tortilla", "pita"],
+    Przyprawy: ["sól", "pieprz", "papryka", "bazylia", "oregano", "curry", "cukier", "mąka"],
   };
 
   const result: { [key: string]: string } = {};
 
   ingredients.forEach((ingredient, index) => {
     const normalized = ingredient.toLowerCase();
-    let category = 'Inne';
+    let category = "Inne";
 
     for (const [cat, keywords] of Object.entries(rules)) {
-      if (keywords.some(keyword => normalized.includes(keyword))) {
+      if (keywords.some((keyword) => normalized.includes(keyword))) {
         category = cat;
         break;
       }
@@ -566,6 +591,7 @@ PoC jest uznany za sukces jeśli:
 7. ✅ **Flow jest kompletny** - od dodania przepisu do wygenerowania listy
 
 **Dodatkowe (nice-to-have):**
+
 - Podstawowa walidacja formularzy
 - Ładne UI (ale nie wymagane - może być brzydkie)
 - Loading states podczas API calls
@@ -576,10 +602,13 @@ PoC jest uznany za sukces jeśli:
 ## CO ROBIĆ JEŚLI COŚ NIE DZIAŁA
 
 ### Problem: Brak OpenAI API key
+
 **Rozwiązanie:** Użyj rule-based categorization (pełny kod powyżej)
 
 ### Problem: Supabase setup jest skomplikowany
+
 **Rozwiązanie opcjonalna:** Użyj in-memory storage (array w pamięci) dla PoC
+
 ```typescript
 // Pseudo-database
 let recipes: Recipe[] = [];
@@ -589,15 +618,18 @@ let nextIngredientId = 1;
 ```
 
 ### Problem: Agregacja nie działa poprawnie
+
 **Rozwiązanie:** Zacznij od prostszej wersji - nie sumuj, tylko wyświetl wszystkie składniki
+
 ```typescript
 // Simplified version - no aggregation
 function getAllIngredients(recipeIds: number[]): Ingredient[] {
-  return ingredients.filter(ing => recipeIds.includes(ing.recipe_id));
+  return ingredients.filter((ing) => recipeIds.includes(ing.recipe_id));
 }
 ```
 
 ### Problem: UI jest brzydki
+
 **Rozwiązanie:** To jest OK dla PoC! Funkcjonalność > wygląd
 
 ---
@@ -683,6 +715,7 @@ Proszę odpowiedz przed rozpoczęciem implementacji:
 1. Przeczytaj cały ten dokument
 2. Przygotuj plan pracy (breakdown na mniejsze zadania)
 3. Przedstaw mi plan do akceptacji w formie:
+
    ```
    PLAN IMPLEMENTACJI PoC ShopMate:
 

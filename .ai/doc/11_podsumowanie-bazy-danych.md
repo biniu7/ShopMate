@@ -46,6 +46,7 @@
 ### 1. Architektura tabel i relacje
 
 **Tabele główne:**
+
 - `recipes` - Przepisy kulinarne użytkowników
 - `ingredients` - Składniki powiązane z przepisami (relacja 1:N)
 - `meal_plan` - Przypisania przepisów do kalendarza tygodniowego
@@ -53,6 +54,7 @@
 - `shopping_list_items` - Składniki w listach zakupów (relacja 1:N)
 
 **Relacje CASCADE DELETE:**
+
 - `recipes.user_id → auth.users(id) ON DELETE CASCADE` (GDPR)
 - `ingredients.recipe_id → recipes(id) ON DELETE CASCADE`
 - `meal_plan.recipe_id → recipes(id) ON DELETE CASCADE` (FR-005)
@@ -61,18 +63,22 @@
 - `shopping_list_items.shopping_list_id → shopping_lists(id) ON DELETE CASCADE`
 
 **Brak relacji:**
+
 - `shopping_lists` NIE ma relacji z `meal_plan` (snapshot pattern)
 - `shopping_list_items` NIE ma relacji z `ingredients` (snapshot pattern)
 
 ### 2. Typy danych i constrainty
 
 **Klucze główne:**
+
 - Wszystkie tabele: `id UUID PRIMARY KEY DEFAULT gen_random_uuid()`
 
 **User references:**
+
 - `user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE`
 
 **Teksty:**
+
 - Krótkie pola: `VARCHAR(N)` z CHECK constraint
 - Długie pola: `TEXT` z CHECK constraint na `char_length()`
 - `recipes.name`: TEXT, CHECK 3-100 znaków
@@ -81,25 +87,30 @@
 - `ingredients.unit`: VARCHAR(50), nullable
 
 **Liczby:**
+
 - `quantity`: NUMERIC (unlimited precision), CHECK > 0 lub NULL
 - `sort_order`: INTEGER NOT NULL DEFAULT 0, CHECK >= 0
 - `day_of_week`: SMALLINT NOT NULL, CHECK 1-7
 
 **Daty:**
+
 - `week_start_date`: DATE (poniedziałek tygodnia)
 - `created_at`: TIMESTAMPTZ NOT NULL DEFAULT NOW()
 - `updated_at`: TIMESTAMPTZ NOT NULL DEFAULT NOW()
 
 **Enumeracje (VARCHAR z CHECK):**
+
 - `meal_type`: VARCHAR(20), CHECK IN ('breakfast', 'second_breakfast', 'lunch', 'dinner')
 - `category`: VARCHAR(20), CHECK IN ('Nabiał', 'Warzywa', 'Owoce', 'Mięso', 'Pieczywo', 'Przyprawy', 'Inne')
 
 **Boolean:**
+
 - `is_checked`: BOOLEAN NOT NULL DEFAULT FALSE
 
 ### 3. Indeksy dla wydajności
 
 **Krytyczne indeksy:**
+
 ```sql
 -- recipes
 CREATE INDEX idx_recipes_user_id ON recipes(user_id);
@@ -127,6 +138,7 @@ CREATE INDEX idx_shopping_list_items_category_sort
 **Wszystkie tabele:** `ALTER TABLE ... ENABLE ROW LEVEL SECURITY;`
 
 **recipes:**
+
 ```sql
 CREATE POLICY recipes_select ON recipes FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY recipes_insert ON recipes FOR INSERT WITH CHECK (auth.uid() = user_id);
@@ -135,6 +147,7 @@ CREATE POLICY recipes_delete ON recipes FOR DELETE USING (auth.uid() = user_id);
 ```
 
 **ingredients (dostęp przez własność recipes):**
+
 ```sql
 CREATE POLICY ingredients_select ON ingredients FOR SELECT
   USING (EXISTS (
@@ -152,6 +165,7 @@ CREATE POLICY ingredients_insert ON ingredients FOR INSERT
 ```
 
 **meal_plan:**
+
 ```sql
 CREATE POLICY meal_plan_all ON meal_plan FOR ALL
   USING (auth.uid() = user_id)
@@ -159,6 +173,7 @@ CREATE POLICY meal_plan_all ON meal_plan FOR ALL
 ```
 
 **shopping_lists:**
+
 ```sql
 CREATE POLICY shopping_lists_all ON shopping_lists FOR ALL
   USING (auth.uid() = user_id)
@@ -166,6 +181,7 @@ CREATE POLICY shopping_lists_all ON shopping_lists FOR ALL
 ```
 
 **shopping_list_items (dostęp przez własność shopping_lists):**
+
 ```sql
 CREATE POLICY shopping_list_items_all ON shopping_list_items FOR ALL
   USING (EXISTS (
@@ -183,6 +199,7 @@ CREATE POLICY shopping_list_items_all ON shopping_list_items FOR ALL
 ### 5. Triggery i funkcje pomocnicze
 
 **Trigger dla `updated_at`:**
+
 ```sql
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -202,6 +219,7 @@ CREATE TRIGGER shopping_lists_updated_at
 ```
 
 **RPC Function dla atomowego generowania listy zakupów:**
+
 ```sql
 CREATE OR REPLACE FUNCTION generate_shopping_list(
   p_name VARCHAR,
@@ -245,31 +263,37 @@ $$;
 ### 6. Naming conventions
 
 **Tabele:** snake_case, plural
+
 - `recipes`, `ingredients`, `shopping_lists`, `shopping_list_items`
 - Wyjątek: `meal_plan` (logicznie singular)
 
 **Kolumny:** snake_case, singular
+
 - `user_id`, `recipe_id`, `shopping_list_id`
 - `week_start_date`, `day_of_week`, `meal_type`
 - `created_at`, `updated_at`
 - `is_checked`, `sort_order`
 
 **Indeksy:** `idx_<table>_<columns>`
+
 - `idx_recipes_user_id`
 - `idx_meal_plan_user_week`
 
 **Polityki RLS:** `<table>_<action>`
+
 - `recipes_select`, `recipes_insert`
 
 ### 7. Walidacja danych (CHECK constraints)
 
 **recipes:**
+
 ```sql
 CHECK (char_length(name) >= 3 AND char_length(name) <= 100)
 CHECK (char_length(instructions) >= 10 AND char_length(instructions) <= 5000)
 ```
 
 **ingredients:**
+
 ```sql
 CHECK (char_length(name) >= 1 AND char_length(name) <= 100)
 CHECK (quantity IS NULL OR quantity > 0)
@@ -278,12 +302,14 @@ CHECK (sort_order >= 0)
 ```
 
 **meal_plan:**
+
 ```sql
 CHECK (day_of_week >= 1 AND day_of_week <= 7)
 CHECK (meal_type IN ('breakfast', 'second_breakfast', 'lunch', 'dinner'))
 ```
 
 **shopping_list_items:**
+
 ```sql
 CHECK (char_length(ingredient_name) >= 1 AND char_length(ingredient_name) <= 100)
 CHECK (quantity IS NULL OR quantity > 0)
@@ -310,7 +336,9 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 ### Kluczowe encje i ich relacje
 
 #### 1. `recipes` (Przepisy)
+
 **Pola:**
+
 - `id` UUID PK
 - `user_id` UUID NOT NULL → `auth.users(id)` ON DELETE CASCADE
 - `name` TEXT NOT NULL, CHECK 3-100 znaków
@@ -319,20 +347,25 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 - `updated_at` TIMESTAMPTZ NOT NULL DEFAULT NOW()
 
 **Relacje:**
+
 - 1:N z `ingredients` (jeden przepis ma wiele składników)
 - 1:N z `meal_plan` (jeden przepis może być przypisany do wielu posiłków)
 - BRAK relacji z `shopping_list_items` (snapshot pattern)
 
 **Indeksy:**
+
 - `idx_recipes_user_id` dla filtrowania przepisów użytkownika
 
 **Business rules:**
+
 - Użytkownik może mieć wiele przepisów o tej samej nazwie (BRAK UNIQUE na name)
 - Edycja przepisu aktualizuje `updated_at` (trigger)
 - Usunięcie przepisu CASCADE usuwa składniki i przypisania w kalendarzu
 
 #### 2. `ingredients` (Składniki przepisów)
+
 **Pola:**
+
 - `id` UUID PK
 - `recipe_id` UUID NOT NULL → `recipes(id)` ON DELETE CASCADE
 - `name` VARCHAR(100) NOT NULL, CHECK 1-100 znaków
@@ -341,20 +374,25 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 - `sort_order` INTEGER NOT NULL DEFAULT 0, CHECK >= 0
 
 **Relacje:**
+
 - N:1 z `recipes` (wiele składników należy do jednego przepisu)
 - BRAK pola `category` (kategoryzacja tylko w `shopping_list_items`)
 
 **Indeksy:**
+
 - `idx_ingredients_recipe_id` dla JOIN z recipes
 
 **Business rules:**
+
 - Minimum 1 składnik na przepis (walidacja w aplikacji - Zod)
 - Maksimum 50 składników na przepis (walidacja w aplikacji - Zod)
 - `quantity` i `unit` opcjonalne (składniki typu "sól do smaku")
 - `sort_order` określa kolejność wyświetlania w przepisie
 
 #### 3. `meal_plan` (Kalendarz posiłków)
+
 **Pola:**
+
 - `id` UUID PK
 - `user_id` UUID NOT NULL → `auth.users(id)` ON DELETE CASCADE
 - `recipe_id` UUID NOT NULL → `recipes(id)` ON DELETE CASCADE
@@ -364,22 +402,27 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 - `created_at` TIMESTAMPTZ NOT NULL DEFAULT NOW()
 
 **Relacje:**
+
 - N:1 z `recipes` (wiele przypisań może używać tego samego przepisu)
 - N:1 z `auth.users` przez `user_id`
 
 **Indeksy:**
+
 - `idx_meal_plan_user_week` compound (user_id, week_start_date) - główne zapytanie kalendarza
 - `idx_meal_plan_recipe_id` dla sprawdzania przypisań przed usunięciem przepisu
 - `idx_meal_plan_unique_assignment` UNIQUE (user_id, week_start_date, day_of_week, meal_type) - zapobiega duplikatom
 
 **Business rules:**
+
 - Jeden przepis na komórkę kalendarza (UNIQUE constraint)
 - Usunięcie przepisu CASCADE usuwa wszystkie przypisania (FR-005)
 - Brak `updated_at` (przypisania rzadko edytowane, tylko DELETE/INSERT)
 - Przechowywanie wszystkich tygodni (nie tylko bieżącego) - brak time limit
 
 #### 4. `shopping_lists` (Zapisane listy zakupów)
+
 **Pola:**
+
 - `id` UUID PK
 - `user_id` UUID NOT NULL → `auth.users(id)` ON DELETE CASCADE
 - `name` VARCHAR(200) NOT NULL DEFAULT 'Lista zakupów'
@@ -388,19 +431,24 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 - `updated_at` TIMESTAMPTZ NOT NULL DEFAULT NOW()
 
 **Relacje:**
+
 - 1:N z `shopping_list_items` (jedna lista ma wiele składników)
 - BRAK relacji z `meal_plan` (snapshot pattern - lista nie aktualizuje się)
 
 **Indeksy:**
+
 - `idx_shopping_lists_user_id` dla historii list użytkownika
 
 **Business rules:**
+
 - Snapshot pattern: zapisana lista jest niemutowalna (późniejsze edycje przepisów NIE aktualizują listy)
 - `week_start_date` NULL jeśli lista generowana "Z przepisów" (FR-016 Tryb 2)
 - `updated_at` może się aktualizować przy zmianie `is_checked` w items (opcjonalne)
 
 #### 5. `shopping_list_items` (Składniki w listach zakupów)
+
 **Pola:**
+
 - `id` UUID PK
 - `shopping_list_id` UUID NOT NULL → `shopping_lists(id)` ON DELETE CASCADE
 - `ingredient_name` VARCHAR(100) NOT NULL, CHECK 1-100 znaków
@@ -411,14 +459,17 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 - `sort_order` INTEGER NOT NULL DEFAULT 0, CHECK >= 0
 
 **Relacje:**
+
 - N:1 z `shopping_lists` (wiele składników należy do jednej listy)
 - BRAK relacji z `ingredients` (snapshot - kopia danych w momencie generowania)
 
 **Indeksy:**
+
 - `idx_shopping_list_items_list_id` dla JOIN z shopping_lists
 - `idx_shopping_list_items_category_sort` compound (shopping_list_id, category, sort_order) dla grupowania i sortowania
 
 **Business rules:**
+
 - `ingredient_name` przechowywany w oryginalnej formie (case preserved)
 - `category` przypisana przez OpenAI lub ręcznie przez użytkownika
 - `is_checked` dla oznaczania zakupionych pozycji podczas zakupów (UI state)
@@ -429,6 +480,7 @@ ShopMate MVP wymaga schematu bazy danych PostgreSQL wspierającego:
 #### Row Level Security (RLS)
 
 **Obowiązkowe dla wszystkich tabel:**
+
 ```sql
 ALTER TABLE recipes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ingredients ENABLE ROW LEVEL SECURITY;
@@ -438,12 +490,14 @@ ALTER TABLE shopping_list_items ENABLE ROW LEVEL SECURITY;
 ```
 
 **Kluczowe zasady:**
+
 1. Wszystkie polityki używają `auth.uid()` dla identyfikacji użytkownika
 2. Tabele z bezpośrednim `user_id`: proste polityki `auth.uid() = user_id`
 3. Tabele bez `user_id` (ingredients, shopping_list_items): polityki z EXISTS subquery
 4. SECURITY DEFINER dla RPC functions z RLS checks wewnątrz
 
 **Testing RLS:**
+
 - Automatyczne testy SQL w migrations (DO $$ block)
 - Integration tests (Vitest + Supabase client) z wieloma użytkownikami
 - Manual testing checklist przed production deploy
@@ -452,27 +506,32 @@ ALTER TABLE shopping_list_items ENABLE ROW LEVEL SECURITY;
 #### GDPR Compliance
 
 **Automatyczne usuwanie danych:**
+
 ```sql
 user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
 ```
 
 **Co jest usuwane przy usunięciu konta:**
+
 1. `recipes` → CASCADE usuwa `ingredients` i `meal_plan`
 2. `shopping_lists` → CASCADE usuwa `shopping_list_items`
 3. Wszystkie dane użytkownika znikają z bazy
 
 **Post-MVP considerations:**
+
 - Export wszystkich danych użytkownika (GDPR right to data portability)
 - Audit log przed usunięciem (compliance)
 
 #### Defense in Depth
 
 **Wielowarstwowa walidacja:**
+
 1. **Frontend:** React forms z live validation
 2. **Application (Zod schemas):** Walidacja w API endpoints
 3. **Database (CHECK constraints):** Ostatnia linia obrony
 
 **Przykład:**
+
 - Frontend: disabled button jeśli nazwa < 3 znaki
 - Zod: `name: z.string().min(3).max(100)`
 - PostgreSQL: `CHECK (char_length(name) >= 3 AND char_length(name) <= 100)`
@@ -482,6 +541,7 @@ user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
 #### Wydajność dla MVP (1000-10000 użytkowników)
 
 **Główne zapytanie (kalendarz tygodnia):**
+
 ```sql
 -- Optymalizowane przez idx_meal_plan_user_week
 SELECT mp.*, r.name
@@ -489,14 +549,17 @@ FROM meal_plan mp
 JOIN recipes r ON mp.recipe_id = r.id
 WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 ```
+
 **Expected performance:** 10-20ms dla 28 przypisań
 
 **Agregacja składników:**
+
 - Wykonywana w aplikacji (JavaScript/TypeScript)
 - Maksimum 20 przepisów × 50 składników = 1000 items (worst case)
 - O(n) complexity dla agregacji z normalizacją case-insensitive
 
 **Indeksy:**
+
 - Minimalne indeksy dla MVP (7 indeksów total)
 - Monitoring przez Supabase Dashboard dla query performance
 - Dodatkowe indeksy tylko jeśli EXPLAIN ANALYZE pokazuje bottleneck
@@ -504,12 +567,14 @@ WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 #### Długoterminowa skalowalność (>10k użytkowników)
 
 **Potencjalne optymalizacje:**
+
 1. **Local cache AI kategoryzacji** - Redis dla popularnych składników ("mleko" → "Nabiał")
 2. **Partitioning `meal_plan`** - Po `user_id` lub `week_start_date` (>1M records)
 3. **Read replicas** - Supabase Team tier dla heavy read load
 4. **Materialized views** - Pre-computed agregacje (jeśli potrzebne)
 
 **Monitorowane metryki:**
+
 - Query response time (target <100ms p95)
 - Database size (Pro tier: 8GB, Team tier: 100GB)
 - Connection pool utilization (PgBouncer monitoring)
@@ -517,11 +582,13 @@ WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 #### Backup & Recovery
 
 **Supabase automatic backups (Pro tier):**
+
 - Daily backups, 7-day Point-in-Time Recovery (PITR)
 - RTO (Recovery Time Objective): <1 godzina
 - RPO (Recovery Point Objective): <24 godziny
 
 **MVP strategy:**
+
 - Brak custom backup logic
 - Monitoring backup status przez Supabase Dashboard
 - Post-MVP: Weekly pg_dump do S3 dla paranoid backups
@@ -531,37 +598,45 @@ WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 ## Nierozwiązane kwestie
 
 ### 1. Performance testing pod obciążeniem
+
 **Status:** Do wykonania po implementacji schematu
 
 **Wymagane testy:**
+
 - Load testing z 1000 concurrent users (Locust, k6)
 - Query performance dla użytkowników z 500+ przepisami
 - Agregacja listy zakupów dla 20 przepisów × 50 składników
 - RLS overhead measurement (porównanie z/bez RLS)
 
 **Action items:**
+
 - Implementacja performance tests w CI/CD
 - Baseline metrics dla MVP launch
 - Monitoring dashboards (Supabase + custom Grafana)
 
 ### 2. Migracje i versioning schematu
+
 **Status:** Strategie określone, implementacja pending
 
 **Zalecenia:**
+
 - Supabase migrations w `supabase/migrations/` jako timestamped SQL files
 - Naming: `YYYYMMDDHHMMSS_descriptive_name.sql`
 - Każda migracja: idempotent (sprawdzanie `IF NOT EXISTS`)
 - Rollback strategy: separate `down.sql` files (opcjonalne w MVP)
 
 **Best practices:**
+
 - Nigdy nie modyfikować starych migrations (tylko dodawać nowe)
 - Testing migrations na staging database przed production
 - Zero-downtime migrations dla production (additive changes only)
 
 ### 3. Strategia cache'owania danych
+
 **Status:** Odłożone na post-MVP
 
 **Potencjalne cache layers:**
+
 1. **Browser cache** - TanStack Query (React Query) dla client-side caching
 2. **CDN cache** - Static assets (images, fonts) przez Vercel
 3. **Application cache** - Redis dla AI kategoryzacji (popularne składniki)
@@ -570,9 +645,11 @@ WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 **MVP decision:** Poleganie na PostgreSQL caching + TanStack Query, bez dedykowanego Redis
 
 ### 4. Monitoring i alerting setup
+
 **Status:** Tools wybrane (Sentry + Supabase Dashboard), konfiguracja pending
 
 **Metryki do monitorowania:**
+
 - Error rate (Sentry): target <0.1% requestów
 - Query latency (Supabase): target p95 <100ms
 - RLS policy violations (Supabase logs)
@@ -580,27 +657,33 @@ WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 - Connection pool saturation (alert at >80% utilization)
 
 **Alerts:**
+
 - Critical: Database down, RLS bypass attempt
 - Warning: Slow queries (>1s), wysokie error rate
 - Info: Daily backup status, storage usage
 
 ### 5. Data seeding dla development i testing
+
 **Status:** Do implementacji
 
 **Wymagania:**
+
 - Seed script dla local development (example recipes, ingredients, meal plans)
 - Test fixtures dla integration tests (known user IDs, predictable data)
 - Staging data sync strategy (anonymized production data?)
 
 **Action items:**
+
 - `supabase/seed.sql` z example data
 - Factory functions w testach (TypeScript)
 - Documentation dla onboarding nowych developerów
 
 ### 6. Edge cases i error handling
+
 **Status:** Zidentyfikowane, implementacja per-feature
 
 **Znane edge cases:**
+
 1. Concurrent UPDATE na tym samym `meal_plan` slot (handled przez UNIQUE constraint)
 2. Usunięcie przepisu podczas generowania listy zakupów (transaction isolation)
 3. OpenAI API timeout podczas kategoryzacji (fallback do "Inne" - FR-019)
@@ -608,20 +691,24 @@ WHERE mp.user_id = $1 AND mp.week_start_date = $2;
 5. Floating-point precision w sumowaniu quantities (NUMERIC eliminuje problem)
 
 **Testing strategy:**
+
 - Unit tests dla każdego edge case
 - Integration tests dla concurrent operations
 - Chaos engineering (opcjonalne post-MVP)
 
 ### 7. Internacjonalizacja (i18n) - przygotowanie schematu
+
 **Status:** MVP = tylko polski, ale przygotować się na przyszłość
 
 **Pytania otwarte:**
+
 - Czy `category` w `shopping_list_items` powinno być od razu jako klucz ('dairy') zamiast wartości ('Nabiał')?
 - Czy `meal_type` powinno być enum ('breakfast') czy tłumaczone nazwy ('Śniadanie')?
 
 **Obecna decyzja:** Polskie wartości w MVP, refactor do kluczy + translation table w v1.1
 
 **Migration path:**
+
 ```sql
 -- Post-MVP migration
 ALTER TABLE shopping_list_items
@@ -643,12 +730,14 @@ ALTER TABLE shopping_list_items RENAME COLUMN category_key TO category;
 ## Następne kroki
 
 ### Immediate (przed rozpoczęciem implementacji)
+
 1. ✅ Podsumowanie planowania bazy danych (ten dokument)
 2. ⏳ Review podsumowania przez tech lead / senior developer
 3. ⏳ Finalizacja edge cases i nierozwiązanych kwestii
 4. ⏳ Setup Supabase project (local + staging + production)
 
 ### Implementacja (tydzień 1-2)
+
 1. ⏳ Utworzenie initial migration z pełnym schematem
 2. ⏳ Implementacja RLS policies + testing
 3. ⏳ Utworzenie TypeScript types (Supabase CLI: `supabase gen types`)
@@ -656,12 +745,14 @@ ALTER TABLE shopping_list_items RENAME COLUMN category_key TO category;
 5. ⏳ Integration tests dla RLS i podstawowych queries
 
 ### Validation (tydzień 2)
+
 1. ⏳ Performance testing (query latency, agregacja składników)
 2. ⏳ Security testing (RLS bypass attempts, SQL injection)
 3. ⏳ Load testing (1000 concurrent users simulation)
 4. ⏳ Backup & recovery testing (restore z PITR)
 
 ### Production Ready Checklist
+
 - [ ] Schema w production Supabase project
 - [ ] RLS policies włączone i przetestowane
 - [ ] Monitoring i alerting skonfigurowane

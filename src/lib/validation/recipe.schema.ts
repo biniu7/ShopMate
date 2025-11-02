@@ -45,23 +45,14 @@ export type IngredientInputSchemaType = z.infer<typeof IngredientInputSchema>;
  * Validates search, sort, page, and limit params
  */
 export const recipeListQuerySchema = z.object({
-  search: z
-    .string()
-    .trim()
-    .optional()
-    .describe("Case-insensitive search on recipe name"),
+  search: z.string().trim().optional().describe("Case-insensitive search on recipe name"),
 
   sort: z
     .enum(["name_asc", "name_desc", "created_asc", "created_desc"])
     .default("created_desc")
     .describe("Sort order for recipes"),
 
-  page: z.coerce
-    .number()
-    .int()
-    .min(1, "Page must be at least 1")
-    .default(1)
-    .describe("Page number for pagination"),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1).describe("Page number for pagination"),
 
   limit: z.coerce
     .number()
@@ -73,3 +64,13 @@ export const recipeListQuerySchema = z.object({
 });
 
 export type RecipeListQueryInput = z.infer<typeof recipeListQuerySchema>;
+
+/**
+ * Zod schema for GET /api/recipes/:id path parameter
+ * Validates that the recipe ID is a valid UUID
+ */
+export const getRecipeByIdParamsSchema = z.object({
+  id: z.string().uuid({ message: "Invalid recipe ID format" }),
+});
+
+export type GetRecipeByIdParams = z.infer<typeof getRecipeByIdParamsSchema>;

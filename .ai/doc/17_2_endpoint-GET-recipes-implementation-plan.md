@@ -5,6 +5,7 @@
 Endpoint GET /api/recipes służy do pobierania listy przepisów użytkownika z możliwością wyszukiwania, sortowania i paginacji. Zwraca uproszczoną reprezentację przepisów (bez szczegółów składników), zoptymalizowaną dla widoku listy.
 
 **Główne funkcje:**
+
 - Pobieranie listy przepisów zalogowanego użytkownika
 - Wyszukiwanie przepisów po nazwie (case-insensitive)
 - Sortowanie po nazwie lub dacie utworzenia (rosnąco/malejąco)
@@ -18,9 +19,11 @@ Endpoint GET /api/recipes służy do pobierania listy przepisów użytkownika z 
 ## 2. Szczegóły żądania
 
 ### HTTP Method
+
 `GET`
 
 ### Struktura URL
+
 ```
 /api/recipes
 ```
@@ -28,43 +31,50 @@ Endpoint GET /api/recipes służy do pobierania listy przepisów użytkownika z 
 ### Query Parameters
 
 #### Wymagane
+
 Brak - wszystkie parametry są opcjonalne. Identyfikacja użytkownika odbywa się poprzez sesję uwierzytelniającą.
 
 #### Opcjonalne
 
-| Parametr | Typ | Domyślna wartość | Walidacja | Opis |
-|----------|-----|------------------|-----------|------|
-| `search` | string | - | Opcjonalny, trim | Case-insensitive substring match na nazwie przepisu |
-| `sort` | enum | `created_desc` | `name_asc` \| `name_desc` \| `created_asc` \| `created_desc` | Sposób sortowania wyników |
-| `page` | number | 1 | >= 1 | Numer strony dla paginacji |
-| `limit` | number | 20 | >= 1, <= 100 | Liczba elementów na stronie |
+| Parametr | Typ    | Domyślna wartość | Walidacja                                                    | Opis                                                |
+| -------- | ------ | ---------------- | ------------------------------------------------------------ | --------------------------------------------------- |
+| `search` | string | -                | Opcjonalny, trim                                             | Case-insensitive substring match na nazwie przepisu |
+| `sort`   | enum   | `created_desc`   | `name_asc` \| `name_desc` \| `created_asc` \| `created_desc` | Sposób sortowania wyników                           |
+| `page`   | number | 1                | >= 1                                                         | Numer strony dla paginacji                          |
+| `limit`  | number | 20               | >= 1, <= 100                                                 | Liczba elementów na stronie                         |
 
 ### Request Headers
+
 ```
 Cookie: sb-<project>-auth-token (automatycznie przez Supabase Auth)
 ```
 
 ### Request Body
+
 Brak - GET request nie zawiera body.
 
 ### Przykładowe żądania
 
 **1. Podstawowe żądanie (bez parametrów):**
+
 ```
 GET /api/recipes
 ```
 
 **2. Wyszukiwanie z sortowaniem:**
+
 ```
 GET /api/recipes?search=pasta&sort=name_asc
 ```
 
 **3. Paginacja z limitem:**
+
 ```
 GET /api/recipes?page=2&limit=10
 ```
 
 **4. Pełny przykład:**
+
 ```
 GET /api/recipes?search=kurczak&sort=created_desc&page=1&limit=20
 ```
@@ -76,6 +86,7 @@ GET /api/recipes?search=kurczak&sort=created_desc&page=1&limit=20
 ### Types z src/types.ts
 
 #### Request Types
+
 ```typescript
 // Query parameters
 export interface RecipeListQueryParams extends PaginationParams {
@@ -90,6 +101,7 @@ export interface PaginationParams {
 ```
 
 #### Response Types
+
 ```typescript
 // Single item in list
 export interface RecipeListItemDto {
@@ -116,6 +128,7 @@ export interface PaginationMetadata {
 ```
 
 #### Error Types
+
 ```typescript
 export interface ErrorResponseDto {
   error: string;
@@ -131,6 +144,7 @@ export type ValidationErrorDetails = Record<string, string[]>;
 ```
 
 #### Database Types (używane wewnętrznie)
+
 ```typescript
 export type Recipe = Database["public"]["Tables"]["recipes"]["Row"];
 ```
@@ -160,11 +174,13 @@ export type RecipeListQueryInput = z.infer<typeof recipeListQuerySchema>;
 ### Success Response (200 OK)
 
 #### Structure
+
 ```typescript
-PaginatedResponse<RecipeListItemDto>
+PaginatedResponse<RecipeListItemDto>;
 ```
 
 #### Example
+
 ```json
 {
   "data": [
@@ -193,6 +209,7 @@ PaginatedResponse<RecipeListItemDto>
 ```
 
 #### Empty Result
+
 ```json
 {
   "data": [],
@@ -208,6 +225,7 @@ PaginatedResponse<RecipeListItemDto>
 ### Error Responses
 
 #### 401 Unauthorized
+
 **Przyczyna:** Użytkownik nie jest uwierzytelniony lub sesja wygasła.
 
 ```json
@@ -218,6 +236,7 @@ PaginatedResponse<RecipeListItemDto>
 ```
 
 #### 400 Bad Request
+
 **Przyczyna:** Nieprawidłowe parametry query (np. limit > 100, page < 1, nieprawidłowa wartość sort).
 
 ```json
@@ -231,6 +250,7 @@ PaginatedResponse<RecipeListItemDto>
 ```
 
 #### 500 Internal Server Error
+
 **Przyczyna:** Błąd serwera lub bazy danych.
 
 ```json
@@ -296,47 +316,53 @@ Client Request (GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20)
 ### Szczegółowy opis kroków
 
 **Krok 1: API Route Handler**
+
 - Plik: `src/pages/api/recipes/index.ts`
 - Export: `export const prerender = false;`
 - Handler: `export async function GET(context: APIContext)`
 
 **Krok 2: Walidacja parametrów**
+
 - Pobierz query params z `context.url.searchParams`
 - Przekonwertuj na obiekt
 - Waliduj przez `recipeListQuerySchema.safeParse()`
 - Jeśli błąd: zwróć 400 z szczegółami błędów walidacji
 
 **Krok 3: Uwierzytelnienie**
+
 - Wywołaj `context.locals.supabase.auth.getUser()`
 - Sprawdź czy `data.user` istnieje i nie ma błędu
 - Jeśli brak: zwróć 401
 
 **Krok 4: Ekstrakcja user_id**
+
 - Pobierz `user_id = data.user.id`
 
 **Krok 5: Wywołanie serwisu**
+
 - `const result = await recipeService.getRecipesList(userId, validatedParams)`
 - Service zwraca `{ recipes: RecipeListItemDto[], total: number }`
 
 **Krok 6: Budowanie zapytania Supabase**
 W serwisie:
+
 ```typescript
 let query = supabase
-  .from('recipes')
-  .select('id, name, created_at, updated_at, ingredients(count)', { count: 'exact' })
-  .eq('user_id', userId);
+  .from("recipes")
+  .select("id, name, created_at, updated_at, ingredients(count)", { count: "exact" })
+  .eq("user_id", userId);
 
 // Apply search filter
 if (search) {
-  query = query.ilike('name', `%${search}%`);
+  query = query.ilike("name", `%${search}%`);
 }
 
 // Apply sorting
 const sortMap = {
-  name_asc: { column: 'name', ascending: true },
-  name_desc: { column: 'name', ascending: false },
-  created_asc: { column: 'created_at', ascending: true },
-  created_desc: { column: 'created_at', ascending: false },
+  name_asc: { column: "name", ascending: true },
+  name_desc: { column: "name", ascending: false },
+  created_asc: { column: "created_at", ascending: true },
+  created_desc: { column: "created_at", ascending: false },
 };
 const sortConfig = sortMap[sort];
 query = query.order(sortConfig.column, { ascending: sortConfig.ascending });
@@ -351,12 +377,14 @@ const { data, error, count } = await query;
 ```
 
 **Krok 7: Obsługa wyniku**
+
 - Sprawdź `error`, jeśli istnieje - throw
 - Zmapuj `data` na `RecipeListItemDto[]`
 
 **Krok 8: Transformacja danych**
+
 ```typescript
-const recipes = data.map(recipe => ({
+const recipes = data.map((recipe) => ({
   id: recipe.id,
   name: recipe.name,
   ingredients_count: recipe.ingredients?.[0]?.count ?? 0,
@@ -366,6 +394,7 @@ const recipes = data.map(recipe => ({
 ```
 
 **Krok 9: Kalkulacja metadanych paginacji**
+
 ```typescript
 const totalPages = Math.ceil(count / limit);
 const pagination = {
@@ -377,6 +406,7 @@ const pagination = {
 ```
 
 **Krok 10: Formatowanie odpowiedzi**
+
 ```typescript
 const response: PaginatedResponse<RecipeListItemDto> = {
   data: recipes,
@@ -385,10 +415,11 @@ const response: PaginatedResponse<RecipeListItemDto> = {
 ```
 
 **Krok 11: Zwrot odpowiedzi**
+
 ```typescript
 return new Response(JSON.stringify(response), {
   status: 200,
-  headers: { 'Content-Type': 'application/json' },
+  headers: { "Content-Type": "application/json" },
 });
 ```
 
@@ -399,30 +430,37 @@ return new Response(JSON.stringify(response), {
 ### 6.1. Uwierzytelnienie (Authentication)
 
 **Implementacja:**
+
 - Użyj `context.locals.supabase.auth.getUser()` do weryfikacji sesji
 - Endpoint wymaga aktywnej sesji uwierzytelniającej
 - Token jest automatycznie pobierany z cookies przez middleware Astro
 
 **Kod:**
+
 ```typescript
-const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
+const {
+  data: { user },
+  error: authError,
+} = await context.locals.supabase.auth.getUser();
 
 if (authError || !user) {
-  return new Response(
-    JSON.stringify({ error: "Unauthorized", message: "Authentication required" }),
-    { status: 401, headers: { 'Content-Type': 'application/json' } }
-  );
+  return new Response(JSON.stringify({ error: "Unauthorized", message: "Authentication required" }), {
+    status: 401,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 ```
 
 ### 6.2. Autoryzacja (Authorization)
 
 **Row Level Security (RLS):**
+
 - RLS na tabeli `recipes` zapewnia, że użytkownik widzi tylko swoje przepisy
 - Policy: `auth.uid() = user_id`
 - Dodatkowa eksplicitna filtracja w query: `.eq('user_id', userId)`
 
 **Dlaczego eksplicitny filtr:**
+
 - Dodatkowa warstwa bezpieczeństwa (defense in depth)
 - Lepsze komunikowanie intencji w kodzie
 - Łatwiejsze testowanie i debugowanie
@@ -430,6 +468,7 @@ if (authError || !user) {
 ### 6.3. Walidacja danych wejściowych
 
 **Zod Schema:**
+
 - Wszystkie parametry query są walidowane przez Zod
 - Coercion: konwersja stringów na liczby dla `page` i `limit`
 - Bounds checking: `limit` max 100, `page` min 1
@@ -437,6 +476,7 @@ if (authError || !user) {
 - String trimming: `search` automatyczne usuwanie whitespace
 
 **Obrona przed atakami:**
+
 - **SQL Injection:** Używamy Supabase query builder (parameterized queries)
 - **NoSQL Injection:** Nie dotyczy (PostgreSQL)
 - **Type Coercion Attacks:** Zod zapewnia type safety
@@ -445,13 +485,14 @@ if (authError || !user) {
 ### 6.4. Ochrona przed wyszukiwaniem wrażliwych danych
 
 **Search Parameter:**
+
 - Użyj `.ilike()` zamiast konkatenacji stringów
 - PostgreSQL automatycznie escapuje special characters w LIKE
 - Case-insensitive search bezpieczny z ILIKE
 
 ```typescript
 // BEZPIECZNE
-query = query.ilike('name', `%${search}%`);
+query = query.ilike("name", `%${search}%`);
 
 // NIEBEZPIECZNE (nie rób tego!)
 query = query.sql(`name ILIKE '%${search}%'`);
@@ -460,22 +501,26 @@ query = query.sql(`name ILIKE '%${search}%'`);
 ### 6.5. Rate Limiting
 
 **Rekomendacje:**
+
 - Rozważ dodanie rate limiting na poziomie middleware lub API Gateway
 - Dla MVP: Supabase ma wbudowane limity połączeń
 - W produkcji: użyj Vercel Edge Config lub Upstash Redis dla rate limiting
 
 **Przykładowe limity:**
+
 - 100 requests/minute per user dla authenticated endpoints
 - 10 requests/minute per IP dla unauthenticated
 
 ### 6.6. Exposure of Sensitive Data
 
 **Co zwracamy:**
+
 - ✅ Tylko dane publiczne dla użytkownika (id, name, counts, timestamps)
 - ✅ Nie zwracamy pełnych danych składników (optymalizacja i bezpieczeństwo)
 - ✅ Nie zwracamy `user_id` w response (nie jest potrzebny na frontendzie)
 
 **Content-Type Header:**
+
 - Zawsze ustawiaj `Content-Type: application/json`
 - Zapobiega MIME type sniffing attacks
 
@@ -485,18 +530,19 @@ query = query.sql(`name ILIKE '%${search}%'`);
 
 ### 7.1. Katalog błędów
 
-| Kod | Scenariusz | Przyczyna | Response Body | Akcja |
-|-----|------------|-----------|---------------|-------|
-| 400 | Invalid query params | `limit > 100` | `{ error: "Validation failed", details: {...} }` | Waliduj na frontendzie, wyświetl komunikat |
-| 400 | Invalid query params | `page < 1` | `{ error: "Validation failed", details: {...} }` | Waliduj na frontendzie, wyświetl komunikat |
-| 400 | Invalid sort value | `sort=invalid` | `{ error: "Validation failed", details: {...} }` | Użyj tylko dozwolonych wartości |
-| 401 | No authentication | Brak sesji lub wygasła | `{ error: "Unauthorized", message: "..." }` | Przekieruj na /login |
-| 500 | Database error | Connection timeout | `{ error: "Internal server error" }` | Retry, loguj błąd, alert admin |
-| 500 | Unexpected error | Unhandled exception | `{ error: "Internal server error" }` | Loguj stack trace, alert admin |
+| Kod | Scenariusz           | Przyczyna              | Response Body                                    | Akcja                                      |
+| --- | -------------------- | ---------------------- | ------------------------------------------------ | ------------------------------------------ |
+| 400 | Invalid query params | `limit > 100`          | `{ error: "Validation failed", details: {...} }` | Waliduj na frontendzie, wyświetl komunikat |
+| 400 | Invalid query params | `page < 1`             | `{ error: "Validation failed", details: {...} }` | Waliduj na frontendzie, wyświetl komunikat |
+| 400 | Invalid sort value   | `sort=invalid`         | `{ error: "Validation failed", details: {...} }` | Użyj tylko dozwolonych wartości            |
+| 401 | No authentication    | Brak sesji lub wygasła | `{ error: "Unauthorized", message: "..." }`      | Przekieruj na /login                       |
+| 500 | Database error       | Connection timeout     | `{ error: "Internal server error" }`             | Retry, loguj błąd, alert admin             |
+| 500 | Unexpected error     | Unhandled exception    | `{ error: "Internal server error" }`             | Loguj stack trace, alert admin             |
 
 ### 7.2. Implementacja w kodzie
 
 **Try-Catch Block:**
+
 ```typescript
 export async function GET(context: APIContext) {
   try {
@@ -510,45 +556,40 @@ export async function GET(context: APIContext) {
           error: "Validation failed",
           details: validation.error.flatten().fieldErrors,
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Authentication check
-    const { data: { user }, error: authError } =
-      await context.locals.supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await context.locals.supabase.auth.getUser();
 
     if (authError || !user) {
       return new Response(
         JSON.stringify({
           error: "Unauthorized",
-          message: "Authentication required"
+          message: "Authentication required",
         }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
+        { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
 
     // Business logic
-    const result = await recipeService.getRecipesList(
-      user.id,
-      validation.data
-    );
+    const result = await recipeService.getRecipesList(user.id, validation.data);
 
-    return new Response(
-      JSON.stringify(result),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
-    );
-
+    return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (error) {
-    console.error('Error in GET /api/recipes:', error);
+    console.error("Error in GET /api/recipes:", error);
 
     // Don't expose internal error details to client
     return new Response(
       JSON.stringify({
         error: "Internal server error",
-        message: "An unexpected error occurred"
+        message: "An unexpected error occurred",
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 }
@@ -557,15 +598,18 @@ export async function GET(context: APIContext) {
 ### 7.3. Error Logging
 
 **Development:**
+
 - `console.error()` z pełnym stack trace
 - Loguj request details (user_id, params)
 
 **Production:**
+
 - Integracja z Sentry (zgodnie z CLAUDE.md)
 - Loguj context: user_id, query params, timestamp
 - Alert dla 500 errors
 
 **Przykład:**
+
 ```typescript
 catch (error) {
   const errorContext = {
@@ -584,10 +628,12 @@ catch (error) {
 ### 7.4. Graceful Degradation
 
 **Brak wyników:**
+
 - Zwróć pustą tablicę z total=0 (nie error)
 - Frontend powinien wyświetlić "Brak przepisów" message
 
 **Partial failures:**
+
 - Jeśli count query fails ale select succeeds - użyj data.length jako fallback
 - Zawsze zwróć validną strukturę response
 
@@ -618,6 +664,7 @@ ON recipes(lower(name) text_pattern_ops);
 ```
 
 **Sprawdzenie indeksów:**
+
 ```sql
 SELECT * FROM pg_indexes WHERE tablename = 'recipes';
 ```
@@ -625,54 +672,65 @@ SELECT * FROM pg_indexes WHERE tablename = 'recipes';
 ### 8.2. Query Optimization
 
 **N+1 Problem:**
+
 - ❌ NIE: Fetch recipes, potem dla każdego recipe count ingredients (N+1 queries)
 - ✅ TAK: Użyj agregacji w jednym query
 
 **Optymalne zapytanie:**
+
 ```typescript
 const { data, error, count } = await supabase
-  .from('recipes')
-  .select(`
+  .from("recipes")
+  .select(
+    `
     id,
     name,
     created_at,
     updated_at,
     ingredients(count)
-  `, { count: 'exact' })
-  .eq('user_id', userId)
-  // ... filters, sorting, pagination
+  `,
+    { count: "exact" }
+  )
+  .eq("user_id", userId);
+// ... filters, sorting, pagination
 ```
 
 **Count optimization:**
+
 - Użyj `{ count: 'exact' }` tylko gdy potrzebne (zawsze dla paginacji)
 - PostgreSQL wykonuje count efektywnie z indeksami
 
 ### 8.3. Pagination Strategy
 
 **Offset-based pagination (implementacja):**
+
 - Proste w implementacji
 - Dobre dla małych i średnich dataset'ów
 - Limit: 100 items/page (wystarczające dla MVP)
 
 **Range calculation:**
+
 ```typescript
-const from = (page - 1) * limit;  // page=1, limit=20 → from=0
-const to = from + limit - 1;       // page=1, limit=20 → to=19
+const from = (page - 1) * limit; // page=1, limit=20 → from=0
+const to = from + limit - 1; // page=1, limit=20 → to=19
 query.range(from, to);
 ```
 
 **Alternatywa (future):**
+
 - Cursor-based pagination dla bardzo dużych dataset'ów
 - Użyj `created_at` + `id` jako cursor
 
 ### 8.4. Caching Strategy
 
 **Frontend caching:**
+
 - React Query / TanStack Query na frontendzie
 - Cache TTL: 5 minutes dla listy przepisów
 - Invalidate cache po create/update/delete
 
 **Backend caching (future):**
+
 - Nie implementujemy dla MVP (overkill)
 - W produkcji: Redis cache dla często odpytywanych list
 - Cache key: `recipes:${userId}:${hash(params)}`
@@ -680,22 +738,26 @@ query.range(from, to);
 ### 8.5. Response Size Optimization
 
 **Dlaczego RecipeListItemDto:**
+
 - Zwracamy tylko potrzebne pola (id, name, counts, timestamps)
 - NIE zwracamy instructions ani pełnych ingredients (duże dane)
 - Zmniejsza payload size ~80% vs full RecipeResponseDto
 
 **Przykładowe rozmiary:**
+
 - RecipeListItemDto: ~150 bytes/item
 - Full RecipeResponseDto: ~800+ bytes/item
 - 20 items: 3KB vs 16KB
 
 **Compression:**
+
 - Vercel automatycznie stosuje gzip/brotli compression
 - Dodatkowo: używaj `Content-Encoding: gzip` jeśli hosting nie robi tego automatycznie
 
 ### 8.6. Database Connection Pooling
 
 **Supabase:**
+
 - Connection pooling obsługiwany automatycznie przez Supabase
 - Używaj `context.locals.supabase` (singleton per request)
 - NIE twórz nowych klientów w pętlach
@@ -703,6 +765,7 @@ query.range(from, to);
 ### 8.7. Monitoring & Metrics
 
 **Metryki do śledzenia:**
+
 - Response time (target: <200ms p95)
 - Query execution time
 - Cache hit rate (gdy implementujemy cache)
@@ -710,6 +773,7 @@ query.range(from, to);
 - Pagination stats (most used page, limit distribution)
 
 **Tools:**
+
 - Supabase Dashboard: query performance
 - Vercel Analytics: endpoint latency
 - Sentry Performance Monitoring
@@ -721,6 +785,7 @@ query.range(from, to);
 ### Krok 1: Przygotowanie struktury plików
 
 **1.1. Sprawdź/utwórz pliki:**
+
 ```
 src/
 ├── pages/
@@ -736,6 +801,7 @@ src/
 ```
 
 **1.2. Komendy:**
+
 ```bash
 # Sprawdź czy folder istnieje
 ls src/pages/api/recipes/
@@ -751,10 +817,12 @@ mkdir -p src/pages/api/recipes
 **Plik:** `src/lib/validation/recipe.schema.ts`
 
 **Zadanie:**
+
 - Dodaj `recipeListQuerySchema` dla walidacji query params
 - Export type `RecipeListQueryInput`
 
 **Kod:**
+
 ```typescript
 import { z } from "zod";
 
@@ -765,23 +833,14 @@ import { z } from "zod";
  * Validates search, sort, page, and limit params
  */
 export const recipeListQuerySchema = z.object({
-  search: z
-    .string()
-    .trim()
-    .optional()
-    .describe("Case-insensitive search on recipe name"),
+  search: z.string().trim().optional().describe("Case-insensitive search on recipe name"),
 
   sort: z
     .enum(["name_asc", "name_desc", "created_asc", "created_desc"])
     .default("created_desc")
     .describe("Sort order for recipes"),
 
-  page: z.coerce
-    .number()
-    .int()
-    .min(1, "Page must be at least 1")
-    .default(1)
-    .describe("Page number for pagination"),
+  page: z.coerce.number().int().min(1, "Page must be at least 1").default(1).describe("Page number for pagination"),
 
   limit: z.coerce
     .number()
@@ -796,19 +855,20 @@ export type RecipeListQueryInput = z.infer<typeof recipeListQuerySchema>;
 ```
 
 **Weryfikacja:**
+
 ```typescript
 // Test w REPL/console
 const testValid = recipeListQuerySchema.safeParse({
   search: "pasta",
   sort: "name_asc",
   page: "1",
-  limit: "20"
+  limit: "20",
 });
 console.log(testValid.success); // true
 console.log(testValid.data); // { search: "pasta", sort: "name_asc", page: 1, limit: 20 }
 
 const testInvalid = recipeListQuerySchema.safeParse({
-  limit: "200"
+  limit: "200",
 });
 console.log(testInvalid.success); // false
 console.log(testInvalid.error.flatten());
@@ -821,19 +881,17 @@ console.log(testInvalid.error.flatten());
 **Plik:** `src/lib/services/recipe.service.ts`
 
 **Zadanie:**
+
 - Dodaj funkcję `getRecipesList()`
 - Implementuj logikę query z search, sort, pagination
 - Agreguj count składników
 
 **Kod:**
+
 ```typescript
 import type { SupabaseClient } from "@/db/supabase.client";
 import type { RecipeListQueryInput } from "@/lib/validation/recipe.schema";
-import type {
-  RecipeListItemDto,
-  PaginatedResponse,
-  PaginationMetadata,
-} from "@/types";
+import type { RecipeListItemDto, PaginatedResponse, PaginationMetadata } from "@/types";
 
 /**
  * Get paginated list of user's recipes with search and sorting
@@ -933,6 +991,7 @@ function getSortConfig(sort: RecipeListQueryInput["sort"]): {
 ```
 
 **Weryfikacja:**
+
 - Sprawdź czy funkcja kompiluje się bez błędów TypeScript
 - Przygotuj test unit test (opcjonalnie)
 
@@ -943,6 +1002,7 @@ function getSortConfig(sort: RecipeListQueryInput["sort"]): {
 **Plik:** `src/pages/api/recipes/index.ts`
 
 **Zadanie:**
+
 - Utwórz GET handler
 - Implementuj authentication flow
 - Waliduj query params
@@ -950,16 +1010,12 @@ function getSortConfig(sort: RecipeListQueryInput["sort"]): {
 - Obsłuż błędy
 
 **Kod:**
+
 ```typescript
 import type { APIContext } from "astro";
 import { recipeListQuerySchema } from "@/lib/validation/recipe.schema";
 import { getRecipesList } from "@/lib/services/recipe.service";
-import type {
-  PaginatedResponse,
-  RecipeListItemDto,
-  ErrorResponseDto,
-  ValidationErrorResponseDto,
-} from "@/types";
+import type { PaginatedResponse, RecipeListItemDto, ErrorResponseDto, ValidationErrorResponseDto } from "@/types";
 
 export const prerender = false;
 
@@ -1039,6 +1095,7 @@ export async function GET(context: APIContext): Promise<Response> {
 ```
 
 **Weryfikacja:**
+
 - Sprawdź czy plik kompiluje się bez błędów TypeScript
 - Sprawdź czy `context.locals.supabase` jest dostępny (powinien być z middleware)
 
@@ -1047,6 +1104,7 @@ export async function GET(context: APIContext): Promise<Response> {
 ### Krok 5: Weryfikacja Database Indexes
 
 **Zadanie:**
+
 - Sprawdź czy wymagane indeksy istnieją w Supabase
 - Utwórz brakujące indeksy
 
@@ -1093,6 +1151,7 @@ ORDER BY indexname;
 ```
 
 **Weryfikacja:**
+
 - Sprawdź output z query #3 - powinny być widoczne wszystkie indeksy
 - Sprawdź query plan: `EXPLAIN ANALYZE SELECT * FROM recipes WHERE user_id = '...' ORDER BY created_at DESC LIMIT 20;`
 - Index Scan powinien być używany (nie Seq Scan)
@@ -1102,6 +1161,7 @@ ORDER BY indexname;
 ### Krok 6: Testowanie manualne
 
 **6.1. Test authentication (401)**
+
 ```bash
 # Request bez auth token (użyj Incognito/Private browsing)
 curl http://localhost:3000/api/recipes
@@ -1110,6 +1170,7 @@ curl http://localhost:3000/api/recipes
 ```
 
 **6.2. Test podstawowy (200)**
+
 ```bash
 # Request z auth (użyj authenticated browser session lub token)
 curl http://localhost:3000/api/recipes
@@ -1118,6 +1179,7 @@ curl http://localhost:3000/api/recipes
 ```
 
 **6.3. Test z parametrami (200)**
+
 ```bash
 # Search
 curl "http://localhost:3000/api/recipes?search=pasta"
@@ -1133,6 +1195,7 @@ curl "http://localhost:3000/api/recipes?search=kurczak&sort=created_desc&page=1&
 ```
 
 **6.4. Test walidacji (400)**
+
 ```bash
 # Invalid limit (> 100)
 curl "http://localhost:3000/api/recipes?limit=200"
@@ -1148,6 +1211,7 @@ curl "http://localhost:3000/api/recipes?sort=invalid"
 ```
 
 **6.5. Test edge cases**
+
 ```bash
 # Empty search
 curl "http://localhost:3000/api/recipes?search="
@@ -1167,10 +1231,12 @@ curl "http://localhost:3000/api/recipes?search=%27OR%201=1--"
 ### Krok 7: Integracja z frontendem (Preview)
 
 **Zadanie:**
+
 - Przygotuj przykładowy hook React Query (opcjonalnie)
 - Dokumentacja API dla frontend team
 
 **Przykładowy hook (future):**
+
 ```typescript
 // src/components/hooks/useRecipes.ts
 import { useQuery } from "@tanstack/react-query";
@@ -1208,6 +1274,7 @@ export function useRecipes(params: UseRecipesParams = {}) {
 ```
 
 **Dokumentacja dla frontend (API Contract):**
+
 - Endpoint: `GET /api/recipes`
 - Base URL: `/api/recipes`
 - Query Params: search, sort, page, limit
@@ -1221,6 +1288,7 @@ export function useRecipes(params: UseRecipesParams = {}) {
 **Przed mergem do głównej gałęzi:**
 
 **✅ Functionality:**
+
 - [ ] Endpoint zwraca poprawną listę przepisów dla zalogowanego użytkownika
 - [ ] Search działa case-insensitive
 - [ ] Wszystkie opcje sortowania działają poprawnie
@@ -1228,6 +1296,7 @@ export function useRecipes(params: UseRecipesParams = {}) {
 - [ ] Empty results zwracają pustą tablicę (nie error)
 
 **✅ Security:**
+
 - [ ] Authentication check na początku handlera
 - [ ] User widzi tylko swoje przepisy (RLS + explicit filter)
 - [ ] Parametry query są walidowane przez Zod
@@ -1235,12 +1304,14 @@ export function useRecipes(params: UseRecipesParams = {}) {
 - [ ] Error responses nie expose sensitive data
 
 **✅ Performance:**
+
 - [ ] Indeksy w bazie danych utworzone
 - [ ] Brak N+1 queries (sprawdź Supabase logs)
 - [ ] Pagination limit max 100
 - [ ] Query time < 200ms (sprawdź w Supabase Dashboard)
 
 **✅ Code Quality:**
+
 - [ ] TypeScript: brak any types, wszystkie typy z types.ts
 - [ ] Error handling: try-catch w handlerze, throw w service
 - [ ] Logging: console.error z kontekstem dla debug
@@ -1248,6 +1319,7 @@ export function useRecipes(params: UseRecipesParams = {}) {
 - [ ] Naming: czytelne nazwy zmiennych i funkcji
 
 **✅ Testing:**
+
 - [ ] Testy manualne przeprowadzone (wszystkie scenariusze z Kroku 6)
 - [ ] Test authentication (401)
 - [ ] Test validation errors (400)
@@ -1255,6 +1327,7 @@ export function useRecipes(params: UseRecipesParams = {}) {
 - [ ] Test edge cases
 
 **✅ Documentation:**
+
 - [ ] Plan implementacji zapisany w `.ai/doc/`
 - [ ] API contract documented dla frontend team
 - [ ] README zaktualizowany (jeśli potrzebne)
@@ -1264,6 +1337,7 @@ export function useRecipes(params: UseRecipesParams = {}) {
 ### Krok 9: Deployment
 
 **9.1. Commit changes:**
+
 ```bash
 git add src/pages/api/recipes/index.ts
 git add src/lib/services/recipe.service.ts
@@ -1280,23 +1354,27 @@ Closes #XX"
 ```
 
 **9.2. Deploy to staging:**
+
 ```bash
 git push origin feature/get-recipes-endpoint
 # Create PR → Review → Merge to develop
 ```
 
 **9.3. Verify on staging:**
+
 - Test endpoint na staging URL
 - Sprawdź Supabase logs
 - Sprawdź Vercel logs dla błędów
 
 **9.4. Deploy to production:**
+
 ```bash
 # Merge develop → master
 # Automatic deploy via Vercel
 ```
 
 **9.5. Post-deployment verification:**
+
 - Test endpoint na production URL
 - Monitor Sentry dla errors (jeśli skonfigurowany)
 - Sprawdź metryki w Vercel Analytics
@@ -1306,17 +1384,20 @@ git push origin feature/get-recipes-endpoint
 ### Krok 10: Monitoring i optymalizacja
 
 **Co monitorować:**
+
 - Response time (target: p95 < 200ms)
 - Error rate (target: < 0.1%)
 - Most common search queries
 - Pagination patterns (which pages are most accessed)
 
 **Tools:**
+
 - Supabase Dashboard: Query Performance
 - Vercel Analytics: Endpoint latency
 - Browser DevTools: Network tab
 
 **Optymalizacje post-launch:**
+
 - Add caching if needed (Redis/Vercel KV)
 - Optimize indexes based on actual query patterns
 - Consider cursor-based pagination if offset becomes slow
@@ -1328,24 +1409,28 @@ git push origin feature/get-recipes-endpoint
 ### Kluczowe cechy implementacji
 
 ✅ **Bezpieczeństwo:**
+
 - Authentication via Supabase Auth
 - RLS + explicit user_id filtering
 - Zod validation dla wszystkich inputów
 - SQL injection protection
 
 ✅ **Wydajność:**
+
 - Database indexing (user_id, created_at, name)
 - Agregacja składników w jednym query
 - Pagination limit max 100
 - Lightweight DTOs (tylko potrzebne pola)
 
 ✅ **Niezawodność:**
+
 - Comprehensive error handling (401, 400, 500)
 - Graceful degradation (empty results)
 - Error logging z kontekstem
 - Type safety (TypeScript + Zod)
 
 ✅ **Maintainability:**
+
 - Clean separation: route → service → database
 - Reusable validation schemas
 - Well-documented code (JSDoc)

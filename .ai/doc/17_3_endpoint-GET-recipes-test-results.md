@@ -1,29 +1,32 @@
 # Test Results: GET /api/recipes Endpoint
 
 ## Test Environment
+
 - **Date**: 2025-11-02
 - **Server**: Astro dev server (localhost:3000)
 - **Endpoint**: GET /api/recipes
 
 ## Test Summary
 
-| Test # | Scenario | Expected | Actual | Status |
-|--------|----------|----------|--------|--------|
-| 1 | No authentication | 401 Unauthorized | 401 Unauthorized | ✅ PASS |
-| 2 | Invalid limit (> 100) | 400 Bad Request | 400 Bad Request | ✅ PASS |
-| 3 | Invalid page (< 1) | 400 Bad Request | 400 Bad Request | ✅ PASS |
-| 4 | Invalid sort value | 400 Bad Request | 400 Bad Request | ✅ PASS |
+| Test # | Scenario              | Expected         | Actual           | Status  |
+| ------ | --------------------- | ---------------- | ---------------- | ------- |
+| 1      | No authentication     | 401 Unauthorized | 401 Unauthorized | ✅ PASS |
+| 2      | Invalid limit (> 100) | 400 Bad Request  | 400 Bad Request  | ✅ PASS |
+| 3      | Invalid page (< 1)    | 400 Bad Request  | 400 Bad Request  | ✅ PASS |
+| 4      | Invalid sort value    | 400 Bad Request  | 400 Bad Request  | ✅ PASS |
 
 ## Detailed Test Results
 
 ### Test 1: Authentication Check (401 Unauthorized)
 
 **Request:**
+
 ```bash
 curl http://localhost:3000/api/recipes
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -40,11 +43,13 @@ curl http://localhost:3000/api/recipes
 ### Test 2: Validation - Limit Exceeds Maximum (400 Bad Request)
 
 **Request:**
+
 ```bash
 curl "http://localhost:3000/api/recipes?limit=200"
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -63,11 +68,13 @@ curl "http://localhost:3000/api/recipes?limit=200"
 ### Test 3: Validation - Page Below Minimum (400 Bad Request)
 
 **Request:**
+
 ```bash
 curl "http://localhost:3000/api/recipes?page=0"
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -86,11 +93,13 @@ curl "http://localhost:3000/api/recipes?page=0"
 ### Test 4: Validation - Invalid Sort Value (400 Bad Request)
 
 **Request:**
+
 ```bash
 curl "http://localhost:3000/api/recipes?sort=invalid_sort"
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -113,6 +122,7 @@ curl "http://localhost:3000/api/recipes?sort=invalid_sort"
 The following tests require authentication and database setup:
 
 ### Test 5: Basic GET Request (200 OK)
+
 **Requires:** Valid authentication token + user with recipes in database
 
 ```bash
@@ -120,6 +130,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." http://localhost:3000/api/recipes
 ```
 
 **Expected Response:**
+
 ```json
 {
   "data": [
@@ -143,6 +154,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." http://localhost:3000/api/recipes
 ---
 
 ### Test 6: Search Filter (200 OK)
+
 **Requires:** Valid authentication + recipes in database
 
 ```bash
@@ -154,6 +166,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." "http://localhost:3000/api/recipes?searc
 ---
 
 ### Test 7: Sort by Name Ascending (200 OK)
+
 **Requires:** Valid authentication + multiple recipes
 
 ```bash
@@ -165,6 +178,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." "http://localhost:3000/api/recipes?sort=
 ---
 
 ### Test 8: Pagination (200 OK)
+
 **Requires:** Valid authentication + 20+ recipes in database
 
 ```bash
@@ -176,6 +190,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." "http://localhost:3000/api/recipes?page=
 ---
 
 ### Test 9: Empty Result Set (200 OK)
+
 **Requires:** Valid authentication + no recipes in database
 
 ```bash
@@ -183,6 +198,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." http://localhost:3000/api/recipes
 ```
 
 **Expected Response:**
+
 ```json
 {
   "data": [],
@@ -198,6 +214,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." http://localhost:3000/api/recipes
 ---
 
 ### Test 10: Combined Parameters (200 OK)
+
 **Requires:** Valid authentication + recipes
 
 ```bash
@@ -242,6 +259,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." \
 ## Implementation Status
 
 ### ✅ Completed
+
 - Zod schema validation (recipeListQuerySchema)
 - Recipe service function (getRecipesList)
 - API route handler (GET)
@@ -251,6 +269,7 @@ curl -H "Cookie: sb-xxx-auth-token=..." \
 - TypeScript type safety
 
 ### 📝 Pending
+
 - Database indexes creation (manual step in Supabase)
 - Authenticated endpoint testing
 - Performance verification

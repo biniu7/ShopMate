@@ -5,50 +5,43 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 1. Route API specification:
    <route_api_specification>
    **Method:** `GET`
-   **Path:** `/api/recipes`
-   **Description:** Get user's recipes with optional search and sorting
-
-**Query Parameters:**
-
-- `search` (optional): Case-insensitive substring match on recipe name
-- `sort` (optional): `name_asc` | `name_desc` | `created_asc` | `created_desc` (default: `created_desc`)
-- `page` (optional): Page number for pagination (default: 1)
-- `limit` (optional): Items per page (default: 20, max: 100)
-
-**Example Request:**
-
-```
-GET /api/recipes?search=pasta&sort=name_asc&page=1&limit=20
-```
+   **Path:** `/api/recipes/:id`
+   **Description:** Get single recipe with all ingredients
 
 **Response (200 OK):**
 
 ```json
 {
-  "data": [
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "user_id": "123e4567-e89b-12d3-a456-426614174000",
+  "name": "Spaghetti Carbonara",
+  "instructions": "1. Boil pasta...\n2. Cook bacon...",
+  "created_at": "2025-01-26T10:00:00Z",
+  "updated_at": "2025-01-26T10:00:00Z",
+  "ingredients": [
     {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "name": "Spaghetti Carbonara",
-      "ingredients_count": 5,
-      "created_at": "2025-01-26T10:00:00Z",
-      "updated_at": "2025-01-26T10:00:00Z"
+      "id": "650e8400-e29b-41d4-a716-446655440001",
+      "recipe_id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "spaghetti",
+      "quantity": 500,
+      "unit": "g",
+      "sort_order": 0
     }
-    // ... more recipes
+    // ... other ingredients sorted by sort_order
   ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 45,
-    "total_pages": 3
-  }
+  "meal_plan_assignments": 3
 }
 ```
 
 **Error Responses:**
 
 - `401 Unauthorized` - User not authenticated
-
----
+- `404 Not Found` - Recipe not found or doesn't belong to user
+  ```json
+  {
+    "error": "Recipe not found"
+  }
+  ```
 
 </route_api_specification>
 
@@ -182,5 +175,5 @@ Końcowym wynikiem powinien być dobrze zorganizowany plan wdrożenia w formacie
 
 Końcowe wyniki powinny składać się wyłącznie z planu wdrożenia w formacie markdown i nie powinny powielać ani powtarzać żadnej pracy wykonanej w sekcji analizy.
 
-Pamiętaj, aby zapisać swój plan wdrożenia jako .ai/doc/17_2_endpoint-GET-recipes-implementation-plan.md Upewnij się, że plan jest szczegółowy, przejrzysty i zapewnia kompleksowe wskazówki dla zespołu programistów.
+Pamiętaj, aby zapisać swój plan wdrożenia jako .ai/doc/17_3_endpoint-GET-id-recipes-implementation-plan.md Upewnij się, że plan jest szczegółowy, przejrzysty i zapewnia kompleksowe wskazówki dla zespołu programistów.
 ```

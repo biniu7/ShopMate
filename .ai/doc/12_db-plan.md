@@ -12,16 +12,17 @@
 
 **Opis:** Przepisy kulinarne użytkowników
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Unikalny identyfikator przepisu |
-| `user_id` | UUID | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE | Właściciel przepisu |
-| `name` | TEXT | NOT NULL CHECK (char_length(name) >= 3 AND char_length(name) <= 100) | Nazwa przepisu |
-| `instructions` | TEXT | Instrukcje przygotowania |
-| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia |
-| `updated_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej modyfikacji |
+| Kolumna        | Typ         | Ograniczenia                                                         | Opis                            |
+| -------------- | ----------- | -------------------------------------------------------------------- | ------------------------------- |
+| `id`           | UUID        | PRIMARY KEY DEFAULT gen_random_uuid()                                | Unikalny identyfikator przepisu |
+| `user_id`      | UUID        | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE                 | Właściciel przepisu             |
+| `name`         | TEXT        | NOT NULL CHECK (char_length(name) >= 3 AND char_length(name) <= 100) | Nazwa przepisu                  |
+| `instructions` | TEXT        | Instrukcje przygotowania                                             |
+| `created_at`   | TIMESTAMPTZ | NOT NULL DEFAULT NOW()                                               | Data utworzenia                 |
+| `updated_at`   | TIMESTAMPTZ | NOT NULL DEFAULT NOW()                                               | Data ostatniej modyfikacji      |
 
 **Notatki:**
+
 - Brak UNIQUE constraint na `name` - użytkownik może mieć wiele przepisów o tej samej nazwie
 - `updated_at` aktualizowany automatycznie przez trigger
 
@@ -31,16 +32,17 @@
 
 **Opis:** Składniki powiązane z przepisami
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Unikalny identyfikator składnika |
-| `recipe_id` | UUID | NOT NULL REFERENCES recipes(id) ON DELETE CASCADE | Przepis, do którego należy składnik |
-| `name` | VARCHAR(100) | NOT NULL CHECK (char_length(name) >= 1 AND char_length(name) <= 100) | Nazwa składnika |
-| `quantity` | NUMERIC | CHECK (quantity IS NULL OR quantity > 0) | Ilość (opcjonalna) |
-| `unit` | VARCHAR(50) | CHECK (unit IS NULL OR char_length(unit) <= 50) | Jednostka miary (opcjonalna) |
-| `sort_order` | INTEGER | NOT NULL DEFAULT 0 CHECK (sort_order >= 0) | Kolejność wyświetlania |
+| Kolumna      | Typ          | Ograniczenia                                                         | Opis                                |
+| ------------ | ------------ | -------------------------------------------------------------------- | ----------------------------------- |
+| `id`         | UUID         | PRIMARY KEY DEFAULT gen_random_uuid()                                | Unikalny identyfikator składnika    |
+| `recipe_id`  | UUID         | NOT NULL REFERENCES recipes(id) ON DELETE CASCADE                    | Przepis, do którego należy składnik |
+| `name`       | VARCHAR(100) | NOT NULL CHECK (char_length(name) >= 1 AND char_length(name) <= 100) | Nazwa składnika                     |
+| `quantity`   | NUMERIC      | CHECK (quantity IS NULL OR quantity > 0)                             | Ilość (opcjonalna)                  |
+| `unit`       | VARCHAR(50)  | CHECK (unit IS NULL OR char_length(unit) <= 50)                      | Jednostka miary (opcjonalna)        |
+| `sort_order` | INTEGER      | NOT NULL DEFAULT 0 CHECK (sort_order >= 0)                           | Kolejność wyświetlania              |
 
 **Notatki:**
+
 - BRAK pola `category` - kategoryzacja następuje tylko podczas generowania listy zakupów
 - `quantity` i `unit` opcjonalne dla składników typu "sól do smaku"
 - NUMERIC bez precyzji eliminuje floating-point errors przy sumowaniu
@@ -52,17 +54,18 @@
 
 **Opis:** Kalendarz tygodniowy - przypisania przepisów do dni i posiłków
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Unikalny identyfikator przypisania |
-| `user_id` | UUID | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE | Właściciel planu |
-| `recipe_id` | UUID | NOT NULL REFERENCES recipes(id) ON DELETE CASCADE | Przypisany przepis |
-| `week_start_date` | DATE | NOT NULL | Poniedziałek tygodnia (ISO 8601) |
-| `day_of_week` | SMALLINT | NOT NULL CHECK (day_of_week >= 1 AND day_of_week <= 7) | Dzień tygodnia (1=Pon, 7=Niedz) |
-| `meal_type` | VARCHAR(20) | NOT NULL CHECK (meal_type IN ('breakfast', 'second_breakfast', 'lunch', 'dinner')) | Typ posiłku |
-| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia przypisania |
+| Kolumna           | Typ         | Ograniczenia                                                                       | Opis                               |
+| ----------------- | ----------- | ---------------------------------------------------------------------------------- | ---------------------------------- |
+| `id`              | UUID        | PRIMARY KEY DEFAULT gen_random_uuid()                                              | Unikalny identyfikator przypisania |
+| `user_id`         | UUID        | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE                               | Właściciel planu                   |
+| `recipe_id`       | UUID        | NOT NULL REFERENCES recipes(id) ON DELETE CASCADE                                  | Przypisany przepis                 |
+| `week_start_date` | DATE        | NOT NULL                                                                           | Poniedziałek tygodnia (ISO 8601)   |
+| `day_of_week`     | SMALLINT    | NOT NULL CHECK (day_of_week >= 1 AND day_of_week <= 7)                             | Dzień tygodnia (1=Pon, 7=Niedz)    |
+| `meal_type`       | VARCHAR(20) | NOT NULL CHECK (meal_type IN ('breakfast', 'second_breakfast', 'lunch', 'dinner')) | Typ posiłku                        |
+| `created_at`      | TIMESTAMPTZ | NOT NULL DEFAULT NOW()                                                             | Data utworzenia przypisania        |
 
 **Notatki:**
+
 - UNIQUE constraint na `(user_id, week_start_date, day_of_week, meal_type)` zapobiega duplikatom
 - CASCADE DELETE przy usunięciu przepisu (FR-005)
 - Brak `updated_at` - przypisania są tylko dodawane/usuwane, nie edytowane
@@ -74,16 +77,17 @@
 
 **Opis:** Zapisane listy zakupów (snapshot pattern)
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Unikalny identyfikator listy |
-| `user_id` | UUID | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE | Właściciel listy |
-| `name` | VARCHAR(200) | NOT NULL DEFAULT 'Lista zakupów' | Nazwa listy |
-| `week_start_date` | DATE | NULL | Data początku tygodnia (NULL dla list "Z przepisów") |
-| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia |
-| `updated_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej modyfikacji |
+| Kolumna           | Typ          | Ograniczenia                                         | Opis                                                 |
+| ----------------- | ------------ | ---------------------------------------------------- | ---------------------------------------------------- |
+| `id`              | UUID         | PRIMARY KEY DEFAULT gen_random_uuid()                | Unikalny identyfikator listy                         |
+| `user_id`         | UUID         | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE | Właściciel listy                                     |
+| `name`            | VARCHAR(200) | NOT NULL DEFAULT 'Lista zakupów'                     | Nazwa listy                                          |
+| `week_start_date` | DATE         | NULL                                                 | Data początku tygodnia (NULL dla list "Z przepisów") |
+| `created_at`      | TIMESTAMPTZ  | NOT NULL DEFAULT NOW()                               | Data utworzenia                                      |
+| `updated_at`      | TIMESTAMPTZ  | NOT NULL DEFAULT NOW()                               | Data ostatniej modyfikacji                           |
 
 **Notatki:**
+
 - Snapshot pattern: zapisana lista NIE aktualizuje się przy edycji przepisów
 - `week_start_date` NULL jeśli lista wygenerowana "Z przepisów" (FR-016 Tryb 2)
 - BRAK relacji z `meal_plan` - lista jest niezależnym snapshot
@@ -94,18 +98,19 @@
 
 **Opis:** Składniki w listach zakupów z kategoriami AI
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Unikalny identyfikator pozycji |
-| `shopping_list_id` | UUID | NOT NULL REFERENCES shopping_lists(id) ON DELETE CASCADE | Lista zakupów |
-| `ingredient_name` | VARCHAR(100) | NOT NULL CHECK (char_length(ingredient_name) >= 1 AND char_length(ingredient_name) <= 100) | Nazwa składnika |
-| `quantity` | NUMERIC | CHECK (quantity IS NULL OR quantity > 0) | Łączna ilość (zagregowana) |
-| `unit` | VARCHAR(50) | NULL | Jednostka miary |
-| `category` | VARCHAR(20) | NOT NULL DEFAULT 'Inne' CHECK (category IN ('Nabiał', 'Warzywa', 'Owoce', 'Mięso', 'Pieczywo', 'Przyprawy', 'Inne')) | Kategoria AI |
-| `is_checked` | BOOLEAN | NOT NULL DEFAULT FALSE | Czy zakupiony |
-| `sort_order` | INTEGER | NOT NULL DEFAULT 0 CHECK (sort_order >= 0) | Kolejność w kategorii |
+| Kolumna            | Typ          | Ograniczenia                                                                                                         | Opis                           |
+| ------------------ | ------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| `id`               | UUID         | PRIMARY KEY DEFAULT gen_random_uuid()                                                                                | Unikalny identyfikator pozycji |
+| `shopping_list_id` | UUID         | NOT NULL REFERENCES shopping_lists(id) ON DELETE CASCADE                                                             | Lista zakupów                  |
+| `ingredient_name`  | VARCHAR(100) | NOT NULL CHECK (char_length(ingredient_name) >= 1 AND char_length(ingredient_name) <= 100)                           | Nazwa składnika                |
+| `quantity`         | NUMERIC      | CHECK (quantity IS NULL OR quantity > 0)                                                                             | Łączna ilość (zagregowana)     |
+| `unit`             | VARCHAR(50)  | NULL                                                                                                                 | Jednostka miary                |
+| `category`         | VARCHAR(20)  | NOT NULL DEFAULT 'Inne' CHECK (category IN ('Nabiał', 'Warzywa', 'Owoce', 'Mięso', 'Pieczywo', 'Przyprawy', 'Inne')) | Kategoria AI                   |
+| `is_checked`       | BOOLEAN      | NOT NULL DEFAULT FALSE                                                                                               | Czy zakupiony                  |
+| `sort_order`       | INTEGER      | NOT NULL DEFAULT 0 CHECK (sort_order >= 0)                                                                           | Kolejność w kategorii          |
 
 **Notatki:**
+
 - BRAK relacji z `ingredients` - snapshot pattern, kopia danych w momencie generowania
 - `category` przypisana przez OpenAI GPT-4o mini lub fallback "Inne"
 - `is_checked` dla oznaczania zakupionych pozycji (nie narusza snapshot pattern)
@@ -136,14 +141,14 @@ auth.users (Supabase Auth)
 
 ### Szczegóły relacji
 
-| Relacja | Kardynalność | Typu CASCADE | Opis |
-|---------|--------------|--------------|------|
-| `auth.users → recipes` | 1:N | ON DELETE CASCADE | Użytkownik ma wiele przepisów. Usunięcie konta = usunięcie wszystkich przepisów (GDPR) |
-| `recipes → ingredients` | 1:N | ON DELETE CASCADE | Przepis ma wiele składników. Usunięcie przepisu = usunięcie składników |
-| `auth.users → meal_plan` | 1:N | ON DELETE CASCADE | Użytkownik ma wiele przypisań w kalendarzu |
-| `recipes → meal_plan` | 1:N | ON DELETE CASCADE | Przepis może być przypisany wiele razy. Usunięcie przepisu = usunięcie przypisań (FR-005) |
-| `auth.users → shopping_lists` | 1:N | ON DELETE CASCADE | Użytkownik ma wiele list zakupów |
-| `shopping_lists → shopping_list_items` | 1:N | ON DELETE CASCADE | Lista ma wiele pozycji. Usunięcie listy = usunięcie pozycji |
+| Relacja                                | Kardynalność | Typu CASCADE      | Opis                                                                                      |
+| -------------------------------------- | ------------ | ----------------- | ----------------------------------------------------------------------------------------- |
+| `auth.users → recipes`                 | 1:N          | ON DELETE CASCADE | Użytkownik ma wiele przepisów. Usunięcie konta = usunięcie wszystkich przepisów (GDPR)    |
+| `recipes → ingredients`                | 1:N          | ON DELETE CASCADE | Przepis ma wiele składników. Usunięcie przepisu = usunięcie składników                    |
+| `auth.users → meal_plan`               | 1:N          | ON DELETE CASCADE | Użytkownik ma wiele przypisań w kalendarzu                                                |
+| `recipes → meal_plan`                  | 1:N          | ON DELETE CASCADE | Przepis może być przypisany wiele razy. Usunięcie przepisu = usunięcie przypisań (FR-005) |
+| `auth.users → shopping_lists`          | 1:N          | ON DELETE CASCADE | Użytkownik ma wiele list zakupów                                                          |
+| `shopping_lists → shopping_list_items` | 1:N          | ON DELETE CASCADE | Lista ma wiele pozycji. Usunięcie listy = usunięcie pozycji                               |
 
 ### Brak relacji (snapshot pattern)
 
@@ -327,6 +332,7 @@ CREATE POLICY shopping_list_items_all ON shopping_list_items
 ### Testing RLS
 
 **Krytyczne wymaganie bezpieczeństwa (FR-015):**
+
 - Automatyczne testy SQL w migrations (DO $$ block)
 - Integration tests (Vitest + Supabase client) z wieloma użytkownikami
 - Manual testing checklist przed production deploy
@@ -420,6 +426,7 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ```
 
 **Korzyści:**
+
 - Atomowa transakcja (INSERT shopping_lists + bulk INSERT items)
 - SECURITY DEFINER zapewnia kontrolę dostępu
 - Walidacja auth.uid() wewnątrz funkcji
@@ -432,23 +439,27 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ### Architektura i wzorce
 
 **1. Snapshot Pattern dla list zakupów**
+
 - `shopping_lists` i `shopping_list_items` są niezależne od `recipes` i `meal_plan`
 - Edycja przepisu NIE aktualizuje zapisanych list zakupów
 - Korzyści: prostota, przewidywalność, brak konieczności wersjonowania
 - Trade-off: duplikacja danych (akceptowalne dla MVP)
 
 **2. Brak własnej tabeli `users`**
+
 - Wykorzystanie Supabase Auth (`auth.users`) jako single source of truth
 - Korzyści: mniej kodu, automatic auth management, GDPR compliance
 - Jeśli w przyszłości potrzeba dodatkowych pól użytkownika: tabela `user_profiles` z 1:1 relation
 
 **3. Kategoryzacja tylko w listach zakupów**
+
 - Pole `category` NIE istnieje w `ingredients`
 - Kategoryzacja następuje podczas generowania listy przez OpenAI GPT-4o mini
 - Ten sam składnik może mieć różne kategorie w różnych listach (edge case)
 - Korzyści: prostota schematu, flexibility, brak migracji przy zmianie kategorii
 
 **4. CASCADE DELETE dla GDPR compliance**
+
 - Wszystkie tabele mają `ON DELETE CASCADE` od `auth.users(id)`
 - Usunięcie konta użytkownika = automatyczne usunięcie wszystkich danych
 - Zgodność z GDPR "right to be forgotten"
@@ -456,37 +467,44 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ### Typy danych i walidacja
 
 **5. TEXT vs VARCHAR dla długich pól**
+
 - `recipes.name`, `recipes.instructions`: TEXT z CHECK constraint na `char_length()`
 - PostgreSQL przechowuje TEXT i VARCHAR identycznie (performance brak różnicy)
 - CHECK constraint daje taką samą walidację jak VARCHAR(N)
 - Zaleta TEXT: łatwiejsze migracje (zmiana limitu = zmiana CHECK, nie ALTER TYPE)
 
 **6. NUMERIC bez precyzji dla `quantity`**
+
 - Eliminuje floating-point errors przy sumowaniu składników
 - Unlimited precision = brak overflow
 - Trade-off: nieco wolniejsze operacje (marginal dla MVP scale)
 
 **7. VARCHAR z CHECK zamiast PostgreSQL ENUM**
+
 - `meal_type` i `category`: VARCHAR(20) z CHECK IN (...)
 - Łatwiejsze migracje: dodanie wartości = ALTER TABLE CHECK, nie ALTER TYPE ENUM
 - ENUM wymaga rebuild całej tabeli przy zmianie wartości
 
 **8. TIMESTAMPTZ zamiast TIMESTAMP**
+
 - Automatic UTC conversion, zgodność międzynarodowa
 - Best practice dla aplikacji multi-region (future-proofing)
 
 ### Wydajność i skalowalność
 
 **9. Compound indexes dla głównych zapytań**
+
 - `idx_meal_plan_user_week` (user_id, week_start_date) - kalendarz tygodnia
 - `idx_shopping_list_items_category_sort` - grupowanie w eksporcie
 - Minimalizacja liczby indeksów (7 total) dla szybkości zapisu
 
 **10. Connection pooling przez PgBouncer**
+
 - Supabase używa PgBouncer automatycznie
 - Eliminuje problem limitu concurrent connections PostgreSQL
 
 **11. RLS overhead dla large scale**
+
 - RLS dodaje 10-30% overhead do queries
 - Dla MVP (1k-10k users) = acceptable
 - Dla 100k+ users: rozważyć app-level authorization
@@ -494,12 +512,14 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ### Bezpieczeństwo
 
 **12. Defense in depth - wielowarstwowa walidacja**
+
 - Frontend: React forms z live validation
 - Application: Zod schemas w API endpoints
 - Database: CHECK constraints
 - RLS: policy-based authorization
 
 **13. SECURITY DEFINER dla RPC functions**
+
 - `generate_shopping_list()` wykonywana z elevated privileges
 - Walidacja `auth.uid()` wewnątrz funkcji zapewnia bezpieczeństwo
 - Zapobiega SQL injection (parameterized queries)
@@ -507,6 +527,7 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ### Naming conventions
 
 **14. PostgreSQL best practices**
+
 - Tabele: snake_case, plural (`recipes`, `shopping_lists`)
 - Kolumny: snake_case, singular (`user_id`, `created_at`)
 - Indeksy: `idx_<table>_<columns>`
@@ -515,6 +536,7 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ### Out of scope (post-MVP)
 
 **15. Nie implementowane w MVP:**
+
 - Soft deletes (używamy hard deletes dla prostoty i GDPR)
 - Audit log / history table
 - Automatic backup logic (Supabase Pro PITR wystarczający)
@@ -525,6 +547,7 @@ GRANT EXECUTE ON FUNCTION generate_shopping_list(VARCHAR, DATE, JSONB) TO authen
 ### Migration strategy
 
 **16. Przygotowanie na przyszłe zmiany:**
+
 - Internacjonalizacja: `category` jako klucze ('dairy') zamiast wartości ('Nabiał') w v1.1
 - Multi-currency: dodanie `price` i `currency` w `shopping_list_items` (post-MVP)
 - Recipe images: dodanie `image_url` w `recipes` + Supabase Storage (post-MVP)

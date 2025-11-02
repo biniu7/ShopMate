@@ -3,12 +3,13 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `POST`
    **Path:** `/api/recipes`
    **Description:** Create a new recipe with ingredients
 
 **Request Body:**
+
 ```json
 {
   "name": "Spaghetti Carbonara",
@@ -49,6 +50,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -72,6 +74,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 ```
 
 **Error Responses:**
+
 - `400 Bad Request` - Validation error
   ```json
   {
@@ -93,43 +96,46 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 </route_api_specification>
 
 2. Related database resources:
-<related_db_resources>
+   <related_db_resources>
+
 ### Tabela: `recipes`
 
 **Opis:** Przepisy kulinarne użytkowników
 
-| Kolumna | Typ | Ograniczenia | Opis |
-|---------|-----|--------------|------|
-| `id` | UUID | PRIMARY KEY DEFAULT gen_random_uuid() | Unikalny identyfikator przepisu |
-| `user_id` | UUID | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE | Właściciel przepisu |
-| `name` | TEXT | NOT NULL CHECK (char_length(name) >= 3 AND char_length(name) <= 100) | Nazwa przepisu |
-| `instructions` | TEXT | Instrukcje przygotowania |
-| `created_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data utworzenia |
-| `updated_at` | TIMESTAMPTZ | NOT NULL DEFAULT NOW() | Data ostatniej modyfikacji |
+| Kolumna        | Typ         | Ograniczenia                                                         | Opis                            |
+| -------------- | ----------- | -------------------------------------------------------------------- | ------------------------------- |
+| `id`           | UUID        | PRIMARY KEY DEFAULT gen_random_uuid()                                | Unikalny identyfikator przepisu |
+| `user_id`      | UUID        | NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE                 | Właściciel przepisu             |
+| `name`         | TEXT        | NOT NULL CHECK (char_length(name) >= 3 AND char_length(name) <= 100) | Nazwa przepisu                  |
+| `instructions` | TEXT        | Instrukcje przygotowania                                             |
+| `created_at`   | TIMESTAMPTZ | NOT NULL DEFAULT NOW()                                               | Data utworzenia                 |
+| `updated_at`   | TIMESTAMPTZ | NOT NULL DEFAULT NOW()                                               | Data ostatniej modyfikacji      |
 
 **Notatki:**
+
 - Brak UNIQUE constraint na `name` - użytkownik może mieć wiele przepisów o tej samej nazwie
 - `updated_at` aktualizowany automatycznie przez trigger
 
 ---
+
 </related_db_resources>
 
 3. Definicje typów:
-<type_definitions>
-@src\types.ts
-</type_definitions>
+   <type_definitions>
+   @src\types.ts
+   </type_definitions>
 
-3. Tech stack:
-<tech_stack>
-@ai\doc\tech-stack.md
-</tech_stack>
+4. Tech stack:
+   <tech_stack>
+   @ai\doc\tech-stack.md
+   </tech_stack>
 
-4. Implementation rules:
-<implementation_rules>
-@.cursor\rules\shared.mdc, 
-@.cursor\rules\backend.mdc, 
-@.cursor\rules\astro.mdc)
-</implementation_rules>
+5. Implementation rules:
+   <implementation_rules>
+   @.cursor\rules\shared.mdc,
+   @.cursor\rules\backend.mdc,
+   @.cursor\rules\astro.mdc)
+   </implementation_rules>
 
 Twoim zadaniem jest stworzenie kompleksowego planu wdrożenia endpointu interfejsu API REST. Przed dostarczeniem ostatecznego planu użyj znaczników <analysis>, aby przeanalizować informacje i nakreślić swoje podejście. W tej analizie upewnij się, że:
 
@@ -154,6 +160,7 @@ Po przeprowadzeniu analizy utwórz szczegółowy plan wdrożenia w formacie mark
 8. Kroki implementacji
 
 W całym planie upewnij się, że
+
 - Używać prawidłowych kodów stanu API:
   - 200 dla pomyślnego odczytu
   - 201 dla pomyślnego utworzenia
@@ -167,12 +174,15 @@ W całym planie upewnij się, że
 Końcowym wynikiem powinien być dobrze zorganizowany plan wdrożenia w formacie markdown. Oto przykład tego, jak powinny wyglądać dane wyjściowe:
 
 ``markdown
-# API Endpoint Implementation Plan:  GET /api/recipes/:id - Szczegóły przepisu
+
+# API Endpoint Implementation Plan: GET /api/recipes/:id - Szczegóły przepisu
 
 ## 1. Przegląd punktu końcowego
+
 [Krótki opis celu i funkcjonalności punktu końcowego]
 
 ## 2. Szczegóły żądania
+
 - Metoda HTTP: [GET/POST/PUT/DELETE]
 - Struktura URL: [wzorzec URL]
 - Parametry:
@@ -181,30 +191,39 @@ Końcowym wynikiem powinien być dobrze zorganizowany plan wdrożenia w formacie
 - Request Body: [Struktura treści żądania, jeśli dotyczy]
 
 ## 3. Wykorzystywane typy
+
 [DTOs i Command Modele niezbędne do implementacji]
 
 ## 3. Szczegóły odpowiedzi
+
 [Oczekiwana struktura odpowiedzi i kody statusu]
 
 ## 4. Przepływ danych
+
 [Opis przepływu danych, w tym interakcji z zewnętrznymi usługami lub bazami danych]
 
 ## 5. Względy bezpieczeństwa
+
 [Szczegóły uwierzytelniania, autoryzacji i walidacji danych]
 
 ## 6. Obsługa błędów
+
 [Lista potencjalnych błędów i sposób ich obsługi]
 
 ## 7. Rozważania dotyczące wydajności
+
 [Potencjalne wąskie gardła i strategie optymalizacji]
 
 ## 8. Etapy wdrożenia
+
 1. [Krok 1]
 2. [Krok 2]
 3. [Krok 3]
-...
+   ...
+
 ```
 
 Końcowe wyniki powinny składać się wyłącznie z planu wdrożenia w formacie markdown i nie powinny powielać ani powtarzać żadnej pracy wykonanej w sekcji analizy.
 
 Pamiętaj, aby zapisać swój plan wdrożenia jako .ai/doc/17_endpoint-POST-recipes-id-implementation-plan.md Upewnij się, że plan jest szczegółowy, przejrzysty i zapewnia kompleksowe wskazówki dla zespołu programistów.
+```
