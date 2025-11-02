@@ -39,3 +39,37 @@ export const RecipeSchema = z.object({
  */
 export type RecipeSchemaType = z.infer<typeof RecipeSchema>;
 export type IngredientInputSchemaType = z.infer<typeof IngredientInputSchema>;
+
+/**
+ * Zod schema for GET /api/recipes query parameters
+ * Validates search, sort, page, and limit params
+ */
+export const recipeListQuerySchema = z.object({
+  search: z
+    .string()
+    .trim()
+    .optional()
+    .describe("Case-insensitive search on recipe name"),
+
+  sort: z
+    .enum(["name_asc", "name_desc", "created_asc", "created_desc"])
+    .default("created_desc")
+    .describe("Sort order for recipes"),
+
+  page: z.coerce
+    .number()
+    .int()
+    .min(1, "Page must be at least 1")
+    .default(1)
+    .describe("Page number for pagination"),
+
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit cannot exceed 100")
+    .default(20)
+    .describe("Number of items per page"),
+});
+
+export type RecipeListQueryInput = z.infer<typeof recipeListQuerySchema>;
