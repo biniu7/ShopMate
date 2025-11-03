@@ -7,6 +7,7 @@ import type {
   RecipeListItemDto,
   PaginatedResponse,
   PaginationMetadata,
+  DeleteRecipeResponseDto,
 } from "@/types";
 import type { RecipeListQueryInput } from "@/lib/validation/recipe.schema";
 
@@ -356,6 +357,59 @@ export async function updateRecipe(
     ...completeRecipe,
     ingredients: sortedIngredients,
     meal_plan_assignments: count ?? 0,
+  };
+}
+
+/**
+ * Deletes a recipe with CASCADE deletion of ingredients and meal plan assignments
+ *
+ * This function performs the following steps:
+ * 1. Count meal plan assignments BEFORE deletion (needed for response)
+ * 2. Delete recipe (CASCADE automatically deletes ingredients and meal_plan_assignments)
+ * 3. Return the count of deleted meal plan assignments
+ *
+ * @param supabase - Authenticated Supabase client
+ * @param recipeId - UUID of the recipe to delete
+ * @param userId - User ID from auth session (for ownership verification)
+ * @returns Object with deleted_meal_plan_assignments count, or null if recipe not found
+ * @throws Error if database operation fails
+ */
+export async function deleteRecipe(
+  supabase: SupabaseClientType,
+  recipeId: string,
+  userId: string
+): Promise<{ deleted_meal_plan_assignments: number } | null> {
+  // Step 1: Count meal plan assignments BEFORE deletion
+  const { count, error: countError } = await supabase
+    .from("meal_plan")
+    .select("*", { count: "exact", head: true })
+    .eq("recipe_id", recipeId)
+    .eq("user_id", userId);
+
+  if (countError) {
+    console.error("Failed to count meal plan assignments:", countError);
+    throw new Error("Failed to count meal plan assignments");
+  }
+
+  const deletedMealPlanAssignments = count ?? 0;
+
+  // Step 2: Delete recipe (CASCADE will automatically delete ingredients and meal_plan)
+  const { data: deletedRecipe, error: deleteError } = await supabase
+    .from("recipes")
+    .delete()
+    .eq("id", recipeId)
+    .eq("user_id", userId)
+    .select()
+    .single();
+
+  // If recipe not found or doesn't belong to user, return null
+  if (deleteError || !deletedRecipe) {
+    return null;
+  }
+
+  // Step 3: Return count of deleted meal plan assignments
+  return {
+    deleted_meal_plan_assignments: deletedMealPlanAssignments,
   };
 }
 
