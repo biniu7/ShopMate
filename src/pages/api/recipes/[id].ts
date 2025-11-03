@@ -1,9 +1,9 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
-import { getRecipeByIdParamsSchema } from "@/lib/validation/recipe.schema";
-import { getRecipeById } from "@/lib/services/recipe.service";
-import type { RecipeResponseDto, ErrorResponseDto } from "@/types";
+import { getRecipeByIdParamsSchema, RecipeSchema } from "@/lib/validation/recipe.schema";
+import { getRecipeById, updateRecipe } from "@/lib/services/recipe.service";
+import type { RecipeResponseDto, ErrorResponseDto, ValidationErrorResponseDto } from "@/types";
 
 /**
  * GET /api/recipes/:id - Get single recipe with all ingredients
@@ -87,6 +87,135 @@ export const GET: APIRoute = async ({ params, locals }) => {
 
     const errorResponse: ErrorResponseDto = {
       error: "Internal server error",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+};
+
+/**
+ * PUT /api/recipes/:id - Update recipe and ingredients (full replacement)
+ *
+ * Updates an existing recipe with full replacement of ingredients.
+ * All old ingredients are deleted and new ones are created.
+ * Only allows updating recipes that belong to the authenticated user.
+ * Changes propagate to meal plan assignments (live update).
+ * Changes do NOT propagate to saved shopping lists (snapshot pattern).
+ *
+ * @param params - Route parameters containing recipe ID
+ * @param request - Request object containing recipe data
+ * @param locals - Astro locals containing supabase client
+ * @returns 200 OK with RecipeResponseDto on success
+ * @returns 400 Bad Request if validation fails
+ * @returns 401 Unauthorized if not authenticated
+ * @returns 404 Not Found if recipe doesn't exist or doesn't belong to user
+ * @returns 500 Internal Server Error if database operation fails
+ */
+export const PUT: APIRoute = async ({ params, request, locals }) => {
+  // Step 1: Check authentication
+  const {
+    data: { user },
+    error: authError,
+  } = await locals.supabase.auth.getUser();
+
+  if (authError || !user) {
+    const errorResponse: ErrorResponseDto = {
+      error: "Unauthorized",
+      message: "User not authenticated",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const userId = user.id;
+
+  // Step 2: Validate path parameter
+  const paramValidation = getRecipeByIdParamsSchema.safeParse({ id: params.id });
+  if (!paramValidation.success) {
+    const errorResponse: ErrorResponseDto = {
+      error: "Bad Request",
+      message: "Invalid recipe ID format",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const { id: recipeId } = paramValidation.data;
+
+  // Step 3: Parse request body
+  let requestBody: unknown;
+  try {
+    requestBody = await request.json();
+  } catch {
+    const errorResponse: ErrorResponseDto = {
+      error: "Bad Request",
+      message: "Invalid JSON in request body",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // Step 4: Validate request body
+  const validation = RecipeSchema.safeParse(requestBody);
+  if (!validation.success) {
+    const errorResponse: ValidationErrorResponseDto = {
+      error: "Validation error",
+      details: validation.error.flatten().fieldErrors,
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const updateData = validation.data;
+
+  // Step 5: Update recipe via service
+  try {
+    const updatedRecipe = await updateRecipe(locals.supabase, recipeId, userId, updateData);
+
+    if (!updatedRecipe) {
+      const errorResponse: ErrorResponseDto = {
+        error: "Not Found",
+        message: "Recipe not found",
+      };
+
+      return new Response(JSON.stringify(errorResponse), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // Step 6: Return success response
+    return new Response(JSON.stringify(updatedRecipe), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("Failed to update recipe:", error);
+
+    // TODO: Add Sentry logging
+    // Sentry.captureException(error, {
+    //   tags: { endpoint: 'PUT /api/recipes/:id', recipeId: recipeId },
+    //   user: { id: userId }
+    // });
+
+    const errorResponse: ErrorResponseDto = {
+      error: "Internal Server Error",
+      message: "Failed to update recipe",
     };
 
     return new Response(JSON.stringify(errorResponse), {

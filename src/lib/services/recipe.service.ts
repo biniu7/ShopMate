@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
 import type {
   CreateRecipeDto,
+  UpdateRecipeDto,
   RecipeResponseDto,
   RecipeListItemDto,
   PaginatedResponse,
@@ -243,6 +244,117 @@ export async function getRecipeById(
   return {
     ...recipe,
     ingredients: ingredients || [],
+    meal_plan_assignments: count ?? 0,
+  };
+}
+
+/**
+ * Updates an existing recipe with full replacement of ingredients
+ *
+ * This function performs the following steps:
+ * 1. Verify recipe exists and belongs to user
+ * 2. Update recipe (name, instructions)
+ * 3. Delete all old ingredients
+ * 4. Bulk insert new ingredients
+ * 5. Fetch complete recipe with ingredients and meal plan count
+ *
+ * @param supabase - Authenticated Supabase client
+ * @param recipeId - UUID of the recipe to update
+ * @param userId - User ID from auth session (for ownership verification)
+ * @param updateData - Validated recipe data
+ * @returns Updated RecipeResponseDto or null if recipe not found
+ * @throws Error if database operation fails
+ */
+export async function updateRecipe(
+  supabase: SupabaseClientType,
+  recipeId: string,
+  userId: string,
+  updateData: UpdateRecipeDto
+): Promise<RecipeResponseDto | null> {
+  // Step 1: Verify recipe exists and belongs to user
+  const { data: existing, error: existingError } = await supabase
+    .from("recipes")
+    .select("id")
+    .eq("id", recipeId)
+    .eq("user_id", userId)
+    .single();
+
+  if (existingError || !existing) {
+    return null; // Recipe not found or doesn't belong to user
+  }
+
+  // Step 2: Update recipe (name, instructions)
+  const { error: updateError } = await supabase
+    .from("recipes")
+    .update({
+      name: updateData.name,
+      instructions: updateData.instructions,
+    })
+    .eq("id", recipeId);
+
+  if (updateError) {
+    console.error("Failed to update recipe:", updateError);
+    throw new Error("Failed to update recipe");
+  }
+
+  // Step 3: Delete all old ingredients
+  const { error: deleteError } = await supabase.from("ingredients").delete().eq("recipe_id", recipeId);
+
+  if (deleteError) {
+    console.error("Failed to delete ingredients:", deleteError);
+    throw new Error("Failed to update ingredients");
+  }
+
+  // Step 4: Prepare and bulk insert new ingredients
+  const ingredientsToInsert = updateData.ingredients.map((ingredient) => ({
+    recipe_id: recipeId,
+    name: ingredient.name,
+    quantity: ingredient.quantity,
+    unit: ingredient.unit,
+    sort_order: ingredient.sort_order,
+  }));
+
+  const { error: insertError } = await supabase.from("ingredients").insert(ingredientsToInsert);
+
+  if (insertError) {
+    console.error("Failed to insert ingredients:", insertError);
+    throw new Error("Failed to update ingredients");
+  }
+
+  // Step 5: Fetch complete recipe with ingredients
+  const { data: completeRecipe, error: fetchError } = await supabase
+    .from("recipes")
+    .select(
+      `
+      *,
+      ingredients (*)
+    `
+    )
+    .eq("id", recipeId)
+    .single();
+
+  if (fetchError || !completeRecipe) {
+    console.error("Failed to fetch updated recipe:", fetchError);
+    throw new Error("Failed to fetch updated recipe");
+  }
+
+  // Sort ingredients by sort_order
+  const sortedIngredients = [...completeRecipe.ingredients].sort((a, b) => a.sort_order - b.sort_order);
+
+  // Step 6: Count meal plan assignments
+  const { count, error: countError } = await supabase
+    .from("meal_plan")
+    .select("*", { count: "exact", head: true })
+    .eq("recipe_id", recipeId);
+
+  if (countError) {
+    console.error("Failed to count meal plan assignments:", countError);
+    // Don't throw - this is an optional field, continue with count = 0
+  }
+
+  return {
+    ...completeRecipe,
+    ingredients: sortedIngredients,
     meal_plan_assignments: count ?? 0,
   };
 }
