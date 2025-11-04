@@ -92,3 +92,115 @@ export type ShoppingListPreviewRequestValidated = z.infer<
  * Helper type for calendar selection
  */
 export type CalendarSelectionValidated = z.infer<typeof calendarSelectionSchema>;
+
+// ============================================================================
+// Shopping List Save Schemas (POST /api/shopping-lists)
+// ============================================================================
+
+/**
+ * Regex for date validation (YYYY-MM-DD)
+ */
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Schema for a single shopping list item when saving
+ */
+export const saveShoppingListItemSchema = z.object({
+  ingredient_name: z
+    .string()
+    .trim()
+    .min(1, "Ingredient name is required")
+    .max(100, "Ingredient name must not exceed 100 characters"),
+
+  quantity: z
+    .number()
+    .positive("Quantity must be positive")
+    .nullable()
+    .optional(),
+
+  unit: z
+    .string()
+    .trim()
+    .max(50, "Unit must not exceed 50 characters")
+    .nullable()
+    .optional(),
+
+  category: z.enum(INGREDIENT_CATEGORIES, {
+    errorMap: () => ({ message: "Invalid ingredient category" }),
+  }),
+
+  sort_order: z
+    .number()
+    .int("Sort order must be an integer")
+    .min(0, "Sort order must be non-negative")
+    .default(0),
+});
+
+/**
+ * Schema for saving a complete shopping list
+ * Used in POST /api/shopping-lists
+ */
+export const saveShoppingListSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .max(200, "Name must not exceed 200 characters")
+    .default("Lista zakupów"),
+
+  week_start_date: z
+    .string()
+    .regex(dateRegex, "Invalid date format. Use YYYY-MM-DD")
+    .refine(
+      (date) => {
+        // Validate that it's a valid date
+        const dateObj = new Date(date);
+        return !isNaN(dateObj.getTime());
+      },
+      { message: "Invalid date" }
+    )
+    .nullable()
+    .optional(),
+
+  items: z
+    .array(saveShoppingListItemSchema)
+    .min(1, "At least 1 item is required")
+    .max(100, "Maximum 100 items allowed"),
+});
+
+/**
+ * Type inference for save shopping list request
+ */
+export type SaveShoppingListInput = z.infer<typeof saveShoppingListSchema>;
+
+/**
+ * Type inference for shopping list item
+ */
+export type SaveShoppingListItemInput = z.infer<typeof saveShoppingListItemSchema>;
+
+// ============================================================================
+// Shopping List Query Schemas (GET /api/shopping-lists)
+// ============================================================================
+
+/**
+ * Schema for query params when fetching shopping lists
+ * Used in GET /api/shopping-lists
+ */
+export const shoppingListQuerySchema = z.object({
+  page: z
+    .number()
+    .int("Page must be an integer")
+    .min(1, "Page must be at least 1")
+    .default(1),
+
+  limit: z
+    .number()
+    .int("Limit must be an integer")
+    .min(1, "Limit must be at least 1")
+    .max(100, "Limit must not exceed 100")
+    .default(20),
+});
+
+/**
+ * Type inference for shopping list query params
+ */
+export type ShoppingListQueryInput = z.infer<typeof shoppingListQuerySchema>;
