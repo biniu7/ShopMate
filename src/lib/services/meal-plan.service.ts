@@ -5,6 +5,23 @@ import type { WeekCalendarResponseDto, MealPlanAssignmentDto, MealType, CreateMe
 type SupabaseClientType = SupabaseClient<Database>;
 
 /**
+ * Custom error classes for better error handling
+ */
+export class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NotFoundError";
+  }
+}
+
+export class DatabaseError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DatabaseError";
+  }
+}
+
+/**
  * Helper: Calculate week end date (Sunday) from week start date (Monday)
  *
  * @param weekStartDate - ISO date string (YYYY-MM-DD) for Monday
@@ -248,4 +265,49 @@ export async function createMealPlanAssignment(
   } catch (error) {
     return { data: null, error: error as Error };
   }
+}
+
+/**
+ * Usuwa przypisanie przepisu z kalendarza (meal plan assignment).
+ * Nie usuwa samego przepisu, tylko wpis w tabeli meal_plan.
+ *
+ * @param supabase - Supabase client z auth context
+ * @param userId - ID użytkownika (z auth.getUser())
+ * @param assignmentId - ID przypisania do usunięcia
+ * @throws {NotFoundError} Gdy assignment nie istnieje lub nie należy do użytkownika
+ * @throws {DatabaseError} Gdy wystąpi błąd bazy danych
+ */
+export async function deleteMealPlanAssignment(
+  supabase: SupabaseClientType,
+  userId: string,
+  assignmentId: string
+): Promise<void> {
+  // Query z count option do sprawdzenia affected rows
+  const { error, count } = await supabase
+    .from("meal_plan")
+    .delete({ count: "exact" })
+    .eq("id", assignmentId)
+    .eq("user_id", userId); // Explicit authorization check
+
+  // Handle database errors
+  if (error) {
+    console.error("[meal-plan.service] Delete query failed:", {
+      assignmentId,
+      userId,
+      error: error.message,
+      code: error.code,
+    });
+
+    throw new DatabaseError(`Failed to delete meal plan assignment: ${error.message}`);
+  }
+
+  // Check if anything was deleted
+  if (count === 0) {
+    // Assignment nie istnieje LUB user nie ma do niego dostępu
+    // Celowo nie rozróżniamy (security best practice)
+    throw new NotFoundError("Assignment not found or you don't have permission to delete it");
+  }
+
+  // Success - return void
+  return;
 }
