@@ -1,0 +1,154 @@
+meta {
+  name: Shopping List Preview - Error Cases
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/shopping-lists/preview
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "source": "invalid_source",
+    "recipe_ids": []
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+}
+
+docs {
+  # Test: Shopping List Preview - Error Cases
+
+  ## Test 1: Unauthorized (401)
+  **Remove Authorization header**
+
+  Expected Response:
+  ```json
+  {
+    "error": "Unauthorized"
+  }
+  ```
+
+  ## Test 2: Validation Error - Invalid Source (400)
+  ```json
+  {
+    "source": "invalid_source",
+    "recipe_ids": []
+  }
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "Validation failed",
+    "details": {
+      "source": ["Invalid literal value, expected \"calendar\" or \"recipes\""]
+    }
+  }
+  ```
+
+  ## Test 3: Validation Error - Empty Recipe IDs (400)
+  ```json
+  {
+    "source": "recipes",
+    "recipe_ids": []
+  }
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "Validation failed",
+    "details": {
+      "recipe_ids": ["Array must contain at least 1 element"]
+    }
+  }
+  ```
+
+  ## Test 4: Validation Error - Invalid UUID (400)
+  ```json
+  {
+    "source": "recipes",
+    "recipe_ids": ["not-a-uuid"]
+  }
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "Validation failed",
+    "details": {
+      "recipe_ids": ["Invalid recipe ID format. Expected UUID"]
+    }
+  }
+  ```
+
+  ## Test 5: Validation Error - Invalid Date Format (400)
+  ```json
+  {
+    "source": "calendar",
+    "week_start_date": "2025/11/04",
+    "selections": [
+      {"day_of_week": 1, "meal_types": ["breakfast"]}
+    ]
+  }
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "Validation failed",
+    "details": {
+      "week_start_date": ["Invalid date format. Expected YYYY-MM-DD"]
+    }
+  }
+  ```
+
+  ## Test 6: Validation Error - Not Monday (400)
+  ```json
+  {
+    "source": "calendar",
+    "week_start_date": "2025-11-05",
+    "selections": [
+      {"day_of_week": 1, "meal_types": ["breakfast"]}
+    ]
+  }
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "Validation failed",
+    "details": {
+      "week_start_date": ["Week start date must be a Monday"]
+    }
+  }
+  ```
+
+  ## Test 7: No Recipes Found (400)
+  Use valid but non-existent recipe UUIDs (or UUIDs belonging to another user)
+  ```json
+  {
+    "source": "recipes",
+    "recipe_ids": ["550e8400-e29b-41d4-a716-446655440000"]
+  }
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "No recipes selected or all selected meals are empty"
+  }
+  ```
+
+  ## Test 8: Invalid JSON (400)
+  Send malformed JSON:
+  ```
+  {invalid json}
+  ```
+  Expected Response:
+  ```json
+  {
+    "error": "Invalid JSON"
+  }
+  ```
+}

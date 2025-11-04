@@ -1,0 +1,86 @@
+meta {
+  name: Shopping List Preview - Calendar Mode
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/shopping-lists/preview
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "source": "calendar",
+    "week_start_date": "2025-11-04",
+    "selections": [
+      {
+        "day_of_week": 1,
+        "meal_types": ["breakfast", "lunch"]
+      },
+      {
+        "day_of_week": 2,
+        "meal_types": ["breakfast", "second_breakfast", "lunch", "dinner"]
+      },
+      {
+        "day_of_week": 3,
+        "meal_types": ["lunch", "dinner"]
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+}
+
+docs {
+  # Test: Shopping List Preview - Calendar Mode
+
+  ## Description
+  Tests the shopping list preview endpoint with calendar-based meal selection (Mode 1).
+
+  ## Expected Response (200 OK)
+  ```json
+  {
+    "items": [
+      {
+        "ingredient_name": "jajka",
+        "quantity": 24,
+        "unit": "szt",
+        "category": "Nabiał",
+        "sort_order": 0
+      },
+      {
+        "ingredient_name": "mleko",
+        "quantity": 2,
+        "unit": "l",
+        "category": "Nabiał",
+        "sort_order": 1
+      }
+    ],
+    "metadata": {
+      "source": "calendar",
+      "week_start_date": "2025-11-04",
+      "total_recipes": 5,
+      "total_items": 23,
+      "ai_categorization_status": "success",
+      "skipped_empty_meals": 2
+    }
+  }
+  ```
+
+  ## Setup
+  1. Replace `{{authToken}}` with your Supabase JWT token
+  2. Make sure you have meal plan assignments for week starting 2025-11-04
+  3. week_start_date must be a Monday (2025-11-04 is Monday)
+
+  ## Note
+  - skipped_empty_meals counts meal slots that don't have recipes assigned
+  - Day of week: 1 = Monday, 7 = Sunday
+}

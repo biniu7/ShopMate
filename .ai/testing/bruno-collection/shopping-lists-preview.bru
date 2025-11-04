@@ -1,0 +1,62 @@
+meta {
+  name: Shopping List Preview - Recipes Mode
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/shopping-lists/preview
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{authToken}}
+}
+
+body:json {
+  {
+    "source": "recipes",
+    "recipe_ids": [
+      "{{recipe_id_1}}",
+      "{{recipe_id_2}}"
+    ]
+  }
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3001
+}
+
+docs {
+  # Test: Shopping List Preview - Recipes Mode
+
+  ## Description
+  Tests the shopping list preview endpoint with direct recipe selection (Mode 2).
+
+  ## Expected Response (200 OK)
+  ```json
+  {
+    "items": [
+      {
+        "ingredient_name": "jajka",
+        "quantity": 12,
+        "unit": "szt",
+        "category": "Nabiał",
+        "sort_order": 0
+      }
+    ],
+    "metadata": {
+      "source": "recipes",
+      "total_recipes": 2,
+      "total_items": 10,
+      "ai_categorization_status": "success"
+    }
+  }
+  ```
+
+  ## Setup
+  1. Replace `{{authToken}}` with your Supabase JWT token
+  2. Replace `{{recipe_id_1}}` and `{{recipe_id_2}}` with actual recipe UUIDs
+  3. Make sure recipes belong to the authenticated user
+}
