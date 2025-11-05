@@ -204,3 +204,20 @@ export const shoppingListQuerySchema = z.object({
  * Type inference for shopping list query params
  */
 export type ShoppingListQueryInput = z.infer<typeof shoppingListQuerySchema>;
+
+// ============================================================================
+// Shopping List By ID Schemas (GET /api/shopping-lists/:id)
+// ============================================================================
+
+/**
+ * Schema for path parameter validation (GET /api/shopping-lists/:id)
+ * Validates that the id is a valid UUID format
+ */
+export const shoppingListIdParamSchema = z.object({
+  id: z.string().uuid("Invalid shopping list ID format"),
+});
+
+/**
+ * Type inference for path param
+ */
+export type ShoppingListIdParam = z.infer<typeof shoppingListIdParamSchema>;

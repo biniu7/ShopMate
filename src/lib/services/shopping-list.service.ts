@@ -11,9 +11,11 @@ import type {
   SaveShoppingListDto,
   ShoppingListResponseDto,
   ShoppingListListItemDto,
+  ShoppingListItemDto,
   PaginatedResponse,
   PaginationMetadata,
 } from "@/types";
+import { INGREDIENT_CATEGORIES } from "@/types";
 
 /**
  * Create a new shopping list with items (snapshot pattern)
@@ -162,4 +164,93 @@ export async function getUserShoppingLists(
     data,
     pagination,
   };
+}
+
+/**
+ * Get a single shopping list by ID with all items (sorted)
+ * Returns null if list not found or doesn't belong to user
+ *
+ * @param supabase - Authenticated Supabase client
+ * @param userId - ID of the user
+ * @param listId - ID of the shopping list
+ * @returns Shopping list with sorted items, or null if not found
+ * @throws Error if database query fails
+ */
+export async function getShoppingListById(
+  supabase: SupabaseClient,
+  userId: string,
+  listId: string
+): Promise<ShoppingListResponseDto | null> {
+  // Fetch shopping list with items in a single query (optimized)
+  const { data, error } = await supabase
+    .from("shopping_lists")
+    .select("*, shopping_list_items(*)")
+    .eq("id", listId)
+    .eq("user_id", userId) // Explicit filter (RLS also enforces this)
+    .single();
+
+  if (error) {
+    // Not found errors are expected (return null)
+    if (error.code === "PGRST116") {
+      return null;
+    }
+    // Other errors are unexpected (throw)
+    throw new Error(`Failed to fetch shopping list: ${error.message}`);
+  }
+
+  // Data not found (shouldn't happen with .single(), but defensive coding)
+  if (!data) {
+    return null;
+  }
+
+  // Extract items and sort them
+  const items = data.shopping_list_items || [];
+  const sortedItems = sortShoppingListItems(items);
+
+  // Return response DTO
+  return {
+    id: data.id,
+    user_id: data.user_id,
+    name: data.name,
+    week_start_date: data.week_start_date,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    items: sortedItems,
+  };
+}
+
+/**
+ * Sort shopping list items by category (fixed order), sort_order, and name
+ *
+ * Sorting order:
+ * 1. Category - fixed order from INGREDIENT_CATEGORIES constant
+ * 2. sort_order - within each category (ascending)
+ * 3. ingredient_name - alphabetically, case-insensitive (within same sort_order)
+ *
+ * @param items - Unsorted shopping list items
+ * @returns Sorted shopping list items
+ */
+function sortShoppingListItems(
+  items: ShoppingListItemDto[]
+): ShoppingListItemDto[] {
+  // Create category order map for O(1) lookup
+  const categoryOrder = INGREDIENT_CATEGORIES.reduce((acc, category, index) => {
+    acc[category] = index;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return [...items].sort((a, b) => {
+    // 1. Sort by category order (fixed order from INGREDIENT_CATEGORIES)
+    const categoryDiff = categoryOrder[a.category] - categoryOrder[b.category];
+    if (categoryDiff !== 0) return categoryDiff;
+
+    // 2. Sort by sort_order within category
+    const sortOrderDiff = a.sort_order - b.sort_order;
+    if (sortOrderDiff !== 0) return sortOrderDiff;
+
+    // 3. Sort alphabetically by ingredient name (case-insensitive)
+    return a.ingredient_name
+      .toLowerCase()
+      .localeCompare(b.ingredient_name.toLowerCase());
+  });
 }

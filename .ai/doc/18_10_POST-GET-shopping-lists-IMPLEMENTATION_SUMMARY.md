@@ -60,6 +60,30 @@
 
 **Response:** 200 OK with paginated lists
 
+### 3. GET /api/shopping-lists/:id
+- **Status:** ✅ Completed
+- **File:** `src/pages/api/shopping-lists/[id].ts`
+- **Service:** `src/lib/services/shopping-list.service.ts` (`getShoppingListById`)
+- **Validation:** `src/lib/validation/shopping-list.schema.ts` (`shoppingListIdParamSchema`)
+- **Description:** Pobiera pojedynczą listę ze wszystkimi itemami, posortowanymi według kategorii
+
+**Features:**
+- Single query with JOIN for performance (shopping_lists + shopping_list_items)
+- Items sorted by category (fixed order), sort_order, and name
+- 404 for non-existent or not-owned lists (security best practice)
+- Cache-Control header (5 min)
+- Invalid UUID treated as 404 (not 400)
+
+**Path Parameter:**
+- `id` (UUID, required) - Shopping list identifier
+
+**Response:** 200 OK with full list + sorted items
+
+**Sorting Order:**
+1. Category - fixed order: Nabiał → Warzywa → Owoce → Mięso → Pieczywo → Przyprawy → Inne
+2. sort_order - within each category (ascending)
+3. ingredient_name - alphabetically, case-insensitive
+
 ---
 
 ## 📁 Created/Modified Files
@@ -71,6 +95,7 @@
 - `saveShoppingListItemSchema` - walidacja pojedynczego itemu
 - `saveShoppingListSchema` - walidacja całej listy (1-100 items)
 - `shoppingListQuerySchema` - walidacja query params (page, limit)
+- `shoppingListIdParamSchema` - walidacja path parameter (UUID format)
 
 **Validation rules:**
 - `name`: max 200 chars, default "Lista zakupów"
@@ -113,16 +138,36 @@ getUserShoppingLists(
 - Aggregate items_count per list
 - Sort by created_at DESC
 
+```typescript
+getShoppingListById(
+  supabase: SupabaseClient,
+  userId: string,
+  listId: string
+): Promise<ShoppingListResponseDto | null>
+```
+- Pobiera pojedynczą listę z itemami
+- Single query with JOIN (optimized)
+- Filters by id AND user_id (RLS + explicit)
+- Sorts items by category → sort_order → name
+- Returns null if not found (404)
+
 ### 3. API Endpoints
+
 **File:** `src/pages/api/shopping-lists/index.ts` (NEW)
 
 **Exports:**
 - `POST` - Saves shopping list snapshot
 - `GET` - Retrieves user's shopping lists with pagination
 
+**File:** `src/pages/api/shopping-lists/[id].ts` (NEW)
+
+**Exports:**
+- `GET` - Retrieves single shopping list with all sorted items
+
 **Error Handling:**
 - 400: Validation errors (Zod)
 - 401: Unauthorized (no auth token)
+- 404: Not found (GET /api/shopping-lists/:id - invalid UUID or not-owned list)
 - 500: Internal server error (database errors)
 
 **Security:**
@@ -312,7 +357,7 @@ git push origin [BRANCH_NAME]
 - [ ] Add cursor-based pagination for better performance at high page numbers
 - [ ] Add caching strategy (Redis) for frequently accessed lists
 - [ ] Add bulk delete endpoint for multiple lists
-- [ ] Add endpoint to get single list with full items (GET /api/shopping-lists/:id)
+- [x] ~~Add endpoint to get single list with full items (GET /api/shopping-lists/:id)~~ ✅ **COMPLETED**
 - [ ] Add sorting options (by name, date, items_count)
 - [ ] Add filtering options (by week_start_date range)
 - [ ] Implement soft delete for lists (archive instead of delete)
@@ -322,25 +367,34 @@ git push origin [BRANCH_NAME]
 
 ## 📊 Implementation Statistics
 
+**Initial Implementation (POST & GET list):**
 - **Time Estimate:** 4-5 hours
 - **Files Created:** 3 new files
-- **Files Modified:** 1 file
 - **Lines of Code Added:** ~450 lines
 - **Test Cases Defined:** 12 test cases
 - **Database Objects:** 2 RLS policies, 3 indexes
+
+**GET /api/shopping-lists/:id Addition:**
+- **Time Estimate:** 2 hours
+- **Files Created:** 1 new file (`src/pages/api/shopping-lists/[id].ts`)
+- **Files Modified:** 2 files (validation schema, service)
+- **Lines of Code Added:** ~120 lines
+- **Key Features:** Single query optimization, sorting logic, security best practices
 
 ---
 
 ## 🔗 Related Files
 
 **Implementation:**
-- `src/pages/api/shopping-lists/index.ts` - API endpoints
+- `src/pages/api/shopping-lists/index.ts` - API endpoints (POST, GET list)
+- `src/pages/api/shopping-lists/[id].ts` - API endpoint (GET by ID)
 - `src/lib/services/shopping-list.service.ts` - Business logic
 - `src/lib/validation/shopping-list.schema.ts` - Validation schemas
 - `src/types.ts` - Type definitions (unchanged, already had required DTOs)
 
 **Documentation:**
-- `.ai/doc/17_10_endpoint-POST-shopping-lists-implementation-plan.md` - Original plan
+- `.ai/doc/17_10_endpoint-POST-shopping-lists-implementation-plan.md` - Original plan (POST)
+- `.ai/doc/17_11_endpoint-GET-shopping-lists-implementation-plan.md` - Implementation plan (GET by ID)
 - `.ai/doc/18_10_shopping-lists-database-setup.sql` - Database setup
 - `.ai/doc/18_10_POST-GET-shopping-lists-IMPLEMENTATION_SUMMARY.md` - This file
 
