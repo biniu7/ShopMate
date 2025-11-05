@@ -56,10 +56,7 @@ export async function POST(context: APIContext) {
     const validation = shoppingListPreviewRequestSchema.safeParse(body);
 
     if (!validation.success) {
-      console.warn(
-        "[POST /api/shopping-lists/preview] Validation failed:",
-        validation.error.flatten().fieldErrors
-      );
+      console.warn("[POST /api/shopping-lists/preview] Validation failed:", validation.error.flatten().fieldErrors);
       return new Response(
         JSON.stringify({
           error: "Validation failed",
@@ -77,11 +74,7 @@ export async function POST(context: APIContext) {
     // ============================================================================
     // Step 3: Generate Preview
     // ============================================================================
-    const preview = await generateShoppingListPreview(
-      context.locals.supabase,
-      user.id,
-      validatedRequest
-    );
+    const preview = await generateShoppingListPreview(context.locals.supabase, user.id, validatedRequest);
 
     // ============================================================================
     // Step 4: Return Success Response
@@ -102,13 +95,10 @@ export async function POST(context: APIContext) {
     // Business logic errors (thrown from service)
     if (error instanceof Error && error.message === "No recipes found") {
       console.warn("[POST /api/shopping-lists/preview] No recipes found for request");
-      return new Response(
-        JSON.stringify({ error: "No recipes selected or all selected meals are empty" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "No recipes selected or all selected meals are empty" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // Unexpected errors

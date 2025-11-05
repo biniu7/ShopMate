@@ -3,12 +3,7 @@ export const prerender = false;
 import type { APIRoute } from "astro";
 import { getRecipeByIdParamsSchema, deleteRecipeParamsSchema, RecipeSchema } from "@/lib/validation/recipe.schema";
 import { getRecipeById, updateRecipe, deleteRecipe } from "@/lib/services/recipe.service";
-import type {
-  RecipeResponseDto,
-  ErrorResponseDto,
-  ValidationErrorResponseDto,
-  DeleteRecipeResponseDto,
-} from "@/types";
+import type { RecipeResponseDto, ErrorResponseDto, ValidationErrorResponseDto, DeleteRecipeResponseDto } from "@/types";
 
 /**
  * GET /api/recipes/:id - Get single recipe with all ingredients

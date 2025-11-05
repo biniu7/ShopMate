@@ -61,7 +61,7 @@ export async function fetchRecipeIdsFromCalendar(
   selections: CalendarSelectionDto[]
 ): Promise<string[]> {
   // Build array of (day_of_week, meal_type) tuples for filtering
-  const filters: Array<{ day: number; meal: MealType }> = [];
+  const filters: { day: number; meal: MealType }[] = [];
 
   for (const selection of selections) {
     for (const mealType of selection.meal_types) {
@@ -78,16 +78,10 @@ export async function fetchRecipeIdsFromCalendar(
 
   // Fetch meal plan entries matching the filters
   // Note: Supabase doesn't support tuple IN queries directly, so we use OR conditions
-  let query = supabase
-    .from("meal_plan")
-    .select("recipe_id")
-    .eq("user_id", userId)
-    .eq("week_start_date", weekStartDate);
+  let query = supabase.from("meal_plan").select("recipe_id").eq("user_id", userId).eq("week_start_date", weekStartDate);
 
   // Build OR conditions for (day_of_week, meal_type) combinations
-  const orConditions = filters
-    .map((f) => `and(day_of_week.eq.${f.day},meal_type.eq.${f.meal})`)
-    .join(",");
+  const orConditions = filters.map((f) => `and(day_of_week.eq.${f.day},meal_type.eq.${f.meal})`).join(",");
 
   query = query.or(orConditions);
 
@@ -176,7 +170,7 @@ export function aggregateIngredients(rawIngredients: RawIngredient[]): Aggregate
       originalName: string;
       normalizedName: string;
       unit: string | null;
-      quantities: Array<number | null>;
+      quantities: (number | null)[];
     }
   >();
 
@@ -197,7 +191,11 @@ export function aggregateIngredients(rawIngredients: RawIngredient[]): Aggregate
       });
     }
 
-    aggregationMap.get(key)!.quantities.push(ingredient.quantity);
+    // Safe to assert existence after has() check, but use safe access for ESLint
+    const entry = aggregationMap.get(key);
+    if (entry) {
+      entry.quantities.push(ingredient.quantity);
+    }
   }
 
   // Aggregate quantities
@@ -215,7 +213,8 @@ export function aggregateIngredients(rawIngredients: RawIngredient[]): Aggregate
 
     if (hasNumber && !hasNull) {
       // All quantities are numbers - sum them
-      aggregatedQuantity = quantities.reduce((sum, q) => sum + (q || 0), 0);
+      // Type assertion safe because hasNumber && !hasNull guarantees all are numbers
+      aggregatedQuantity = quantities.reduce<number>((sum, q) => sum + (q as number), 0);
     } else if (hasNumber && hasNull) {
       // Mixed null and numbers - cannot aggregate, set to null
       aggregatedQuantity = null;
@@ -247,12 +246,12 @@ export function aggregateIngredients(rawIngredients: RawIngredient[]): Aggregate
  * @returns Sorted items with sort_order assigned
  */
 export function sortIngredientsByCategory(
-  items: Array<{
+  items: {
     ingredient_name: string;
     quantity: number | null;
     unit: string | null;
     category: IngredientCategory;
-  }>
+  }[]
 ): ShoppingListItemPreviewDto[] {
   // Define category order (as per INGREDIENT_CATEGORIES)
   const categoryOrder = INGREDIENT_CATEGORIES;
@@ -324,12 +323,7 @@ export async function generateShoppingListPreview(
   if (request.source === "calendar") {
     const totalSelections = request.selections.reduce((sum, s) => sum + s.meal_types.length, 0);
 
-    recipeIds = await fetchRecipeIdsFromCalendar(
-      supabase,
-      userId,
-      request.week_start_date,
-      request.selections
-    );
+    recipeIds = await fetchRecipeIdsFromCalendar(supabase, userId, request.week_start_date, request.selections);
 
     skippedEmptyMeals = totalSelections - recipeIds.length;
   } else {

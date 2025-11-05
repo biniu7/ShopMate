@@ -249,8 +249,8 @@ export interface ShoppingListPreviewResponseDto {
  */
 export interface SaveShoppingListItemDto {
   ingredient_name: string;
-  quantity: number | null;
-  unit: string | null;
+  quantity?: number | null;
+  unit?: string | null;
   category: IngredientCategory;
   sort_order: number;
 }
@@ -261,7 +261,7 @@ export interface SaveShoppingListItemDto {
  */
 export interface SaveShoppingListDto {
   name: string;
-  week_start_date: string | null;
+  week_start_date?: string | null;
   items: SaveShoppingListItemDto[];
 }
 

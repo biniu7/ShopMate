@@ -5,19 +5,9 @@
  */
 
 import type { APIRoute } from "astro";
-import {
-  saveShoppingListSchema,
-  shoppingListQuerySchema,
-} from "@/lib/validation/shopping-list.schema";
-import {
-  createShoppingList,
-  getUserShoppingLists,
-} from "@/lib/services/shopping-list.service";
-import type {
-  SaveShoppingListDto,
-  ErrorResponseDto,
-  ValidationErrorResponseDto,
-} from "@/types";
+import { saveShoppingListSchema, shoppingListQuerySchema } from "@/lib/validation/shopping-list.schema";
+import { createShoppingList, getUserShoppingLists } from "@/lib/services/shopping-list.service";
+import type { SaveShoppingListDto, ErrorResponseDto, ValidationErrorResponseDto } from "@/types";
 
 export const prerender = false;
 

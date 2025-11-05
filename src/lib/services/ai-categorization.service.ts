@@ -150,9 +150,7 @@ Kategorie muszą być dokładnie: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Prz
  * }
  * ```
  */
-export async function categorizeIngredientsWithRetry(
-  ingredients: string[]
-): Promise<CategorizationResult> {
+export async function categorizeIngredientsWithRetry(ingredients: string[]): Promise<CategorizationResult> {
   // Validate input
   if (ingredients.length === 0) {
     return {

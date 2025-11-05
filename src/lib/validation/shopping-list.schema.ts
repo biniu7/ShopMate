@@ -4,7 +4,7 @@
  */
 
 import { z } from "zod";
-import { MEAL_TYPES, INGREDIENT_CATEGORIES } from "@/types";
+import { INGREDIENT_CATEGORIES } from "@/types";
 
 /**
  * Schema for calendar selection (day + meal types)
@@ -84,9 +84,7 @@ export const shoppingListPreviewRequestSchema = z.discriminatedUnion("source", [
 /**
  * Type inference for validated request
  */
-export type ShoppingListPreviewRequestValidated = z.infer<
-  typeof shoppingListPreviewRequestSchema
->;
+export type ShoppingListPreviewRequestValidated = z.infer<typeof shoppingListPreviewRequestSchema>;
 
 /**
  * Helper type for calendar selection
@@ -112,28 +110,15 @@ export const saveShoppingListItemSchema = z.object({
     .min(1, "Ingredient name is required")
     .max(100, "Ingredient name must not exceed 100 characters"),
 
-  quantity: z
-    .number()
-    .positive("Quantity must be positive")
-    .nullable()
-    .optional(),
+  quantity: z.number().positive("Quantity must be positive").nullable().optional(),
 
-  unit: z
-    .string()
-    .trim()
-    .max(50, "Unit must not exceed 50 characters")
-    .nullable()
-    .optional(),
+  unit: z.string().trim().max(50, "Unit must not exceed 50 characters").nullable().optional(),
 
-  category: z.enum(INGREDIENT_CATEGORIES, {
+  category: z.enum(["Nabiał", "Warzywa", "Owoce", "Mięso", "Pieczywo", "Przyprawy", "Inne"], {
     errorMap: () => ({ message: "Invalid ingredient category" }),
   }),
 
-  sort_order: z
-    .number()
-    .int("Sort order must be an integer")
-    .min(0, "Sort order must be non-negative")
-    .default(0),
+  sort_order: z.number().int("Sort order must be an integer").min(0, "Sort order must be non-negative").default(0),
 });
 
 /**
@@ -141,11 +126,7 @@ export const saveShoppingListItemSchema = z.object({
  * Used in POST /api/shopping-lists
  */
 export const saveShoppingListSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .max(200, "Name must not exceed 200 characters")
-    .default("Lista zakupów"),
+  name: z.string().trim().max(200, "Name must not exceed 200 characters").default("Lista zakupów"),
 
   week_start_date: z
     .string()
@@ -186,11 +167,7 @@ export type SaveShoppingListItemInput = z.infer<typeof saveShoppingListItemSchem
  * Used in GET /api/shopping-lists
  */
 export const shoppingListQuerySchema = z.object({
-  page: z
-    .number()
-    .int("Page must be an integer")
-    .min(1, "Page must be at least 1")
-    .default(1),
+  page: z.number().int("Page must be an integer").min(1, "Page must be at least 1").default(1),
 
   limit: z
     .number()
@@ -221,3 +198,34 @@ export const shoppingListIdParamSchema = z.object({
  * Type inference for path param
  */
 export type ShoppingListIdParam = z.infer<typeof shoppingListIdParamSchema>;
+
+// ============================================================================
+// Shopping List Item Update Schemas (PATCH /api/shopping-lists/:list_id/items/:item_id)
+// ============================================================================
+
+/**
+ * Schema for validating UUID format in path parameters
+ * Reusable for any UUID validation needs
+ */
+export const uuidParamSchema = z.string().uuid({
+  message: "Nieprawidłowy format UUID",
+});
+
+/**
+ * Schema for updating shopping list item checked status
+ * Used in PATCH /api/shopping-lists/:list_id/items/:item_id
+ * This is the ONLY mutation allowed on saved shopping lists (snapshot pattern)
+ */
+export const updateShoppingListItemSchema = z
+  .object({
+    is_checked: z.boolean({
+      required_error: "Pole is_checked jest wymagane",
+      invalid_type_error: "Pole is_checked musi być typu boolean",
+    }),
+  })
+  .strict(); // Prevent additional fields (mass assignment protection)
+
+/**
+ * Type inference for update shopping list item request
+ */
+export type UpdateShoppingListItemInput = z.infer<typeof updateShoppingListItemSchema>;

@@ -12,6 +12,7 @@ import type {
   ShoppingListResponseDto,
   ShoppingListListItemDto,
   ShoppingListItemDto,
+  ShoppingListItem,
   PaginatedResponse,
   PaginationMetadata,
 } from "@/types";
@@ -58,10 +59,7 @@ export async function createShoppingList(
     is_checked: false, // Default value for new items
   }));
 
-  const { data: items, error: itemsError } = await supabase
-    .from("shopping_list_items")
-    .insert(itemsToInsert)
-    .select();
+  const { data: items, error: itemsError } = await supabase.from("shopping_list_items").insert(itemsToInsert).select();
 
   if (itemsError) {
     // Rollback: delete the list (CASCADE will handle any items that were inserted)
@@ -90,8 +88,8 @@ export async function createShoppingList(
 export async function getUserShoppingLists(
   supabase: SupabaseClient,
   userId: string,
-  page: number = 1,
-  limit: number = 20
+  page = 1,
+  limit = 20
 ): Promise<PaginatedResponse<ShoppingListListItemDto>> {
   // Calculate offset for pagination
   const offset = (page - 1) * limit;
@@ -138,10 +136,13 @@ export async function getUserShoppingLists(
     }
 
     // Count items per list
-    itemsCounts = (itemsData || []).reduce((acc, item) => {
-      acc[item.shopping_list_id] = (acc[item.shopping_list_id] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    itemsCounts = (itemsData || []).reduce(
+      (acc, item) => {
+        acc[item.shopping_list_id] = (acc[item.shopping_list_id] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
   }
 
   // Step 4: Map to response DTO
@@ -230,14 +231,15 @@ export async function getShoppingListById(
  * @param items - Unsorted shopping list items
  * @returns Sorted shopping list items
  */
-function sortShoppingListItems(
-  items: ShoppingListItemDto[]
-): ShoppingListItemDto[] {
+function sortShoppingListItems(items: ShoppingListItemDto[]): ShoppingListItemDto[] {
   // Create category order map for O(1) lookup
-  const categoryOrder = INGREDIENT_CATEGORIES.reduce((acc, category, index) => {
-    acc[category] = index;
-    return acc;
-  }, {} as Record<string, number>);
+  const categoryOrder = INGREDIENT_CATEGORIES.reduce(
+    (acc, category, index) => {
+      acc[category] = index;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   return [...items].sort((a, b) => {
     // 1. Sort by category order (fixed order from INGREDIENT_CATEGORIES)
@@ -249,8 +251,68 @@ function sortShoppingListItems(
     if (sortOrderDiff !== 0) return sortOrderDiff;
 
     // 3. Sort alphabetically by ingredient name (case-insensitive)
-    return a.ingredient_name
-      .toLowerCase()
-      .localeCompare(b.ingredient_name.toLowerCase());
+    return a.ingredient_name.toLowerCase().localeCompare(b.ingredient_name.toLowerCase());
   });
+}
+
+/**
+ * Update the checked status of a shopping list item
+ * This is the ONLY mutation allowed on saved shopping lists (snapshot pattern)
+ *
+ * Security: Verifies list ownership before update (IDOR protection)
+ *
+ * @param supabase - Authenticated Supabase client
+ * @param listId - ID of the shopping list
+ * @param itemId - ID of the item to update
+ * @param userId - ID of the user (for ownership verification)
+ * @param isChecked - New checked status
+ * @returns Updated shopping list item
+ * @throws Error with message 'NOT_FOUND' if item/list doesn't exist or doesn't belong to user
+ * @throws Error with message 'DATABASE_ERROR' for other database errors
+ */
+export async function updateItemCheckedStatus(
+  supabase: SupabaseClient,
+  listId: string,
+  itemId: string,
+  userId: string,
+  isChecked: boolean
+): Promise<ShoppingListItem> {
+  // Step 1: Verify list ownership (IDOR protection)
+  // This ensures the user owns the list before allowing item update
+  const { data: list, error: listError } = await supabase
+    .from("shopping_lists")
+    .select("id")
+    .eq("id", listId)
+    .eq("user_id", userId)
+    .single();
+
+  if (listError || !list) {
+    throw new Error("NOT_FOUND");
+  }
+
+  // Step 2: Update the item (RLS provides additional security layer)
+  // Using .single() ensures we get exactly one result
+  const { data: updatedItem, error: updateError } = await supabase
+    .from("shopping_list_items")
+    .update({ is_checked: isChecked })
+    .eq("id", itemId)
+    .eq("shopping_list_id", listId)
+    .select()
+    .single();
+
+  if (updateError) {
+    // PostgREST error code PGRST116 means no rows returned
+    if (updateError.code === "PGRST116") {
+      throw new Error("NOT_FOUND");
+    }
+    // Other database errors
+    throw new Error("DATABASE_ERROR");
+  }
+
+  // Defensive check (shouldn't happen with .single(), but good practice)
+  if (!updatedItem) {
+    throw new Error("NOT_FOUND");
+  }
+
+  return updatedItem;
 }
