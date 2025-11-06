@@ -316,3 +316,39 @@ export async function updateItemCheckedStatus(
 
   return updatedItem;
 }
+
+/**
+ * Delete a shopping list belonging to the user
+ * Uses CASCADE deletion for all associated items
+ *
+ * Security: Verifies list ownership before deletion (IDOR protection)
+ *
+ * @param supabase - Authenticated Supabase client
+ * @param listId - UUID of the list to delete
+ * @param userId - UUID of the list owner
+ * @returns true if deleted, false if not found
+ * @throws Error for database errors
+ */
+export async function deleteShoppingList(supabase: SupabaseClient, listId: string, userId: string): Promise<boolean> {
+  // Delete list with ownership verification in one query
+  // CASCADE will automatically delete all associated shopping_list_items
+  const { data, error } = await supabase
+    .from("shopping_lists")
+    .delete()
+    .eq("id", listId)
+    .eq("user_id", userId)
+    .select("id")
+    .single();
+
+  if (error) {
+    // PGRST116 = no rows found (not an error, just not found)
+    if (error.code === "PGRST116") {
+      return false;
+    }
+    // Other errors = throw
+    throw error;
+  }
+
+  // If data !== null, list was deleted successfully
+  return data !== null;
+}
