@@ -21,10 +21,7 @@ export function RecentRecipesSection({ recipes, isLoading }: RecentRecipesSectio
         </div>
         <div className="recipes-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="recipe-card-skeleton h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-            />
+            <div key={i} className="recipe-card-skeleton h-32 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
       </section>

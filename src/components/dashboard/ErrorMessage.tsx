@@ -30,21 +30,15 @@ export function ErrorMessage({
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-semibold text-red-900 dark:text-red-100 mb-2">
-          {title}
-        </h3>
+        <h3 className="text-xl font-semibold text-red-900 dark:text-red-100 mb-2">{title}</h3>
 
         {/* Message */}
-        <p className="text-red-700 dark:text-red-300 mb-6">
-          {message}
-        </p>
+        <p className="text-red-700 dark:text-red-300 mb-6">{message}</p>
 
         {/* Error details (dev mode) */}
         {error && import.meta.env.DEV && (
           <details className="mb-6 text-left">
-            <summary className="text-sm text-red-600 dark:text-red-400 cursor-pointer mb-2">
-              Szczegóły błędu
-            </summary>
+            <summary className="text-sm text-red-600 dark:text-red-400 cursor-pointer mb-2">Szczegóły błędu</summary>
             <pre className="text-xs bg-red-100 dark:bg-red-900/20 p-3 rounded overflow-auto text-red-800 dark:text-red-200">
               {error.message}
               {error.stack && `\n\n${error.stack}`}

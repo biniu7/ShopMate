@@ -623,3 +623,61 @@ export const MEAL_TYPE_ORDER: Record<MealType, number> = {
   lunch: 2,
   dinner: 3,
 };
+
+// ============================================================================
+// Recipes List View Models
+// ============================================================================
+
+/**
+ * Opcje sortowania dla listy przepisów
+ */
+export type RecipeSortOption = "name_asc" | "name_desc" | "created_asc" | "created_desc";
+
+/**
+ * Labels dla opcji sortowania (UI)
+ */
+export const RECIPE_SORT_LABELS: Record<RecipeSortOption, string> = {
+  name_asc: "Alfabetycznie A-Z",
+  name_desc: "Alfabetycznie Z-A",
+  created_asc: "Najstarsze",
+  created_desc: "Najnowsze",
+};
+
+/**
+ * Stan URL query params dla Recipes List
+ */
+export interface RecipesListUrlParams {
+  search?: string;
+  sort?: RecipeSortOption;
+}
+
+/**
+ * Stan wewnętrzny widoku Recipes List
+ */
+export interface RecipesListState {
+  /** Fraza wyszukiwania */
+  search: string;
+  /** Typ sortowania */
+  sort: RecipeSortOption;
+  /** Całkowita liczba przepisów (z pagination) */
+  totalRecipes: number;
+  /** Płaska lista przepisów ze wszystkich stron */
+  recipes: RecipeListItemDto[];
+  /** Czy są kolejne strony do załadowania */
+  hasNextPage: boolean;
+  /** Czy trwa ładowanie pierwszej strony */
+  isLoading: boolean;
+  /** Czy trwa ładowanie kolejnej strony */
+  isFetchingNextPage: boolean;
+  /** Błąd jeśli wystąpił */
+  error: Error | null;
+}
+
+/**
+ * Response dla infinite query
+ */
+export interface RecipesPageResponse {
+  data: RecipeListItemDto[];
+  pagination: PaginationMetadata;
+  nextPage: number | undefined;
+}

@@ -6,7 +6,7 @@
 import { memo, useMemo } from "react";
 import { MealCell } from "./MealCell";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import type { MealPlanAssignmentDto, MealType } from "@/types";
+import type { MealType } from "@/types";
 import type { CalendarCellViewModel } from "@/lib/utils/calendar";
 import { groupCellsByDay } from "@/lib/utils/calendar";
 

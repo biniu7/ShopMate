@@ -22,12 +22,8 @@ export function MealItem({ meal }: MealItemProps) {
       {/* Content */}
       <div className="meal-item-content flex-1 pt-0.5">
         <div className="meal-item-header flex items-center gap-2 mb-1">
-          <span className="meal-item-day text-sm font-semibold text-primary-600 dark:text-primary-400">
-            {meal.day}
-          </span>
-          <span className="meal-item-date text-sm text-gray-500 dark:text-gray-400">
-            {meal.date}
-          </span>
+          <span className="meal-item-day text-sm font-semibold text-primary-600 dark:text-primary-400">{meal.day}</span>
+          <span className="meal-item-date text-sm text-gray-500 dark:text-gray-400">{meal.date}</span>
         </div>
         <div className="meal-item-body">
           <span className="meal-item-type text-sm text-gray-600 dark:text-gray-300 block mb-1">

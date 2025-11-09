@@ -34,12 +34,8 @@ export function StatCard({ icon, label, value, href }: StatCardProps) {
         {icon}
       </div>
       <div className="stat-card-content flex-1 min-w-0">
-        <p className="stat-card-label text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-          {label}
-        </p>
-        <p className="stat-card-value text-3xl font-bold text-gray-900 dark:text-white">
-          {displayValue}
-        </p>
+        <p className="stat-card-label text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{label}</p>
+        <p className="stat-card-value text-3xl font-bold text-gray-900 dark:text-white">{displayValue}</p>
       </div>
     </a>
   );

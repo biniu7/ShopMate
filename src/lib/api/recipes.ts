@@ -2,17 +2,18 @@
  * API functions for recipes
  * Handles fetching recipes list
  */
-import type { PaginatedResponse, RecipeListItemDto, RecipeResponseDto } from "@/types";
+import type { PaginatedResponse, RecipeListItemDto, RecipeResponseDto, RecipeSortOption } from "@/types";
 
 /**
- * Fetch recipes list with pagination and search
+ * Fetch recipes list with pagination, search and sorting
  *
- * @param params - Query parameters (search, page, limit)
+ * @param params - Query parameters (search, sort, page, limit)
  * @returns Paginated recipes list
  * @throws Error if request fails
  */
 export async function fetchRecipes(params: {
   search?: string;
+  sort?: RecipeSortOption;
   page?: number;
   limit?: number;
 }): Promise<PaginatedResponse<RecipeListItemDto>> {
@@ -20,6 +21,9 @@ export async function fetchRecipes(params: {
 
   if (params.search) {
     searchParams.set("search", params.search);
+  }
+  if (params.sort) {
+    searchParams.set("sort", params.sort);
   }
   if (params.page) {
     searchParams.set("page", params.page.toString());

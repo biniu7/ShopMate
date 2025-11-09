@@ -114,10 +114,7 @@ export function useDashboard(): DashboardData {
     const tomorrowDayOfWeek = tomorrow.getDay() === 0 ? 7 : tomorrow.getDay();
 
     return mealPlanData.assignments
-      .filter(
-        (assignment) =>
-          assignment.day_of_week === todayDayOfWeek || assignment.day_of_week === tomorrowDayOfWeek
-      )
+      .filter((assignment) => assignment.day_of_week === todayDayOfWeek || assignment.day_of_week === tomorrowDayOfWeek)
       .map((assignment) => {
         const isToday = assignment.day_of_week === todayDayOfWeek;
         const date = isToday ? today : tomorrow;

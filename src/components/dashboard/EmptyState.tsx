@@ -18,25 +18,16 @@ export function EmptyState() {
 
       {/* Treść */}
       <div className="empty-state-content text-center mb-10">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-          Witaj w ShopMate!
-        </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">
-          Zacznij od dodania pierwszego przepisu
-        </p>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Witaj w ShopMate!</h2>
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-6">Zacznij od dodania pierwszego przepisu</p>
 
         {/* CTA Button */}
         <a href="/recipes/new">
-          <Button
-            size="lg"
-            className="empty-state-cta text-base px-8 py-6 h-auto"
-          >
+          <Button size="lg" className="empty-state-cta text-base px-8 py-6 h-auto">
             Dodaj pierwszy przepis
           </Button>
         </a>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-          Będziesz mógł przypisać go do kalendarza
-        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">Będziesz mógł przypisać go do kalendarza</p>
       </div>
 
       {/* Feature Highlights */}
@@ -47,9 +38,7 @@ export function EmptyState() {
               <Calendar className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Planuj posiłki na cały tydzień
-          </p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Planuj posiłki na cały tydzień</p>
         </div>
 
         <div className="feature-highlight text-center p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -58,9 +47,7 @@ export function EmptyState() {
               <ShoppingCart className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Generuj listy zakupów automatycznie
-          </p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Generuj listy zakupów automatycznie</p>
         </div>
 
         <div className="feature-highlight text-center p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -69,9 +56,7 @@ export function EmptyState() {
               <Sparkles className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            AI kategoryzuje składniki za Ciebie
-          </p>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">AI kategoryzuje składniki za Ciebie</p>
         </div>
       </div>
     </div>

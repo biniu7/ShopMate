@@ -43,10 +43,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           <Badge variant="secondary" className="text-xs">
             {recipe.ingredients_count} składników
           </Badge>
-          <time
-            dateTime={recipe.created_at}
-            className="recipe-card-date text-sm text-gray-500 dark:text-gray-400"
-          >
+          <time dateTime={recipe.created_at} className="recipe-card-date text-sm text-gray-500 dark:text-gray-400">
             {relativeTime}
           </time>
         </div>

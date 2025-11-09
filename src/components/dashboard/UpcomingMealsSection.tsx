@@ -21,10 +21,7 @@ export function UpcomingMealsSection({ meals, isLoading }: UpcomingMealsSectionP
         </div>
         <div className="meals-timeline space-y-4">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="meal-item-skeleton h-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"
-            />
+            <div key={i} className="meal-item-skeleton h-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
           ))}
         </div>
       </section>

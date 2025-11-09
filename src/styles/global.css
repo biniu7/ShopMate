@@ -21,6 +21,49 @@
   --control-h-md: 36px;
   --control-h-lg: 40px;
 
+  /* Fluent UI 2 - Spacing Scale */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+
+  /* Fluent UI 2 - Typography Scale */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.25rem; /* 20px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --text-4xl: 2.25rem; /* 36px */
+
+  /* Fluent UI 2 - Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Fluent UI 2 - Line Heights */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Fluent UI 2 - Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 1000;
+  --z-sticky: 1100;
+  --z-overlay: 1200;
+  --z-modal: 1300;
+  --z-popover: 1400;
+  --z-toast: 1500;
+  --z-tooltip: 1600;
+
   /* Fluent UI 2 - Motion */
   --motion-fast: 80ms;
   --motion-normal: 160ms;
@@ -54,6 +97,27 @@
   --info-fg: oklch(0.20 0 0);
   --danger: oklch(0.62 0.23 29);
   --danger-fg: oklch(0.985 0 0);
+
+  /* Fluent UI 2 - Extended Status Colors */
+  --success-light: oklch(0.92 0.08 145);
+  --success-dark: oklch(0.55 0.20 145);
+  --warning-light: oklch(0.95 0.08 75);
+  --warning-dark: oklch(0.65 0.18 75);
+  --info-light: oklch(0.92 0.06 230);
+  --info-dark: oklch(0.55 0.16 230);
+  --danger-light: oklch(0.92 0.12 29);
+  --danger-dark: oklch(0.45 0.25 29);
+
+  /* Fluent UI 2 - Gradients */
+  --gradient-brand: linear-gradient(135deg, var(--brand-600) 0%, var(--brand-400) 100%);
+  --gradient-hero: linear-gradient(180deg, var(--background) 0%, var(--muted) 100%);
+  --gradient-subtle: linear-gradient(135deg, var(--neutral-98) 0%, var(--neutral-96) 100%);
+
+  /* Fluent UI 2 - Backdrop Blur (Acrylic Effect) */
+  --backdrop-blur-sm: 8px;
+  --backdrop-blur-md: 16px;
+  --backdrop-blur-lg: 24px;
+  --backdrop-tint: oklch(1 0 0 / 0.7);
 
   /* Fluent UI 2 - Shadows (Subtle, Dispersed) */
   --shadow-1: 0 1px 2px oklch(0 0 0 / 0.10), 0 1px 1px oklch(0 0 0 / 0.06);
@@ -117,6 +181,10 @@
 
   /* Fluent UI 2 - Brand in Dark Mode */
   --brand-dark: oklch(0.72 0.18 254);
+
+  /* Fluent UI 2 - Dark Mode Specific */
+  --backdrop-tint-dark: oklch(0.18 0 0 / 0.7);
+  --gradient-subtle-dark: linear-gradient(135deg, var(--dark-16) 0%, var(--dark-18) 100%);
 
   /* Semantic Tokens - Dark Mode */
   --background: var(--dark-16);
@@ -199,6 +267,43 @@
   --color-warning-foreground: var(--warning-fg);
   --color-info: var(--info);
   --color-info-foreground: var(--info-fg);
+
+  /* Extended Status Colors */
+  --color-success-light: var(--success-light);
+  --color-success-dark: var(--success-dark);
+  --color-warning-light: var(--warning-light);
+  --color-warning-dark: var(--warning-dark);
+  --color-info-light: var(--info-light);
+  --color-info-dark: var(--info-dark);
+  --color-danger-light: var(--danger-light);
+  --color-danger-dark: var(--danger-dark);
+
+  /* Spacing Scale */
+  --spacing-1: var(--space-1);
+  --spacing-2: var(--space-2);
+  --spacing-3: var(--space-3);
+  --spacing-4: var(--space-4);
+  --spacing-5: var(--space-5);
+  --spacing-6: var(--space-6);
+  --spacing-8: var(--space-8);
+  --spacing-10: var(--space-10);
+  --spacing-12: var(--space-12);
+  --spacing-16: var(--space-16);
+
+  /* Typography Scale */
+  --font-size-xs: var(--text-xs);
+  --font-size-sm: var(--text-sm);
+  --font-size-base: var(--text-base);
+  --font-size-lg: var(--text-lg);
+  --font-size-xl: var(--text-xl);
+  --font-size-2xl: var(--text-2xl);
+  --font-size-3xl: var(--text-3xl);
+  --font-size-4xl: var(--text-4xl);
+
+  /* Shadows */
+  --box-shadow-sm: var(--shadow-1);
+  --box-shadow-md: var(--shadow-2);
+  --box-shadow-lg: var(--shadow-4);
 
   /* Chart Colors */
   --color-chart-1: var(--chart-1);
