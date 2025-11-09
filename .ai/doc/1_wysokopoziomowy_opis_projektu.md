@@ -1,4 +1,4 @@
-# Aplikacja - ShopMate (MVP)
+1# Aplikacja - ShopMate (MVP)
 
 ## Streszczenie projektu
 
