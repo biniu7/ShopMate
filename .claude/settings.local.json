@@ -4,7 +4,8 @@
       "Bash(npx tsc:*)",
       "Bash(npm run lint)",
       "Bash(npm run dev)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": [],
     "ask": []

@@ -452,3 +452,96 @@ export type NoContentResponse = Record<string, never>;
 export interface MessageResponse {
   message: string;
 }
+
+// ============================================================================
+// Calendar View Models (Frontend)
+// ============================================================================
+
+/**
+ * State tygodnia kalendarza
+ */
+export interface WeekState {
+  weekStartDate: string; // YYYY-MM-DD (Monday)
+  weekEndDate: string; // YYYY-MM-DD (Sunday)
+  dateRange: string; // "20-26 stycznia 2025" (formatted for display)
+}
+
+/**
+ * ViewModel dla pojedynczej komórki kalendarza
+ * Łączy informacje o dacie, posiłku i przypisaniu
+ */
+export interface CalendarCellViewModel {
+  date: Date; // Full date object
+  dateString: string; // YYYY-MM-DD
+  dayOfWeek: number; // 1-7 (1=Monday)
+  dayName: string; // "Poniedziałek", "Wtorek", ...
+  dayNameShort: string; // "Pon", "Wt", ...
+  mealType: MealType;
+  mealTypeLabel: string; // "Śniadanie", "Drugie śniadanie", "Obiad", "Kolacja"
+  assignment: MealPlanAssignmentDto | null;
+  isEmpty: boolean; // true if assignment === null
+}
+
+/**
+ * State modala wyboru przepisu
+ */
+export interface RecipePickerState {
+  isOpen: boolean;
+  targetCell: {
+    dayOfWeek: number;
+    mealType: MealType;
+    date: Date;
+  } | null;
+}
+
+/**
+ * State podglądu przepisu
+ */
+export interface RecipePreviewState {
+  isOpen: boolean;
+  recipeId: string | null;
+  assignmentId: string | null; // Do usunięcia z kalendarza
+}
+
+/**
+ * Stan całego komponentu Calendar
+ */
+export interface CalendarState {
+  // Week navigation
+  weekStartDate: string;
+  weekEndDate: string;
+  dateRange: string;
+
+  // Assignments
+  assignments: MealPlanAssignmentDto[];
+  isLoading: boolean;
+  error: Error | null;
+
+  // Modals
+  recipePicker: RecipePickerState;
+  recipePreview: RecipePreviewState;
+}
+
+/**
+ * Parametry wyszukiwania przepisów w modalu
+ */
+export interface RecipeSearchParams {
+  search: string;
+  page: number;
+  limit: number;
+}
+
+/**
+ * Typ dla handlera zmiany tygodnia
+ */
+export type WeekChangeHandler = (newWeekStart: string) => void;
+
+/**
+ * Typ dla handlera przypisania przepisu
+ */
+export type AssignRecipeHandler = (dayOfWeek: number, mealType: MealType, recipeId: string) => Promise<void>;
+
+/**
+ * Typ dla handlera usunięcia przypisania
+ */
+export type RemoveAssignmentHandler = (assignmentId: string) => Promise<void>;
