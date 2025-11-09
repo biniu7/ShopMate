@@ -2,7 +2,7 @@
  * Date utility functions for calendar view
  * Handles week calculations, date formatting, and validation
  */
-import { format, addDays, subDays, startOfWeek, addYears } from "date-fns";
+import { format, addDays, subDays, startOfWeek, addYears, formatDistanceToNow } from "date-fns";
 import { pl } from "date-fns/locale";
 import type { MealType } from "@/types";
 
@@ -130,4 +130,37 @@ export function subDaysFromDateString(dateString: string, days: number): string 
  */
 export function getWeekEndDate(weekStartDate: string): string {
   return addDaysToDateString(weekStartDate, 6);
+}
+
+/**
+ * Format a date as relative time (e.g., "2 dni temu")
+ * @param dateString - ISO date string
+ * @returns Formatted relative time in Polish
+ */
+export function formatRelativeTime(dateString: string): string {
+  return formatDistanceToNow(new Date(dateString), {
+    addSuffix: true,
+    locale: pl,
+  });
+}
+
+/**
+ * Check if a date is today
+ * @param date - Date to check
+ * @returns true if date is today, false otherwise
+ */
+export function isToday(date: Date): boolean {
+  const today = new Date();
+  return date.toDateString() === today.toDateString();
+}
+
+/**
+ * Check if a date is tomorrow
+ * @param date - Date to check
+ * @returns true if date is tomorrow, false otherwise
+ */
+export function isTomorrow(date: Date): boolean {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return date.toDateString() === tomorrow.toDateString();
 }

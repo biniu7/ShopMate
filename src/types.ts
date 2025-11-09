@@ -545,3 +545,81 @@ export type AssignRecipeHandler = (dayOfWeek: number, mealType: MealType, recipe
  * Typ dla handlera usunięcia przypisania
  */
 export type RemoveAssignmentHandler = (assignmentId: string) => Promise<void>;
+
+// ============================================================================
+// Dashboard View Models
+// ============================================================================
+
+/**
+ * Statystyki dashboardu
+ */
+export interface DashboardStats {
+  /** Całkowita liczba przepisów użytkownika */
+  recipesCount: number;
+  /** Liczba przypisań posiłków w bieżącym tygodniu */
+  mealPlansCount: number;
+  /** Całkowita liczba zapisanych list zakupów */
+  shoppingListsCount: number;
+}
+
+/**
+ * ViewModel dla nadchodzącego posiłku w timeline
+ */
+export interface UpcomingMealViewModel {
+  /** Etykieta dnia: "Dzisiaj" lub "Jutro" */
+  day: string;
+  /** Sformatowana data (np. "20 stycznia") */
+  date: string;
+  /** ISO date string dla sortowania */
+  isoDate: string;
+  /** Dzień tygodnia (1-7) */
+  dayOfWeek: number;
+  /** Typ posiłku (breakfast, lunch, etc.) */
+  mealType: MealType;
+  /** Polska etykieta typu posiłku (np. "Śniadanie") */
+  mealTypeLabel: string;
+  /** Nazwa przypisanego przepisu */
+  recipeName: string;
+  /** ID przypisanego przepisu */
+  recipeId: string;
+  /** Porządek sortowania (0-7, gdzie 0 = dziś śniadanie, 7 = jutro kolacja) */
+  sortOrder: number;
+}
+
+/**
+ * Kompletne dane dla widoku Dashboard
+ */
+export interface DashboardData {
+  /** Statystyki (liczby) */
+  stats: DashboardStats;
+  /** 3 ostatnio dodane przepisy */
+  recentRecipes: RecipeListItemDto[];
+  /** Posiłki na dziś i jutro */
+  upcomingMeals: UpcomingMealViewModel[];
+  /** Czy użytkownik jest nowy (0 przepisów) */
+  isNewUser: boolean;
+  /** Czy dane się ładują */
+  isLoading: boolean;
+  /** Błąd jeśli wystąpił */
+  error: Error | null;
+}
+
+/**
+ * Mapowanie typu posiłku na polską etykietę
+ */
+export const MEAL_TYPE_LABELS: Record<MealType, string> = {
+  breakfast: "Śniadanie",
+  second_breakfast: "Drugie śniadanie",
+  lunch: "Obiad",
+  dinner: "Kolacja",
+};
+
+/**
+ * Kolejność typów posiłków (dla sortowania)
+ */
+export const MEAL_TYPE_ORDER: Record<MealType, number> = {
+  breakfast: 0,
+  second_breakfast: 1,
+  lunch: 2,
+  dinner: 3,
+};

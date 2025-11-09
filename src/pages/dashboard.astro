@@ -1,0 +1,16 @@
+---
+/**
+ * Dashboard page - główny widok po zalogowaniu
+ */
+import Layout from '@/layouts/Layout.astro';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+import { DashboardView } from '@/components/dashboard/DashboardView';
+
+// Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
+---
+
+<Layout title="Dashboard - ShopMate">
+  <QueryProvider client:load>
+    <DashboardView client:load />
+  </QueryProvider>
+</Layout>
