@@ -164,3 +164,20 @@ export function isTomorrow(date: Date): boolean {
   tomorrow.setDate(tomorrow.getDate() + 1);
   return date.toDateString() === tomorrow.toDateString();
 }
+
+/**
+ * Format week range from week_start_date
+ * @param weekStartDate - ISO date string (Monday) in YYYY-MM-DD format
+ * @returns Formatted week range (e.g., "Tydzień 20-26 stycznia")
+ */
+export function formatWeekRange(weekStartDate: string): string {
+  const start = new Date(weekStartDate);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+
+  const startDay = format(start, "d", { locale: pl });
+  const endDay = format(end, "d", { locale: pl });
+  const month = format(end, "MMMM", { locale: pl });
+
+  return `Tydzień ${startDay}-${endDay} ${month}`;
+}

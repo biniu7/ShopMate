@@ -1,0 +1,19 @@
+---
+/**
+ * Shopping Lists History page - przegląd i zarządzanie listami zakupów
+ * Route: /shopping-lists
+ */
+import Layout from "@/layouts/Layout.astro";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { ShoppingListsHistoryView } from "@/components/shopping-lists/ShoppingListsHistoryView";
+import { Toaster } from "@/components/ui/toaster";
+
+// Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
+---
+
+<Layout title="Listy zakupów - ShopMate">
+  <QueryProvider client:only="react">
+    <ShoppingListsHistoryView client:only="react" />
+  </QueryProvider>
+  <Toaster client:only="react" />
+</Layout>
