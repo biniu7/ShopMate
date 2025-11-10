@@ -5,6 +5,7 @@
 Widok Recipe Edit umożliwia edycję istniejącego przepisu. Jest to formularz identyczny jak Recipe Create, ale z danymi wstępnie wypełnionymi z istniejącego przepisu. Dodatkowo zawiera info alert informujący że zmiany propagują się do wszystkich przypisań w kalendarzu. Po pomyślnej aktualizacji użytkownik jest przekierowywany do widoku szczegółów przepisu z toast notification "Przepis zaktualizowany pomyślnie".
 
 **Główne różnice względem Recipe Create:**
+
 - Pre-filled form (fetch existing recipe first)
 - PUT /api/recipes/:id zamiast POST /api/recipes
 - Info alert: "Zmiany zaktualizują wszystkie przypisania w kalendarzu"
@@ -17,11 +18,13 @@ Widok Recipe Edit umożliwia edycję istniejącego przepisu. Jest to formularz i
 **Ścieżka:** `/recipes/[id]/edit`
 
 **URL Parameters:**
+
 - `id` - UUID przepisu
 
 **Typ:** Strona Astro z dynamicznym komponentem React (client:load)
 
 **Zabezpieczenia:**
+
 - Middleware sprawdza autentykację
 - RLS zapewnia że tylko właściciel ma dostęp
 - 404 jeśli przepis nie istnieje lub nie należy do użytkownika
@@ -51,6 +54,7 @@ src/pages/recipes/[id]/edit.astro (Astro page)
 Główny kontener zarządzający fetchem istniejącego przepisu i renderowaniem formularza edycji.
 
 **Główne elementy:**
+
 ```tsx
 <div className="recipe-edit-view">
   {isLoading && <RecipeFormSkeleton />}
@@ -59,16 +63,14 @@ Główny kontener zarządzający fetchem istniejącego przepisu i renderowaniem 
 
   {recipe && (
     <div className="container mx-auto max-w-3xl p-4">
-      <RecipeEditForm
-        recipeId={recipe.id}
-        initialData={recipe}
-      />
+      <RecipeEditForm recipeId={recipe.id} initialData={recipe} />
     </div>
   )}
 </div>
 ```
 
 **Propsy:**
+
 ```typescript
 interface RecipeEditViewProps {
   recipeId: string; // z URL params
@@ -81,6 +83,7 @@ interface RecipeEditViewProps {
 Formularz edycji identyczny jak RecipeForm z Recipe Create, ale z pre-filled data i PUT mutation.
 
 **Główne elementy:**
+
 ```tsx
 <form onSubmit={handleSubmit(onSubmit)}>
   <FormHeader recipeId={recipeId} recipeName={initialData.name} />
@@ -106,6 +109,7 @@ Formularz edycji identyczny jak RecipeForm z Recipe Create, ale z pre-filled dat
 ```
 
 **Zarządzanie stanem:**
+
 ```typescript
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -211,6 +215,7 @@ export function RecipeEditForm({ recipeId, initialData }: RecipeEditFormProps) {
 ```
 
 **Propsy:**
+
 ```typescript
 interface RecipeEditFormProps {
   recipeId: string;
@@ -224,11 +229,13 @@ interface RecipeEditFormProps {
 Alert informacyjny o propagacji zmian do kalendarza.
 
 **Główne elementy:**
+
 ```tsx
 <Alert variant="info" className="my-4">
   <Info className="h-4 w-4" />
   <AlertDescription>
-    Zmiany zaktualizują wszystkie przypisania w kalendarzu. Wcześniej wygenerowane listy zakupów pozostaną niezmienione (snapshot).
+    Zmiany zaktualizują wszystkie przypisania w kalendarzu. Wcześniej wygenerowane listy zakupów pozostaną niezmienione
+    (snapshot).
   </AlertDescription>
 </Alert>
 ```
@@ -239,6 +246,7 @@ Alert informacyjny o propagacji zmian do kalendarza.
 Dialog potwierdzający odrzucenie niezapisanych zmian.
 
 **Główne elementy:**
+
 ```tsx
 <Dialog open={isOpen} onOpenChange={onClose}>
   <DialogContent>
@@ -262,6 +270,7 @@ Dialog potwierdzający odrzucenie niezapisanych zmian.
 ```
 
 **Propsy:**
+
 ```typescript
 interface DiscardChangesDialogProps {
   isOpen: boolean;
@@ -285,28 +294,21 @@ interface FormActionsProps {
 ```
 
 Implementacja:
+
 ```tsx
 <div className="form-actions sticky bottom-0 bg-white border-t p-4 flex gap-4 justify-end shadow-lg">
-  <Button
-    type="button"
-    onClick={onCancel}
-    variant="ghost"
-    disabled={isSubmitting}
-  >
+  <Button type="button" onClick={onCancel} variant="ghost" disabled={isSubmitting}>
     Anuluj
   </Button>
 
-  <Button
-    type="submit"
-    disabled={!isValid || isSubmitting}
-  >
+  <Button type="submit" disabled={!isValid || isSubmitting}>
     {isSubmitting ? (
       <>
         <Spinner className="h-4 w-4 mr-2" />
         Zapisywanie...
       </>
     ) : (
-      saveButtonLabel || 'Zapisz przepis'
+      saveButtonLabel || "Zapisz przepis"
     )}
   </Button>
 </div>
@@ -317,6 +319,7 @@ Implementacja:
 ### 5.1. Istniejące typy
 
 Używa tych samych typów co Recipe Create:
+
 - `CreateRecipeDto` (request body)
 - `RecipeResponseDto` (response)
 - `createRecipeSchema` (Zod validation)
@@ -326,6 +329,7 @@ Używa tych samych typów co Recipe Create:
 ### 6.1. Endpoint: GET /api/recipes/:id (fetch for pre-fill)
 
 **Request:**
+
 ```
 GET /api/recipes/550e8400-e29b-41d4-a716-446655440000
 ```
@@ -335,6 +339,7 @@ GET /api/recipes/550e8400-e29b-41d4-a716-446655440000
 ### 6.2. Endpoint: PUT /api/recipes/:id (update)
 
 **Request:**
+
 ```
 PUT /api/recipes/550e8400-e29b-41d4-a716-446655440000
 Content-Type: application/json
@@ -355,6 +360,7 @@ Content-Type: application/json
 ```
 
 **Response (200 OK):**
+
 ```typescript
 RecipeResponseDto
 {
@@ -371,6 +377,7 @@ RecipeResponseDto
 ```
 
 **Error Responses:**
+
 - 400 Bad Request (validation)
 - 401 Unauthorized
 - 404 Not Found
@@ -382,6 +389,7 @@ RecipeResponseDto
 ### 7.1. Edycja przepisu
 
 **Przepływ:**
+
 1. User wchodzi na `/recipes/:id/edit` (z Recipe Details)
 2. Fetch existing recipe → pre-fill form
 3. User modyfikuje pola
@@ -392,6 +400,7 @@ RecipeResponseDto
 ### 7.2. Anulowanie z dirty form
 
 **Przepływ:**
+
 1. User modyfikuje formularz (`isDirty = true`)
 2. User klika "Anuluj"
 3. DiscardChangesDialog otwiera się
@@ -402,6 +411,7 @@ RecipeResponseDto
 ### 7.3. Anulowanie z clean form
 
 **Przepływ:**
+
 1. User nie modyfikował formularza (`isDirty = false`)
 2. User klika "Anuluj"
 3. Natychmiastowy redirect do `/recipes/:id` (brak dialogu)

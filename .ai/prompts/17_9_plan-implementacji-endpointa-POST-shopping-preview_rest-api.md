@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `POST`
    **Path:** `/api/shopping-lists/preview`
    **Description:** Generate shopping list preview with aggregated ingredients and AI categorization
@@ -124,9 +124,9 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 2. Normalize ingredient names: trim, lowercase for comparison
 3. Aggregate identical ingredients: group by (name + unit), sum quantities
 4. AI categorization via OpenAI GPT-4o mini:
-    - Batch request with all ingredients
-    - Timeout: 10s, Retry: 2 times with exponential backoff (1s, 2s)
-    - Fallback: All items → category "Inne" if AI fails
+   - Batch request with all ingredients
+   - Timeout: 10s, Retry: 2 times with exponential backoff (1s, 2s)
+   - Fallback: All items → category "Inne" if AI fails
 5. Sort items by category (fixed order), then alphabetically within category
 6. Return preview (NOT saved yet)
 
@@ -146,6 +146,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 2. Related database resources:
    <related_db_resources>
+
 ### Tabela: `shopping_lists`
 
 **Opis:** Zapisane listy zakupów (snapshot pattern)
@@ -191,6 +192,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - Maksimum 100 pozycji na listę (walidacja w aplikacji - Zod)
 
 ---
+
 </related_db_resources>
 
 3. Definicje typów:

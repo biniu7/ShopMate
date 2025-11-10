@@ -5,6 +5,7 @@
 Widok Shopping List Generate jest 4-etapowym wizardem umożliwiającym wygenerowanie nowej listy zakupów z kalendarza tygodniowego lub wybranych przepisów. Wizard prowadzi użytkownika przez proces: wybór trybu → selekcja posiłków/przepisów → automatyczna generacja z AI kategoryzacją → edycja preview → zapis.
 
 **4 etapy wizarda:**
+
 1. **Mode Selection** - wybór trybu generowania ("Z kalendarza" lub "Z przepisów")
 2. **Selection** - zaznaczenie posiłków (2a) lub przepisów (2b)
 3. **Generation** - loading state z progress bar podczas fetchu i AI kategoryzacji
@@ -17,12 +18,14 @@ Po zapisie użytkownik jest przekierowywany do widoku szczegółów nowo utworzo
 **Ścieżka:** `/shopping-lists/generate`
 
 **Query Parameters:**
+
 - `step` (optional) - numer aktualnego kroku (1-4)
 - `mode` (optional) - `calendar` | `recipes`
 
 **Typ:** Strona Astro z dynamicznym komponentem React (client:load)
 
 **Zabezpieczenia:**
+
 - Middleware sprawdza autentykację
 - Walidacja na każdym kroku
 - Max 20 recipes, max 100 ingredients
@@ -77,6 +80,7 @@ src/pages/shopping-lists/generate.astro
 Główny kontener renderujący wizard.
 
 **Główne elementy:**
+
 ```tsx
 <div className="shopping-list-generate-view">
   <div className="container mx-auto max-w-5xl p-4">
@@ -91,10 +95,11 @@ Główny kontener renderujący wizard.
 Główny komponent zarządzający stanem wizarda (aktualny step, mode, selections, preview data).
 
 **Stan wizarda:**
+
 ```typescript
 interface WizardState {
   currentStep: 1 | 2 | 3 | 4;
-  mode: 'calendar' | 'recipes' | null;
+  mode: "calendar" | "recipes" | null;
 
   // Step 2a state (calendar)
   selectedMeals: CalendarSelectionDto[]; // {day_of_week, meal_types[]}
@@ -103,7 +108,7 @@ interface WizardState {
   selectedRecipes: string[]; // recipe IDs
 
   // Step 3 state (generation)
-  generationStatus: 'idle' | 'fetching' | 'categorizing' | 'done' | 'error';
+  generationStatus: "idle" | "fetching" | "categorizing" | "done" | "error";
   generationProgress: number; // 0-100
 
   // Step 4 state (preview)
@@ -116,6 +121,7 @@ interface WizardState {
 ```
 
 **Główne metody:**
+
 ```typescript
 - goToStep(step: number)
 - selectMode(mode: 'calendar' | 'recipes')
@@ -129,6 +135,7 @@ interface WizardState {
 ```
 
 **Renderowanie conditional steps:**
+
 ```tsx
 <div className="wizard">
   <WizardHeader currentStep={state.currentStep} />
@@ -141,7 +148,7 @@ interface WizardState {
     />
   )}
 
-  {state.currentStep === 2 && state.mode === 'calendar' && (
+  {state.currentStep === 2 && state.mode === "calendar" && (
     <Step2a_CalendarSelection
       selectedMeals={state.selectedMeals}
       onToggleMeal={toggleMeal}
@@ -153,7 +160,7 @@ interface WizardState {
     />
   )}
 
-  {state.currentStep === 2 && state.mode === 'recipes' && (
+  {state.currentStep === 2 && state.mode === "recipes" && (
     <Step2b_RecipesSelection
       selectedRecipes={state.selectedRecipes}
       onToggleRecipe={toggleRecipe}
@@ -165,12 +172,7 @@ interface WizardState {
     />
   )}
 
-  {state.currentStep === 3 && (
-    <Step3_Generation
-      status={state.generationStatus}
-      progress={state.generationProgress}
-    />
-  )}
+  {state.currentStep === 3 && <Step3_Generation status={state.generationStatus} progress={state.generationProgress} />}
 
   {state.currentStep === 4 && (
     <Step4_PreviewEdit
@@ -180,7 +182,7 @@ interface WizardState {
       onRemoveItem={removeItem}
       onAddItem={addItem}
       onBack={() => goToStep(2)}
-      onCancel={() => router.push('/shopping-lists')}
+      onCancel={() => router.push("/shopping-lists")}
       onSave={(name) => saveList(name)}
     />
   )}
@@ -193,30 +195,32 @@ interface WizardState {
 Header z breadcrumbs i progress bar.
 
 **Główne elementy:**
+
 ```tsx
 <div className="wizard-header mb-8">
-  <Breadcrumbs items={[
-    { label: 'Listy zakupów', href: '/shopping-lists' },
-    { label: 'Generuj listę', href: '/shopping-lists/generate' }
-  ]} />
+  <Breadcrumbs
+    items={[
+      { label: "Listy zakupów", href: "/shopping-lists" },
+      { label: "Generuj listę", href: "/shopping-lists/generate" },
+    ]}
+  />
 
-  <h1 className="text-3xl font-bold text-gray-900 mt-4 mb-6">
-    Generuj listę zakupów
-  </h1>
+  <h1 className="text-3xl font-bold text-gray-900 mt-4 mb-6">Generuj listę zakupów</h1>
 
   <ProgressBar currentStep={currentStep} totalSteps={4} />
 </div>
 ```
 
 **ProgressBar:**
+
 ```tsx
 <div className="progress-bar" role="progressbar" aria-valuenow={currentStep} aria-valuemin={1} aria-valuemax={4}>
   <div className="flex justify-between mb-2">
     {[1, 2, 3, 4].map((step) => (
-      <div key={step} className={cn(
-        "flex-1 text-center",
-        step <= currentStep ? "text-primary font-medium" : "text-gray-400"
-      )}>
+      <div
+        key={step}
+        className={cn("flex-1 text-center", step <= currentStep ? "text-primary font-medium" : "text-gray-400")}
+      >
         <div className="text-sm">Krok {step}</div>
         <div className="text-xs">{getStepLabel(step)}</div>
       </div>
@@ -224,10 +228,7 @@ Header z breadcrumbs i progress bar.
   </div>
 
   <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-    <div
-      className="h-full bg-primary transition-all duration-300"
-      style={{ width: `${(currentStep / 4) * 100}%` }}
-    />
+    <div className="h-full bg-primary transition-all duration-300" style={{ width: `${(currentStep / 4) * 100}%` }} />
   </div>
 </div>
 ```
@@ -238,35 +239,36 @@ Header z breadcrumbs i progress bar.
 Wybór trybu generowania listy.
 
 **Główne elementy:**
+
 ```tsx
 <div className="step-1 max-w-2xl mx-auto">
   <h2 className="text-2xl font-semibold mb-6">Wybierz tryb generowania</h2>
 
   <RadioGroup value={selectedMode} onValueChange={onSelectMode}>
     <div className="space-y-4">
-      <div className={cn(
-        "border rounded-lg p-6 cursor-pointer transition",
-        selectedMode === 'calendar' && "border-primary bg-primary/5"
-      )}>
+      <div
+        className={cn(
+          "border rounded-lg p-6 cursor-pointer transition",
+          selectedMode === "calendar" && "border-primary bg-primary/5"
+        )}
+      >
         <RadioGroupItem value="calendar" id="mode-calendar" />
         <Label htmlFor="mode-calendar" className="cursor-pointer ml-3">
           <div className="font-medium text-lg">Z kalendarza</div>
-          <div className="text-sm text-gray-600">
-            Wybierz posiłki z kalendarza tygodniowego
-          </div>
+          <div className="text-sm text-gray-600">Wybierz posiłki z kalendarza tygodniowego</div>
         </Label>
       </div>
 
-      <div className={cn(
-        "border rounded-lg p-6 cursor-pointer transition",
-        selectedMode === 'recipes' && "border-primary bg-primary/5"
-      )}>
+      <div
+        className={cn(
+          "border rounded-lg p-6 cursor-pointer transition",
+          selectedMode === "recipes" && "border-primary bg-primary/5"
+        )}
+      >
         <RadioGroupItem value="recipes" id="mode-recipes" />
         <Label htmlFor="mode-recipes" className="cursor-pointer ml-3">
           <div className="font-medium text-lg">Z przepisów</div>
-          <div className="text-sm text-gray-600">
-            Wybierz dowolne przepisy z kolekcji
-          </div>
+          <div className="text-sm text-gray-600">Wybierz dowolne przepisy z kolekcji</div>
         </Label>
       </div>
     </div>
@@ -287,6 +289,7 @@ Wybór trybu generowania listy.
 Wybór posiłków z kalendarza tygodniowego.
 
 **Główne elementy:**
+
 ```tsx
 <div className="step-2a">
   <h2 className="text-2xl font-semibold mb-6">Wybierz posiłki z kalendarza</h2>
@@ -297,31 +300,21 @@ Wybór posiłków z kalendarza tygodniowego.
   {calendar && (
     <>
       <div className="mb-4 flex justify-between items-center">
-        <SelectionCounter
-          count={countSelectedMeals(selectedMeals)}
-          label="posiłków"
-        />
+        <SelectionCounter count={countSelectedMeals(selectedMeals)} label="posiłków" />
 
-        <Button
-          variant="outline"
-          onClick={() => selectAllMeals()}
-        >
+        <Button variant="outline" onClick={() => selectAllMeals()}>
           <Check className="h-4 w-4 mr-2" />
           Zaznacz cały tydzień
         </Button>
       </div>
 
-      <CalendarSelector
-        calendar={calendar}
-        selectedMeals={selectedMeals}
-        onToggleMeal={onToggleMeal}
-      />
+      <CalendarSelector calendar={calendar} selectedMeals={selectedMeals} onToggleMeal={onToggleMeal} />
 
       {emptyMealsCount > 0 && (
         <Alert variant="warning" className="mt-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            {emptyMealsCount} {emptyMealsCount === 1 ? 'posiłek nie ma' : 'posiłki nie mają'} przypisanych przepisów
+            {emptyMealsCount} {emptyMealsCount === 1 ? "posiłek nie ma" : "posiłki nie mają"} przypisanych przepisów
           </AlertDescription>
         </Alert>
       )}
@@ -346,9 +339,7 @@ Mini-widok kalendarza z checkboxami.
   <div className="grid grid-cols-1 md:grid-cols-7 gap-2">
     {[1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => (
       <div key={dayOfWeek} className="day-column">
-        <div className="font-medium text-sm mb-2">
-          {getDayName(dayOfWeek)}
-        </div>
+        <div className="font-medium text-sm mb-2">{getDayName(dayOfWeek)}</div>
 
         {MEAL_TYPES.map((mealType) => {
           const assignment = getAssignment(calendar, dayOfWeek, mealType);
@@ -356,24 +347,19 @@ Mini-widok kalendarza z checkboxami.
           const isEmpty = !assignment;
 
           return (
-            <div key={mealType} className={cn(
-              "meal-checkbox-item p-2 border rounded",
-              isEmpty && "bg-gray-50 text-gray-400"
-            )}>
+            <div
+              key={mealType}
+              className={cn("meal-checkbox-item p-2 border rounded", isEmpty && "bg-gray-50 text-gray-400")}
+            >
               <Checkbox
                 id={`meal-${dayOfWeek}-${mealType}`}
                 checked={isSelected}
                 onCheckedChange={() => onToggleMeal(dayOfWeek, mealType)}
                 disabled={isEmpty}
               />
-              <Label
-                htmlFor={`meal-${dayOfWeek}-${mealType}`}
-                className="ml-2 text-xs cursor-pointer"
-              >
+              <Label htmlFor={`meal-${dayOfWeek}-${mealType}`} className="ml-2 text-xs cursor-pointer">
                 {MEAL_TYPE_LABELS[mealType]}
-                {assignment && (
-                  <div className="text-xs truncate">{assignment.recipe_name}</div>
-                )}
+                {assignment && <div className="text-xs truncate">{assignment.recipe_name}</div>}
               </Label>
             </div>
           );
@@ -390,23 +376,16 @@ Mini-widok kalendarza z checkboxami.
 Wybór przepisów z listy z wyszukiwaniem.
 
 **Główne elementy:**
+
 ```tsx
 <div className="step-2b">
   <h2 className="text-2xl font-semibold mb-6">Wybierz przepisy</h2>
 
   <div className="mb-4">
-    <SearchBar
-      value={searchQuery}
-      onChange={setSearchQuery}
-      placeholder="Szukaj przepisu..."
-    />
+    <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Szukaj przepisu..." />
   </div>
 
-  <SelectionCounter
-    count={selectedRecipes.length}
-    label="przepisów"
-    max={20}
-  />
+  <SelectionCounter count={selectedRecipes.length} label="przepisów" max={20} />
 
   {isLoadingRecipes && <RecipesListSkeleton />}
 
@@ -422,9 +401,7 @@ Wybór przepisów z listy z wyszukiwaniem.
           />
           <Label htmlFor={`recipe-${recipe.id}`} className="ml-3 flex-1 cursor-pointer">
             <div className="font-medium">{recipe.name}</div>
-            <div className="text-sm text-gray-600">
-              {recipe.ingredients_count} składników
-            </div>
+            <div className="text-sm text-gray-600">{recipe.ingredients_count} składników</div>
           </Label>
         </div>
       ))}
@@ -446,71 +423,65 @@ Wybór przepisów z listy z wyszukiwaniem.
 Loading state z animated progress bar i komunikatami.
 
 **Główne elementy:**
+
 ```tsx
 <div className="step-3 text-center py-16">
   <Spinner className="h-16 w-16 mx-auto mb-6" />
 
-  <h2 className="text-2xl font-semibold mb-2">
-    {getGenerationMessage(status)}
-  </h2>
+  <h2 className="text-2xl font-semibold mb-2">{getGenerationMessage(status)}</h2>
 
-  <p className="text-gray-600 mb-8">
-    {getGenerationDescription(status)}
-  </p>
+  <p className="text-gray-600 mb-8">{getGenerationDescription(status)}</p>
 
   <div className="max-w-md mx-auto">
     <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div
-        className="h-full bg-primary transition-all duration-500"
-        style={{ width: `${progress}%` }}
-      />
+      <div className="h-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
     </div>
     <div className="text-sm text-gray-600 mt-2">{progress}%</div>
   </div>
 
-  {status === 'error' && (
+  {status === "error" && (
     <Alert variant="destructive" className="mt-8 max-w-md mx-auto">
       <AlertCircle className="h-4 w-4" />
-      <AlertDescription>
-        Nie udało się wygenerować listy. Spróbuj ponownie.
-      </AlertDescription>
+      <AlertDescription>Nie udało się wygenerować listy. Spróbuj ponownie.</AlertDescription>
     </Alert>
   )}
 </div>
 ```
 
 **Generation flow:**
+
 ```typescript
 async function generatePreview() {
-  setState({ generationStatus: 'fetching', generationProgress: 0 });
+  setState({ generationStatus: "fetching", generationProgress: 0 });
 
   try {
     // Prepare request body
-    const requestBody: ShoppingListPreviewRequestDto = state.mode === 'calendar'
-      ? {
-          source: 'calendar',
-          week_start_date: currentWeekStart,
-          selections: state.selectedMeals,
-        }
-      : {
-          source: 'recipes',
-          recipe_ids: state.selectedRecipes,
-        };
+    const requestBody: ShoppingListPreviewRequestDto =
+      state.mode === "calendar"
+        ? {
+            source: "calendar",
+            week_start_date: currentWeekStart,
+            selections: state.selectedMeals,
+          }
+        : {
+            source: "recipes",
+            recipe_ids: state.selectedRecipes,
+          };
 
     // Simulate progress updates
     updateProgress(40);
 
     // POST /api/shopping-lists/preview
-    const response = await fetch('/api/shopping-lists/preview', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/shopping-lists/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
     });
 
     updateProgress(70);
 
     if (!response.ok) {
-      throw new Error('Failed to generate preview');
+      throw new Error("Failed to generate preview");
     }
 
     const data: ShoppingListPreviewResponseDto = await response.json();
@@ -518,10 +489,10 @@ async function generatePreview() {
     updateProgress(90);
 
     setState({
-      generationStatus: 'categorizing',
+      generationStatus: "categorizing",
       previewItems: data.items,
       previewMetadata: data.metadata,
-      modifiedItems: data.items.map(item => ({
+      modifiedItems: data.items.map((item) => ({
         ingredient_name: item.ingredient_name,
         quantity: item.quantity,
         unit: item.unit,
@@ -536,10 +507,9 @@ async function generatePreview() {
     setTimeout(() => {
       goToStep(4);
     }, 500);
-
   } catch (error) {
-    setState({ generationStatus: 'error' });
-    toast.error('Nie udało się wygenerować listy');
+    setState({ generationStatus: "error" });
+    toast.error("Nie udało się wygenerować listy");
   }
 }
 ```
@@ -550,21 +520,20 @@ async function generatePreview() {
 Preview wygenerowanej listy z możliwością edycji przed zapisem.
 
 **Główne elementy:**
+
 ```tsx
 <div className="step-4">
   <h2 className="text-2xl font-semibold mb-2">Podgląd listy zakupów</h2>
-  <p className="text-gray-600 mb-6">
-    Sprawdź i edytuj listę przed zapisem
-  </p>
+  <p className="text-gray-600 mb-6">Sprawdź i edytuj listę przed zapisem</p>
 
   {metadata && (
-    <Alert variant={metadata.ai_categorization_status === 'success' ? 'info' : 'warning'} className="mb-6">
-      {metadata.ai_categorization_status === 'success' ? (
+    <Alert variant={metadata.ai_categorization_status === "success" ? "info" : "warning"} className="mb-6">
+      {metadata.ai_categorization_status === "success" ? (
         <>
           <Check className="h-4 w-4" />
           <AlertDescription>
-            Lista zawiera {metadata.total_items} składników z {metadata.total_recipes} przepisów.
-            Kategoryzacja AI: sukces.
+            Lista zawiera {metadata.total_items} składników z {metadata.total_recipes} przepisów. Kategoryzacja AI:
+            sukces.
           </AlertDescription>
         </>
       ) : (
@@ -578,12 +547,7 @@ Preview wygenerowanej listy z możliwością edycji przed zapisem.
     </Alert>
   )}
 
-  <ShoppingListPreview
-    items={items}
-    onUpdateItem={onUpdateItem}
-    onRemoveItem={onRemoveItem}
-    onAddItem={onAddItem}
-  />
+  <ShoppingListPreview items={items} onUpdateItem={onUpdateItem} onRemoveItem={onRemoveItem} onAddItem={onAddItem} />
 
   <NavigationButtons
     onBack={onBack}
@@ -595,10 +559,11 @@ Preview wygenerowanej listy z możliwością edycji przed zapisem.
 ```
 
 **ShoppingListPreview:**
+
 ```tsx
 <div className="shopping-list-preview space-y-4">
   {CATEGORY_ORDER.map((category) => {
-    const categoryItems = items.filter(item => item.category === category);
+    const categoryItems = items.filter((item) => item.category === category);
 
     if (categoryItems.length === 0) return null;
 
@@ -626,11 +591,7 @@ Preview wygenerowanej listy z możliwością edycji przed zapisem.
     );
   })}
 
-  <Button
-    variant="outline"
-    onClick={() => setAddDialogOpen(true)}
-    className="w-full"
-  >
+  <Button variant="outline" onClick={() => setAddDialogOpen(true)} className="w-full">
     <Plus className="h-4 w-4 mr-2" />
     Dodaj składnik
   </Button>
@@ -638,22 +599,23 @@ Preview wygenerowanej listy z możliwością edycji przed zapisem.
 ```
 
 **IngredientRow (editable):**
+
 ```tsx
 <div className="ingredient-row flex items-center gap-2 p-3 border rounded-lg bg-white">
   <Checkbox checked={false} disabled />
 
   <Input
     type="number"
-    value={item.quantity ?? ''}
-    onChange={(e) => onUpdate('quantity', e.target.value ? Number(e.target.value) : null)}
+    value={item.quantity ?? ""}
+    onChange={(e) => onUpdate("quantity", e.target.value ? Number(e.target.value) : null)}
     className="w-20"
     placeholder="200"
   />
 
   <Input
     type="text"
-    value={item.unit ?? ''}
-    onChange={(e) => onUpdate('unit', e.target.value || null)}
+    value={item.unit ?? ""}
+    onChange={(e) => onUpdate("unit", e.target.value || null)}
     className="w-20"
     placeholder="g"
   />
@@ -661,31 +623,25 @@ Preview wygenerowanej listy z możliwością edycji przed zapisem.
   <Input
     type="text"
     value={item.ingredient_name}
-    onChange={(e) => onUpdate('ingredient_name', e.target.value)}
+    onChange={(e) => onUpdate("ingredient_name", e.target.value)}
     className="flex-1"
     placeholder="nazwa"
   />
 
-  <Select
-    value={item.category}
-    onValueChange={(value) => onUpdate('category', value)}
-  >
+  <Select value={item.category} onValueChange={(value) => onUpdate("category", value)}>
     <SelectTrigger className="w-32">
       <SelectValue />
     </SelectTrigger>
     <SelectContent>
       {INGREDIENT_CATEGORIES.map((cat) => (
-        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+        <SelectItem key={cat} value={cat}>
+          {cat}
+        </SelectItem>
       ))}
     </SelectContent>
   </Select>
 
-  <Button
-    variant="ghost"
-    size="icon"
-    onClick={onRemove}
-    aria-label="Usuń składnik"
-  >
+  <Button variant="ghost" size="icon" onClick={onRemove} aria-label="Usuń składnik">
     <Trash2 className="h-4 w-4 text-red-600" />
   </Button>
 </div>
@@ -697,14 +653,13 @@ Preview wygenerowanej listy z możliwością edycji przed zapisem.
 Dialog z inputem dla nazwy listy przed zapisem.
 
 **Główne elementy:**
+
 ```tsx
 <Dialog open={isOpen} onOpenChange={onClose}>
   <DialogContent>
     <DialogHeader>
       <DialogTitle>Zapisz listę zakupów</DialogTitle>
-      <DialogDescription>
-        Podaj nazwę dla listy zakupów
-      </DialogDescription>
+      <DialogDescription>Podaj nazwę dla listy zakupów</DialogDescription>
     </DialogHeader>
 
     <div className="py-4">
@@ -717,9 +672,7 @@ Dialog z inputem dla nazwy listy przed zapisem.
         maxLength={200}
         autoFocus
       />
-      <p className="text-sm text-gray-600 mt-1">
-        {listName.length}/200
-      </p>
+      <p className="text-sm text-gray-600 mt-1">{listName.length}/200</p>
     </div>
 
     <DialogFooter>
@@ -733,7 +686,7 @@ Dialog z inputem dla nazwy listy przed zapisem.
             Zapisywanie...
           </>
         ) : (
-          'Zapisz'
+          "Zapisz"
         )}
       </Button>
     </DialogFooter>
@@ -742,12 +695,13 @@ Dialog z inputem dla nazwy listy przed zapisem.
 ```
 
 **Default name:**
+
 ```typescript
 function getDefaultName(): string {
-  if (metadata?.source === 'calendar' && metadata.week_start_date) {
+  if (metadata?.source === "calendar" && metadata.week_start_date) {
     return `Lista zakupów - ${formatWeekRange(metadata.week_start_date)}`;
   }
-  return `Lista zakupów - ${format(new Date(), 'd MMMM yyyy', { locale: pl })}`;
+  return `Lista zakupów - ${format(new Date(), "d MMMM yyyy", { locale: pl })}`;
 }
 ```
 
@@ -872,6 +826,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 ### 7.1. POST /api/shopping-lists/preview
 
 **Request (Calendar Mode):**
+
 ```json
 {
   "source": "calendar",
@@ -890,6 +845,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 ```
 
 **Request (Recipes Mode):**
+
 ```json
 {
   "source": "recipes",
@@ -898,6 +854,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "items": [
@@ -923,6 +880,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
 ### 7.2. POST /api/shopping-lists
 
 **Request:**
+
 ```json
 {
   "name": "Lista zakupów - Tydzień 20-26 stycznia",
@@ -984,11 +942,13 @@ disabled={!selectedMode}
 ### 9.2. Step 2: Enable "Generuj" button
 
 Calendar:
+
 ```typescript
 disabled={selectedMealsCount === 0}
 ```
 
 Recipes:
+
 ```typescript
 disabled={selectedRecipes.length === 0 || selectedRecipes.length > 20}
 ```
@@ -996,6 +956,7 @@ disabled={selectedRecipes.length === 0 || selectedRecipes.length > 20}
 ### 9.3. Step 3: Auto-transition
 
 Gdy `generationStatus === 'done'` i `progress === 100`:
+
 ```typescript
 setTimeout(() => goToStep(4), 500);
 ```
@@ -1003,9 +964,7 @@ setTimeout(() => goToStep(4), 500);
 ### 9.4. Step 4: Validation przed save
 
 ```typescript
-const isValid = modifiedItems.length > 0 && modifiedItems.every(item =>
-  item.ingredient_name.trim().length > 0
-);
+const isValid = modifiedItems.length > 0 && modifiedItems.every((item) => item.ingredient_name.trim().length > 0);
 ```
 
 ### 9.5. Empty meals warning

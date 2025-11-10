@@ -18,6 +18,7 @@
 **Purpose:** Test successful retrieval of meal plan for a week with existing assignments
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -25,6 +26,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "week_start_date": "2025-01-20",
@@ -46,6 +48,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 200
 - ✅ `week_end_date` = `week_start_date` + 6 days
 - ✅ Assignments sorted by `day_of_week` then `meal_type`
@@ -59,6 +62,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
 **Purpose:** Test response when week has no meal plan assignments
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-12-01" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -66,6 +70,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-12-01" \
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "week_start_date": "2025-12-01",
@@ -75,6 +80,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-12-01" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 200
 - ✅ Empty `assignments` array
 - ✅ `week_start_date` and `week_end_date` still calculated correctly
@@ -86,6 +92,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-12-01" \
 **Purpose:** Test validation error when required parameter is missing
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -93,6 +100,7 @@ curl -X GET "http://localhost:3000/api/meal-plan" \
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -103,6 +111,7 @@ curl -X GET "http://localhost:3000/api/meal-plan" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 400
 - ✅ Error type: "Validation failed"
 - ✅ Details indicate missing `week_start_date`
@@ -114,6 +123,7 @@ curl -X GET "http://localhost:3000/api/meal-plan" \
 **Purpose:** Test validation error for incorrect date format
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=20250120" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -121,6 +131,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=20250120" \
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -131,10 +142,12 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=20250120" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 400
 - ✅ Clear error message about format
 
 **Additional Test - Invalid Date:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-13-40" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -142,6 +155,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-13-40" \
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -158,12 +172,14 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-13-40" \
 **Purpose:** Test authentication requirement
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
   -v
 ```
 
 **Expected Response:** `401 Unauthorized`
+
 ```json
 {
   "error": "Unauthorized",
@@ -172,6 +188,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 401
 - ✅ Clear authentication error message
 
@@ -182,6 +199,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
 **Purpose:** Verify endpoint accepts historical dates
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2024-01-01" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -189,6 +207,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2024-01-01" \
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "week_start_date": "2024-01-01",
@@ -198,6 +217,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2024-01-01" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 200
 - ✅ Accepts past dates without restriction
 
@@ -208,6 +228,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2024-01-01" \
 **Purpose:** Verify endpoint accepts future dates
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2026-06-15" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -215,6 +236,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2026-06-15" \
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "week_start_date": "2026-06-15",
@@ -224,6 +246,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2026-06-15" \
 ```
 
 **Validation:**
+
 - ✅ Status code: 200
 - ✅ Accepts future dates without restriction
 
@@ -236,6 +259,7 @@ curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2026-06-15" \
 **Setup:** Create meal plan with 28 assignments (7 days × 4 meals)
 
 **Request:**
+
 ```bash
 time curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20" \
   -H "Cookie: sb-access-token=${SB_ACCESS_TOKEN}; sb-refresh-token=${SB_REFRESH_TOKEN}" \
@@ -243,6 +267,7 @@ time curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Expected:**
+
 - ✅ Response time < 200ms
 - ✅ All 28 assignments returned
 - ✅ Proper sorting (day 1-7, meals in order)
@@ -265,38 +290,39 @@ time curl -X GET "http://localhost:3000/api/meal-plan?week_start_date=2025-01-20
      - `Cookie`: `sb-access-token={{sb_access_token}}; sb-refresh-token={{sb_refresh_token}}`
 
 3. **Tests Script (Postman):**
+
 ```javascript
 pm.test("Status code is 200", function () {
-    pm.response.to.have.status(200);
+  pm.response.to.have.status(200);
 });
 
 pm.test("Response has correct structure", function () {
-    var jsonData = pm.response.json();
-    pm.expect(jsonData).to.have.property("week_start_date");
-    pm.expect(jsonData).to.have.property("week_end_date");
-    pm.expect(jsonData).to.have.property("assignments");
-    pm.expect(jsonData.assignments).to.be.an("array");
+  var jsonData = pm.response.json();
+  pm.expect(jsonData).to.have.property("week_start_date");
+  pm.expect(jsonData).to.have.property("week_end_date");
+  pm.expect(jsonData).to.have.property("assignments");
+  pm.expect(jsonData.assignments).to.be.an("array");
 });
 
 pm.test("Week dates are correct", function () {
-    var jsonData = pm.response.json();
-    var startDate = new Date(jsonData.week_start_date);
-    var endDate = new Date(jsonData.week_end_date);
-    var diffDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
-    pm.expect(diffDays).to.equal(6); // 6 days difference
+  var jsonData = pm.response.json();
+  var startDate = new Date(jsonData.week_start_date);
+  var endDate = new Date(jsonData.week_end_date);
+  var diffDays = (endDate - startDate) / (1000 * 60 * 60 * 24);
+  pm.expect(diffDays).to.equal(6); // 6 days difference
 });
 
 pm.test("Assignments are sorted correctly", function () {
-    var jsonData = pm.response.json();
-    var assignments = jsonData.assignments;
+  var jsonData = pm.response.json();
+  var assignments = jsonData.assignments;
 
-    for (let i = 0; i < assignments.length - 1; i++) {
-        var current = assignments[i];
-        var next = assignments[i + 1];
+  for (let i = 0; i < assignments.length - 1; i++) {
+    var current = assignments[i];
+    var next = assignments[i + 1];
 
-        // Check day_of_week is ascending
-        pm.expect(current.day_of_week).to.be.at.most(next.day_of_week);
-    }
+    // Check day_of_week is ascending
+    pm.expect(current.day_of_week).to.be.at.most(next.day_of_week);
+  }
 });
 ```
 
@@ -308,7 +334,7 @@ pm.test("Assignments are sorted correctly", function () {
 
 ```javascript
 // Fetch meal plan for current week
-const response = await fetch('/api/meal-plan?week_start_date=2025-01-20');
+const response = await fetch("/api/meal-plan?week_start_date=2025-01-20");
 const data = await response.json();
 console.log(data);
 
@@ -327,30 +353,29 @@ async function testMealPlanEndpoint(weekStartDate) {
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('Error:', error);
+      console.error("Error:", error);
       return;
     }
 
     const data = await response.json();
-    console.log('Success:', data);
+    console.log("Success:", data);
 
     // Validation
     console.log(`Week: ${data.week_start_date} to ${data.week_end_date}`);
     console.log(`Total assignments: ${data.assignments.length}`);
-
   } catch (error) {
-    console.error('Request failed:', error);
+    console.error("Request failed:", error);
   }
 }
 
 // Test valid date
-testMealPlanEndpoint('2025-01-20');
+testMealPlanEndpoint("2025-01-20");
 
 // Test invalid date
-testMealPlanEndpoint('2025-13-40'); // Should return 400
+testMealPlanEndpoint("2025-13-40"); // Should return 400
 
 // Test missing parameter
-testMealPlanEndpoint(''); // Should return 400
+testMealPlanEndpoint(""); // Should return 400
 ```
 
 ---
@@ -360,6 +385,7 @@ testMealPlanEndpoint(''); // Should return 400
 ### Issue: 401 Unauthorized despite being logged in
 
 **Solution:**
+
 - Refresh browser and check cookies
 - Verify `sb-access-token` and `sb-refresh-token` exist
 - Check token expiration in DevTools → Application → Cookies
@@ -368,6 +394,7 @@ testMealPlanEndpoint(''); // Should return 400
 ### Issue: 500 Internal Server Error
 
 **Check:**
+
 1. Database connection (Supabase URL and key)
 2. RLS policies enabled on `meal_plan` table
 3. `recipes` table accessible via JOIN
@@ -376,6 +403,7 @@ testMealPlanEndpoint(''); // Should return 400
 ### Issue: Empty assignments array when data exists
 
 **Check:**
+
 1. `user_id` matches logged-in user
 2. `week_start_date` format is correct
 3. Data exists in database for that week

@@ -11,11 +11,13 @@ Widok oferuje przyciski "Edytuj" (nawigacja do formularza edycji) oraz "Usuń" (
 **Ścieżka:** `/recipes/[id]` (dynamic route)
 
 **URL Parameters:**
+
 - `id` - UUID przepisu
 
 **Typ:** Strona Astro z dynamicznym komponentem React (client:load)
 
 **Zabezpieczenia:**
+
 - Middleware sprawdza autentykację użytkownika
 - RLS zapewnia że tylko właściciel przepisu ma dostęp
 - 404 jeśli przepis nie istnieje lub nie należy do użytkownika
@@ -56,6 +58,7 @@ src/pages/recipes/[id].astro (Astro page)
 Główny kontener widoku szczegółów przepisu. Pobiera dane z API używając TanStack Query, zarządza stanem dialogu usuwania oraz nawigacją.
 
 **Główne elementy:**
+
 ```tsx
 <div className="recipe-details-view">
   {isLoading && <RecipeDetailsSkeleton />}
@@ -64,11 +67,7 @@ Główny kontener widoku szczegółów przepisu. Pobiera dane z API używając T
 
   {recipe && (
     <>
-      <RecipeDetailsHeader
-        recipeName={recipe.name}
-        recipeId={recipe.id}
-        onDelete={() => setDeleteDialogOpen(true)}
-      />
+      <RecipeDetailsHeader recipeName={recipe.name} recipeId={recipe.id} onDelete={() => setDeleteDialogOpen(true)} />
 
       <RecipeDetailsContent recipe={recipe} />
 
@@ -85,14 +84,17 @@ Główny kontener widoku szczegółów przepisu. Pobiera dane z API używając T
 ```
 
 **Obsługiwane interakcje:**
+
 - Fetch recipe details przy montowaniu
 - Open/close delete dialog
 - Delete mutation → redirect + toast
 
 **Typy:**
+
 - `RecipeResponseDto`
 
 **Propsy:**
+
 ```typescript
 interface RecipeDetailsViewProps {
   recipeId: string; // z URL params
@@ -105,13 +107,16 @@ interface RecipeDetailsViewProps {
 Sticky header z breadcrumbs i przyciskami akcji (Edit, Delete).
 
 **Główne elementy:**
+
 ```tsx
 <header className="recipe-details-header sticky top-0 bg-white z-10 border-b shadow-sm">
   <div className="container mx-auto p-4">
-    <Breadcrumbs items={[
-      { label: 'Przepisy', href: '/recipes' },
-      { label: recipeName, href: `/recipes/${recipeId}`, truncate: 30 }
-    ]} />
+    <Breadcrumbs
+      items={[
+        { label: "Przepisy", href: "/recipes" },
+        { label: recipeName, href: `/recipes/${recipeId}`, truncate: 30 },
+      ]}
+    />
 
     <div className="flex gap-3 mt-4">
       <Button asChild variant="outline">
@@ -121,11 +126,7 @@ Sticky header z breadcrumbs i przyciskami akcji (Edit, Delete).
         </Link>
       </Button>
 
-      <Button
-        onClick={onDelete}
-        variant="destructive"
-        aria-label={`Usuń przepis ${recipeName}`}
-      >
+      <Button onClick={onDelete} variant="destructive" aria-label={`Usuń przepis ${recipeName}`}>
         <Trash2 className="h-4 w-4 mr-2" />
         Usuń
       </Button>
@@ -142,11 +143,13 @@ Sticky header z breadcrumbs i przyciskami akcji (Edit, Delete).
 ```
 
 **Obsługiwane interakcje:**
+
 - Click "Edytuj" → nawigacja do `/recipes/:id/edit`
 - Click "Usuń" → trigger onDelete (open dialog)
 - Click "Powrót" → nawigacja do `/recipes`
 
 **Propsy:**
+
 ```typescript
 interface RecipeDetailsHeaderProps {
   recipeName: string;
@@ -161,29 +164,24 @@ interface RecipeDetailsHeaderProps {
 Główna zawartość strony z nazwą przepisu, meta informacjami, składnikami i instrukcjami.
 
 **Główne elementy:**
+
 ```tsx
 <div className="recipe-details-content container mx-auto max-w-4xl p-4">
-  <h1 className="text-4xl font-bold text-gray-900 mb-2">
-    {recipe.name}
-  </h1>
+  <h1 className="text-4xl font-bold text-gray-900 mb-2">{recipe.name}</h1>
 
-  <RecipeMeta
-    createdAt={recipe.created_at}
-    updatedAt={recipe.updated_at}
-  />
+  <RecipeMeta createdAt={recipe.created_at} updatedAt={recipe.updated_at} />
 
   <div className="grid md:grid-cols-2 gap-8 mt-8">
     <IngredientsSection ingredients={recipe.ingredients} />
     <InstructionsSection instructions={recipe.instructions} />
   </div>
 
-  {recipe.meal_plan_assignments > 0 && (
-    <AssignmentsInfo count={recipe.meal_plan_assignments} />
-  )}
+  {recipe.meal_plan_assignments > 0 && <AssignmentsInfo count={recipe.meal_plan_assignments} />}
 </div>
 ```
 
 **Propsy:**
+
 ```typescript
 interface RecipeDetailsContentProps {
   recipe: RecipeResponseDto;
@@ -196,27 +194,25 @@ interface RecipeDetailsContentProps {
 Wyświetla daty utworzenia i ostatniej edycji w formacie czytelnym dla użytkownika.
 
 **Główne elementy:**
+
 ```tsx
 <div className="recipe-meta flex gap-4 text-sm text-gray-600">
   <div>
-    <span className="font-medium">Dodano:</span>{' '}
-    <time dateTime={createdAt}>
-      {format(new Date(createdAt), 'd MMMM yyyy, HH:mm', { locale: pl })}
-    </time>
+    <span className="font-medium">Dodano:</span>{" "}
+    <time dateTime={createdAt}>{format(new Date(createdAt), "d MMMM yyyy, HH:mm", { locale: pl })}</time>
   </div>
 
   {updatedAt !== createdAt && (
     <div>
-      <span className="font-medium">Ostatnia edycja:</span>{' '}
-      <time dateTime={updatedAt}>
-        {format(new Date(updatedAt), 'd MMMM yyyy, HH:mm', { locale: pl })}
-      </time>
+      <span className="font-medium">Ostatnia edycja:</span>{" "}
+      <time dateTime={updatedAt}>{format(new Date(updatedAt), "d MMMM yyyy, HH:mm", { locale: pl })}</time>
     </div>
   )}
 </div>
 ```
 
 **Propsy:**
+
 ```typescript
 interface RecipeMetaProps {
   createdAt: string;
@@ -230,11 +226,10 @@ interface RecipeMetaProps {
 Sekcja ze składnikami wyświetlana jako lista punktowana. Każdy składnik pokazuje ilość, jednostkę i nazwę.
 
 **Główne elementy:**
+
 ```tsx
 <section className="ingredients-section">
-  <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-    Składniki ({ingredients.length})
-  </h2>
+  <h2 className="text-2xl font-semibold text-gray-900 mb-4">Składniki ({ingredients.length})</h2>
 
   <ul className="space-y-2" role="list">
     {ingredients
@@ -243,12 +238,8 @@ Sekcja ze składnikami wyświetlana jako lista punktowana. Każdy składnik poka
         <li key={ingredient.id} className="flex items-baseline gap-2">
           <span className="text-primary">•</span>
           <span>
-            {ingredient.quantity && (
-              <strong>{ingredient.quantity} </strong>
-            )}
-            {ingredient.unit && (
-              <span className="text-gray-600">{ingredient.unit} </span>
-            )}
+            {ingredient.quantity && <strong>{ingredient.quantity} </strong>}
+            {ingredient.unit && <span className="text-gray-600">{ingredient.unit} </span>}
             <span>{ingredient.name}</span>
           </span>
         </li>
@@ -258,6 +249,7 @@ Sekcja ze składnikami wyświetlana jako lista punktowana. Każdy składnik poka
 ```
 
 **Propsy:**
+
 ```typescript
 interface IngredientsSectionProps {
   ingredients: IngredientResponseDto[];
@@ -270,19 +262,17 @@ interface IngredientsSectionProps {
 Sekcja z instrukcjami wyświetlana jako paragraph z zachowaniem formatowania (newlines).
 
 **Główne elementy:**
+
 ```tsx
 <section className="instructions-section">
-  <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-    Instrukcje
-  </h2>
+  <h2 className="text-2xl font-semibold text-gray-900 mb-4">Instrukcje</h2>
 
-  <p className="whitespace-pre-wrap leading-relaxed text-gray-800">
-    {instructions}
-  </p>
+  <p className="whitespace-pre-wrap leading-relaxed text-gray-800">{instructions}</p>
 </section>
 ```
 
 **Propsy:**
+
 ```typescript
 interface InstructionsSectionProps {
   instructions: string;
@@ -295,13 +285,13 @@ interface InstructionsSectionProps {
 Alert informacyjny wyświetlany gdy przepis jest przypisany do kalendarza posiłków. Pokazuje liczbę przypisań i link do kalendarza.
 
 **Główne elementy:**
+
 ```tsx
 <Alert variant="info" className="mt-8">
   <Info className="h-4 w-4" />
   <AlertTitle>Ten przepis jest przypisany do kalendarza</AlertTitle>
   <AlertDescription>
-    Ten przepis jest przypisany do {count} {count === 1 ? 'posiłku' : 'posiłków'} w kalendarzu.
-    {' '}
+    Ten przepis jest przypisany do {count} {count === 1 ? "posiłku" : "posiłków"} w kalendarzu.{" "}
     <Link href="/calendar" className="font-medium underline">
       Zobacz kalendarz →
     </Link>
@@ -310,6 +300,7 @@ Alert informacyjny wyświetlany gdy przepis jest przypisany do kalendarza posił
 ```
 
 **Propsy:**
+
 ```typescript
 interface AssignmentsInfoProps {
   count: number;
@@ -322,6 +313,7 @@ interface AssignmentsInfoProps {
 Modal dialog potwierdzający usunięcie przepisu. Wyświetla komunikat o konsekwencjach (usunięcie przypisań w kalendarzu jeśli istnieją).
 
 **Główne elementy:**
+
 ```tsx
 <Dialog open={isOpen} onOpenChange={onClose}>
   <DialogContent>
@@ -330,39 +322,33 @@ Modal dialog potwierdzający usunięcie przepisu. Wyświetla komunikat o konsekw
       <DialogDescription>
         {assignmentsCount > 0 ? (
           <>
-            Ten przepis &quot;{recipeName}&quot; jest przypisany do{' '}
-            <strong>{assignmentsCount} {assignmentsCount === 1 ? 'posiłku' : 'posiłków'}</strong>{' '}
+            Ten przepis &quot;{recipeName}&quot; jest przypisany do{" "}
+            <strong>
+              {assignmentsCount} {assignmentsCount === 1 ? "posiłku" : "posiłków"}
+            </strong>{" "}
             w kalendarzu. Usunięcie spowoduje usunięcie wszystkich przypisań.
           </>
         ) : (
-          <>
-            Czy na pewno chcesz usunąć przepis &quot;{recipeName}&quot;?
-          </>
+          <>Czy na pewno chcesz usunąć przepis &quot;{recipeName}&quot;?</>
         )}
       </DialogDescription>
     </DialogHeader>
 
     <DialogFooter>
-      <Button
-        variant="ghost"
-        onClick={onClose}
-        disabled={deleteMutation.isLoading}
-      >
+      <Button variant="ghost" onClick={onClose} disabled={deleteMutation.isLoading}>
         Anuluj
       </Button>
 
-      <Button
-        variant="destructive"
-        onClick={handleDelete}
-        disabled={deleteMutation.isLoading}
-      >
+      <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isLoading}>
         {deleteMutation.isLoading ? (
           <>
             <Spinner className="h-4 w-4 mr-2" />
             Usuwanie...
           </>
+        ) : assignmentsCount > 0 ? (
+          "Usuń przepis i przypisania"
         ) : (
-          assignmentsCount > 0 ? 'Usuń przepis i przypisania' : 'Usuń przepis'
+          "Usuń przepis"
         )}
       </Button>
     </DialogFooter>
@@ -371,12 +357,14 @@ Modal dialog potwierdzający usunięcie przepisu. Wyświetla komunikat o konsekw
 ```
 
 **Obsługiwane interakcje:**
+
 - Click "Anuluj" → onClose
 - Click "Usuń" → handleDelete → mutation
 - Escape key → onClose
 - Backdrop click → onClose
 
 **Propsy:**
+
 ```typescript
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -393,12 +381,12 @@ interface DeleteConfirmationDialogProps {
 Skeleton loader podczas ładowania szczegółów przepisu.
 
 **Główne elementy:**
+
 ```tsx
 <div className="recipe-details-skeleton">
   <div className="container mx-auto max-w-4xl p-4">
     <Skeleton className="h-10 w-3/4 mb-2" /> {/* Title */}
     <Skeleton className="h-4 w-1/2 mb-8" /> {/* Meta */}
-
     <div className="grid md:grid-cols-2 gap-8">
       <div>
         <Skeleton className="h-6 w-32 mb-4" /> {/* Heading */}
@@ -455,7 +443,7 @@ export interface DeleteRecipeResponseDto {
 ### 6.1. TanStack Query dla fetch recipe
 
 ```typescript
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
   const router = useRouter();
@@ -463,17 +451,21 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
   // Fetch recipe details
-  const { data: recipe, isLoading, error } = useQuery({
-    queryKey: ['recipe', recipeId],
+  const {
+    data: recipe,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["recipe", recipeId],
     queryFn: async () => {
       const response = await fetch(`/api/recipes/${recipeId}`);
 
       if (response.status === 404) {
-        throw new Error('Recipe not found');
+        throw new Error("Recipe not found");
       }
 
       if (!response.ok) {
-        throw new Error('Failed to fetch recipe');
+        throw new Error("Failed to fetch recipe");
       }
 
       return response.json() as Promise<RecipeResponseDto>;
@@ -481,7 +473,7 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
     staleTime: 10 * 60 * 1000, // 10 minut
     retry: (failureCount, error) => {
       // Don't retry 404
-      if (error.message === 'Recipe not found') return false;
+      if (error.message === "Recipe not found") return false;
       return failureCount < 2;
     },
   });
@@ -490,29 +482,29 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
   const deleteMutation = useMutation({
     mutationFn: async () => {
       const response = await fetch(`/api/recipes/${recipeId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete recipe');
+        throw new Error("Failed to delete recipe");
       }
 
       return response.json() as Promise<DeleteRecipeResponseDto>;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(['recipes']);
-      queryClient.invalidateQueries(['meal-plan']); // May be assigned
+      queryClient.invalidateQueries(["recipes"]);
+      queryClient.invalidateQueries(["meal-plan"]); // May be assigned
 
       toast.success(
         data.deleted_meal_plan_assignments > 0
           ? `Przepis usunięty wraz z ${data.deleted_meal_plan_assignments} przypisaniami`
-          : 'Przepis usunięty'
+          : "Przepis usunięty"
       );
 
-      router.push('/recipes');
+      router.push("/recipes");
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Nie udało się usunąć przepisu');
+      toast.error(error.message || "Nie udało się usunąć przepisu");
     },
   });
 
@@ -530,11 +522,13 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
 ### 7.1. Endpoint: GET /api/recipes/:id
 
 **Request:**
+
 ```
 GET /api/recipes/550e8400-e29b-41d4-a716-446655440000
 ```
 
 **Response (200 OK):**
+
 ```typescript
 RecipeResponseDto
 {
@@ -562,29 +556,35 @@ RecipeResponseDto
 **Error Responses:**
 
 **404 Not Found:**
+
 ```json
 {
   "error": "Recipe not found"
 }
 ```
+
 → Show error page "Przepis nie znaleziony" + link do /recipes
 
 **401 Unauthorized:**
+
 ```json
 {
   "error": "Unauthorized"
 }
 ```
+
 → Redirect do /login
 
 ### 7.2. Endpoint: DELETE /api/recipes/:id
 
 **Request:**
+
 ```
 DELETE /api/recipes/550e8400-e29b-41d4-a716-446655440000
 ```
 
 **Response (200 OK):**
+
 ```typescript
 DeleteRecipeResponseDto
 {
@@ -596,6 +596,7 @@ DeleteRecipeResponseDto
 **Error Responses:**
 
 **404 Not Found:**
+
 ```json
 {
   "error": "Recipe not found"
@@ -603,6 +604,7 @@ DeleteRecipeResponseDto
 ```
 
 **401 Unauthorized:**
+
 ```json
 {
   "error": "Unauthorized"
@@ -614,6 +616,7 @@ DeleteRecipeResponseDto
 ### 8.1. Przeglądanie szczegółów przepisu
 
 **Przepływ:**
+
 1. User wchodzi na `/recipes/:id`
 2. RecipeDetailsView montuje się
 3. useQuery fetch recipe details
@@ -624,6 +627,7 @@ DeleteRecipeResponseDto
 ### 8.2. Edycja przepisu
 
 **Przepływ:**
+
 1. User klika "Edytuj"
 2. Nawigacja do `/recipes/:id/edit`
 3. Formularz edycji (prefilled z danymi)
@@ -631,6 +635,7 @@ DeleteRecipeResponseDto
 ### 8.3. Usuwanie przepisu
 
 **Przepływ:**
+
 1. User klika "Usuń"
 2. DeleteConfirmationDialog otwiera się
 3. Dialog pokazuje:
@@ -645,6 +650,7 @@ DeleteRecipeResponseDto
 ### 8.4. Nawigacja do kalendarza (z AssignmentsInfo)
 
 **Przepływ:**
+
 1. User klika "Zobacz kalendarz →"
 2. Nawigacja do `/calendar`
 3. Calendar pokazuje bieżący tydzień
@@ -652,6 +658,7 @@ DeleteRecipeResponseDto
 ### 8.5. Powrót do listy
 
 **Przepływ:**
+
 1. User klika "Powrót do listy"
 2. Nawigacja do `/recipes`
 3. Lista przepisów (cached data)
@@ -695,7 +702,7 @@ if (error?.message === 'Recipe not found') {
 ### 9.5. Sortowanie składników
 
 ```typescript
-ingredients.sort((a, b) => a.sort_order - b.sort_order)
+ingredients.sort((a, b) => a.sort_order - b.sort_order);
 ```
 
 ## 10. Obsługa błędów

@@ -9,6 +9,7 @@ Endpoint `POST /api/analytics/export` służy do śledzenia zdarzeń eksportu li
 - Potencjalne przyszłe wykorzystanie do analytics dashboardów
 
 **Kluczowe charakterystyki:**
+
 - Operacja asynchroniczna (fire-and-forget dla klienta)
 - Minimalna odpowiedź (204 No Content)
 - Fokus na bezpieczeństwie (weryfikacja własności listy)
@@ -19,27 +20,34 @@ Endpoint `POST /api/analytics/export` służy do śledzenia zdarzeń eksportu li
 ## 2. Szczegóły żądania
 
 ### Metoda HTTP
+
 `POST`
 
 ### Struktura URL
+
 ```
 /api/analytics/export
 ```
 
 ### Headers
+
 ```http
 Content-Type: application/json
 Cookie: sb-access-token, sb-refresh-token (Supabase auth)
 ```
 
 ### Parametry
+
 **Wymagane:**
+
 - Brak parametrów URL
 
 **Opcjonalne:**
+
 - Brak
 
 ### Request Body
+
 ```typescript
 {
   "shopping_list_id": "850e8400-e29b-41d4-a716-446655440000", // UUID listy zakupów
@@ -54,6 +62,7 @@ Cookie: sb-access-token, sb-refresh-token (Supabase auth)
 ## 3. Wykorzystywane typy
 
 ### Command Model (Input)
+
 ```typescript
 // src/types.ts:399-402
 export interface TrackExportDto {
@@ -63,6 +72,7 @@ export interface TrackExportDto {
 ```
 
 ### Response Types
+
 ```typescript
 // Brak response body - 204 No Content
 export type NoContentResponse = Record<string, never>;
@@ -80,6 +90,7 @@ export interface ValidationErrorResponseDto {
 ```
 
 ### Database Types (dla walidacji)
+
 ```typescript
 // src/db/database.types.ts
 export type ShoppingList = Database["public"]["Tables"]["shopping_lists"]["Row"];
@@ -90,9 +101,11 @@ export type ShoppingList = Database["public"]["Tables"]["shopping_lists"]["Row"]
 ## 4. Szczegóły odpowiedzi
 
 ### Success Response (204 No Content)
+
 ```http
 HTTP/1.1 204 No Content
 ```
+
 - **Brak response body**
 - Zwracane gdy tracking został zalogowany pomyślnie
 - Klient nie czeka na żadne dane zwrotne
@@ -100,6 +113,7 @@ HTTP/1.1 204 No Content
 ### Error Responses
 
 #### 400 Bad Request
+
 ```json
 {
   "error": "Validation failed",
@@ -111,6 +125,7 @@ HTTP/1.1 204 No Content
 ```
 
 #### 401 Unauthorized
+
 ```json
 {
   "error": "Unauthorized",
@@ -119,6 +134,7 @@ HTTP/1.1 204 No Content
 ```
 
 #### 404 Not Found
+
 ```json
 {
   "error": "Not found",
@@ -127,6 +143,7 @@ HTTP/1.1 204 No Content
 ```
 
 #### 500 Internal Server Error
+
 ```json
 {
   "error": "Internal server error",
@@ -198,45 +215,55 @@ sequenceDiagram
 ## 6. Względy bezpieczeństwa
 
 ### Autentykacja
+
 - **Wymagana:** Użytkownik musi być zalogowany
 - **Mechanizm:** Supabase Auth session cookies
 - **Walidacja:** `context.locals.user` musi być present
 - **Kod błędu:** 401 jeśli nie zalogowany
 
 ### Autoryzacja (RLS-equivalent)
+
 - **Zasada:** Użytkownik może trackować tylko własne listy
 - **Implementacja:** Explicit query z filtrem `user_id`
+
   ```typescript
   const { data: list } = await supabase
-    .from('shopping_lists')
-    .select('id')
-    .eq('id', shopping_list_id)
-    .eq('user_id', user.id)
+    .from("shopping_lists")
+    .select("id")
+    .eq("id", shopping_list_id)
+    .eq("user_id", user.id)
     .single();
 
   if (!list) {
-    return new Response(JSON.stringify({
-      error: "Not found",
-      message: "Shopping list not found or access denied"
-    }), { status: 404 });
+    return new Response(
+      JSON.stringify({
+        error: "Not found",
+        message: "Shopping list not found or access denied",
+      }),
+      { status: 404 }
+    );
   }
   ```
 
 ### Walidacja danych wejściowych
+
 - **UUID validation:** Zapobieganie SQL injection (choć Supabase client sanitizes)
 - **Enum validation:** `format` tylko "pdf" | "txt"
 - **Brak dodatkowych pól:** Zod `.strict()` zapobiega unexpected fields
 
 ### Rate Limiting
+
 - **Supabase default:** 100 req/min per IP (Free tier)
 - **Opcjonalnie:** Custom rate limiting w middleware (post-MVP)
 - **Uwaga:** To lightweight endpoint, rate limiting mniej krytyczne
 
 ### CORS
+
 - **Vercel default:** Same-origin policy
 - **Astro middleware:** Brak custom CORS headers potrzebnych dla SPA
 
 ### Logging wrażliwych danych
+
 - **NIE logować:** User IDs, email, session tokens
 - **Logować:** `shopping_list_id`, `format`, timestamp, IP (jeśli analytics)
 - **Sentry:** Filtrowanie PII w Sentry config
@@ -247,15 +274,15 @@ sequenceDiagram
 
 ### Tabela scenariuszy błędów
 
-| Scenariusz | Kod | Response Body | Handling |
-|------------|-----|---------------|----------|
-| Brak autentykacji | 401 | `{ error: "Unauthorized", message: "Authentication required" }` | Early return jeśli `!context.locals.user` |
-| Nieprawidłowy UUID | 400 | `{ error: "Validation failed", details: { shopping_list_id: [...] } }` | Zod validation error |
-| Nieprawidłowy format | 400 | `{ error: "Validation failed", details: { format: [...] } }` | Zod validation error |
-| Lista nie istnieje | 404 | `{ error: "Not found", message: "Shopping list not found or access denied" }` | Empty query result |
-| Brak dostępu do listy | 404 | `{ error: "Not found", message: "Shopping list not found or access denied" }` | `user_id` mismatch (nie ujawniamy powodu) |
-| Błąd Supabase | 500 | `{ error: "Internal server error", message: "Failed to track export event" }` | Catch block, log do Sentry |
-| Błąd analytics service | 500 | `{ error: "Internal server error", message: "Failed to track export event" }` | Catch block, log do Sentry |
+| Scenariusz             | Kod | Response Body                                                                 | Handling                                  |
+| ---------------------- | --- | ----------------------------------------------------------------------------- | ----------------------------------------- |
+| Brak autentykacji      | 401 | `{ error: "Unauthorized", message: "Authentication required" }`               | Early return jeśli `!context.locals.user` |
+| Nieprawidłowy UUID     | 400 | `{ error: "Validation failed", details: { shopping_list_id: [...] } }`        | Zod validation error                      |
+| Nieprawidłowy format   | 400 | `{ error: "Validation failed", details: { format: [...] } }`                  | Zod validation error                      |
+| Lista nie istnieje     | 404 | `{ error: "Not found", message: "Shopping list not found or access denied" }` | Empty query result                        |
+| Brak dostępu do listy  | 404 | `{ error: "Not found", message: "Shopping list not found or access denied" }` | `user_id` mismatch (nie ujawniamy powodu) |
+| Błąd Supabase          | 500 | `{ error: "Internal server error", message: "Failed to track export event" }` | Catch block, log do Sentry                |
+| Błąd analytics service | 500 | `{ error: "Internal server error", message: "Failed to track export event" }` | Catch block, log do Sentry                |
 
 ### Error Handling Pattern
 
@@ -264,43 +291,52 @@ try {
   // 1. Auth check (middleware powinno to załatwić, ale double-check)
   const user = context.locals.user;
   if (!user) {
-    return new Response(JSON.stringify({
-      error: "Unauthorized",
-      message: "Authentication required"
-    }), {
-      status: 401,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Unauthorized",
+        message: "Authentication required",
+      }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
   // 2. Validation
   const validation = trackExportSchema.safeParse(body);
   if (!validation.success) {
-    return new Response(JSON.stringify({
-      error: "Validation failed",
-      details: validation.error.flatten().fieldErrors
-    }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Validation failed",
+        details: validation.error.flatten().fieldErrors,
+      }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
   // 3. Authorization check
   const { data: list, error: listError } = await supabase
-    .from('shopping_lists')
-    .select('id')
-    .eq('id', validated.shopping_list_id)
-    .eq('user_id', user.id)
+    .from("shopping_lists")
+    .select("id")
+    .eq("id", validated.shopping_list_id)
+    .eq("user_id", user.id)
     .single();
 
   if (listError || !list) {
-    return new Response(JSON.stringify({
-      error: "Not found",
-      message: "Shopping list not found or access denied"
-    }), {
-      status: 404,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Not found",
+        message: "Shopping list not found or access denied",
+      }),
+      {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 
   // 4. Track event (non-blocking ideally)
@@ -308,23 +344,25 @@ try {
     userId: user.id,
     shoppingListId: validated.shopping_list_id,
     format: validated.format,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   // 5. Success response
   return new Response(null, { status: 204 });
-
 } catch (error) {
-  console.error('[POST /api/analytics/export] Error:', error);
+  console.error("[POST /api/analytics/export] Error:", error);
   // Log to Sentry in production
 
-  return new Response(JSON.stringify({
-    error: "Internal server error",
-    message: "Failed to track export event"
-  }), {
-    status: 500,
-    headers: { 'Content-Type': 'application/json' }
-  });
+  return new Response(
+    JSON.stringify({
+      error: "Internal server error",
+      message: "Failed to track export event",
+    }),
+    {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
 ```
 
@@ -355,12 +393,14 @@ try {
 ### Strategie optymalizacji
 
 #### Immediate (MVP)
+
 - ✅ Lightweight query (tylko `id` field)
 - ✅ Early returns (guard clauses)
 - ✅ Brak heavy computations
 - ✅ 204 No Content (brak serializacji response body)
 
 #### Future (Post-MVP)
+
 - 🔮 Async analytics tracking (non-blocking):
   ```typescript
   // Fire-and-forget
@@ -371,6 +411,7 @@ try {
 - 🔮 Caching ownership checks (jeśli repeated calls)
 
 ### Monitoring
+
 - **Sentry:** Track average response time
 - **Metric:** `analytics.export.duration`
 - **Alert:** Jeśli p95 > 500ms
@@ -380,24 +421,28 @@ try {
 ## 9. Etapy wdrożenia
 
 ### Krok 1: Utworzenie Zod schema walidacji
+
 **Plik:** `src/lib/validation/analytics.schema.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
-export const trackExportSchema = z.object({
-  shopping_list_id: z.string().uuid({
-    message: "Invalid shopping list ID format"
-  }),
-  format: z.enum(['pdf', 'txt'], {
-    errorMap: () => ({ message: "Format must be 'pdf' or 'txt'" })
+export const trackExportSchema = z
+  .object({
+    shopping_list_id: z.string().uuid({
+      message: "Invalid shopping list ID format",
+    }),
+    format: z.enum(["pdf", "txt"], {
+      errorMap: () => ({ message: "Format must be 'pdf' or 'txt'" }),
+    }),
   })
-}).strict();
+  .strict();
 
 export type TrackExportInput = z.infer<typeof trackExportSchema>;
 ```
 
 **Testy:**
+
 - ✅ Valid UUID + "pdf" → passes
 - ✅ Valid UUID + "txt" → passes
 - ❌ Invalid UUID → fails with message
@@ -407,23 +452,24 @@ export type TrackExportInput = z.infer<typeof trackExportSchema>;
 ---
 
 ### Krok 2: Utworzenie serwisu analytics (opcjonalne dla MVP)
+
 **Plik:** `src/lib/services/analytics.service.ts`
 
 ```typescript
 interface ExportEvent {
   userId: string;
   shoppingListId: string;
-  format: 'pdf' | 'txt';
+  format: "pdf" | "txt";
   timestamp: string;
 }
 
 export async function trackExportEvent(event: ExportEvent): Promise<void> {
   // MVP: Simple console logging
-  console.log('[Analytics] Export event:', {
+  console.log("[Analytics] Export event:", {
     user: event.userId,
     list: event.shoppingListId,
     format: event.format,
-    time: event.timestamp
+    time: event.timestamp,
   });
 
   // Future: Send to analytics service
@@ -439,12 +485,13 @@ export async function trackExportEvent(event: ExportEvent): Promise<void> {
 ---
 
 ### Krok 3: Implementacja endpointa API
+
 **Plik:** `src/pages/api/analytics/export.ts`
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { trackExportSchema } from '@/lib/validation/analytics.schema';
-import { trackExportEvent } from '@/lib/services/analytics.service';
+import type { APIRoute } from "astro";
+import { trackExportSchema } from "@/lib/validation/analytics.schema";
+import { trackExportEvent } from "@/lib/services/analytics.service";
 
 export const prerender = false;
 
@@ -453,13 +500,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // 1. Authentication check
     const user = locals.user;
     if (!user) {
-      return new Response(JSON.stringify({
-        error: 'Unauthorized',
-        message: 'Authentication required'
-      }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized",
+          message: "Authentication required",
+        }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     // 2. Parse and validate request body
@@ -467,33 +517,39 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const validation = trackExportSchema.safeParse(body);
 
     if (!validation.success) {
-      return new Response(JSON.stringify({
-        error: 'Validation failed',
-        details: validation.error.flatten().fieldErrors
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Validation failed",
+          details: validation.error.flatten().fieldErrors,
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     const { shopping_list_id, format } = validation.data;
 
     // 3. Authorization: Check if shopping list belongs to user
     const { data: list, error: listError } = await locals.supabase
-      .from('shopping_lists')
-      .select('id')
-      .eq('id', shopping_list_id)
-      .eq('user_id', user.id)
+      .from("shopping_lists")
+      .select("id")
+      .eq("id", shopping_list_id)
+      .eq("user_id", user.id)
       .single();
 
     if (listError || !list) {
-      return new Response(JSON.stringify({
-        error: 'Not found',
-        message: 'Shopping list not found or access denied'
-      }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return new Response(
+        JSON.stringify({
+          error: "Not found",
+          message: "Shopping list not found or access denied",
+        }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     // 4. Track export event
@@ -501,25 +557,27 @@ export const POST: APIRoute = async ({ request, locals }) => {
       userId: user.id,
       shoppingListId: shopping_list_id,
       format,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // 5. Success response (204 No Content)
     return new Response(null, { status: 204 });
-
   } catch (error) {
-    console.error('[POST /api/analytics/export] Unexpected error:', error);
+    console.error("[POST /api/analytics/export] Unexpected error:", error);
 
     // TODO: Send to Sentry in production
     // Sentry.captureException(error);
 
-    return new Response(JSON.stringify({
-      error: 'Internal server error',
-      message: 'Failed to track export event'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return new Response(
+      JSON.stringify({
+        error: "Internal server error",
+        message: "Failed to track export event",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
   }
 };
 ```
@@ -555,6 +613,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
    - ❌ Analytics service error → 500 Internal Server Error
 
 **Narzędzia testowe:**
+
 - Vitest (unit tests dla schema i service)
 - Playwright/Cypress (E2E tests dla API endpoint)
 - Postman/Thunder Client (manual testing)
@@ -564,6 +623,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 ### Krok 5: Dokumentacja i deployment
 
 1. **OpenAPI/Swagger docs (opcjonalnie):**
+
    ```yaml
    /api/analytics/export:
      post:
@@ -576,18 +636,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
          content:
            application/json:
              schema:
-               $ref: '#/components/schemas/TrackExportDto'
+               $ref: "#/components/schemas/TrackExportDto"
        responses:
-         '204':
+         "204":
            description: Export event tracked successfully
-         '401':
-           $ref: '#/components/responses/Unauthorized'
-         '400':
-           $ref: '#/components/responses/ValidationError'
-         '404':
-           $ref: '#/components/responses/NotFound'
-         '500':
-           $ref: '#/components/responses/InternalError'
+         "401":
+           $ref: "#/components/responses/Unauthorized"
+         "400":
+           $ref: "#/components/responses/ValidationError"
+         "404":
+           $ref: "#/components/responses/NotFound"
+         "500":
+           $ref: "#/components/responses/InternalError"
    ```
 
 2. **README update:**
@@ -609,33 +669,30 @@ export const POST: APIRoute = async ({ request, locals }) => {
 **Komponent:** `src/components/ShoppingListExport.tsx`
 
 ```typescript
-const handleExport = async (format: 'pdf' | 'txt') => {
+const handleExport = async (format: "pdf" | "txt") => {
   setIsLoading(true);
 
   try {
     // 1. Generate file client-side (existing logic)
-    const blob = format === 'pdf'
-      ? await generateShoppingListPDF(list, items)
-      : generateShoppingListTXT(list, items);
+    const blob = format === "pdf" ? await generateShoppingListPDF(list, items) : generateShoppingListTXT(list, items);
 
     downloadFile(blob, `${list.name}-${format}`);
 
     // 2. Track export event (non-blocking)
-    fetch('/api/analytics/export', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("/api/analytics/export", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         shopping_list_id: list.id,
-        format
-      })
-    }).catch(err => {
+        format,
+      }),
+    }).catch((err) => {
       // Silent fail - analytics tracking nie powinno blokować UX
-      console.warn('Failed to track export:', err);
+      console.warn("Failed to track export:", err);
     });
-
   } catch (error) {
-    console.error('Export failed:', error);
-    alert('Nie udało się wyeksportować listy');
+    console.error("Export failed:", error);
+    alert("Nie udało się wyeksportować listy");
   } finally {
     setIsLoading(false);
   }
@@ -670,6 +727,7 @@ const handleExport = async (format: 'pdf' | 'txt') => {
 ## 11. Future Enhancements (Post-MVP)
 
 1. **Persistent analytics table:**
+
    ```sql
    CREATE TABLE analytics_events (
      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

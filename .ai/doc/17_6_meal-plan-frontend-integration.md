@@ -24,8 +24,8 @@ This guide provides React hooks and components for integrating the GET /api/meal
 Create file: `src/components/hooks/useMealPlan.ts`
 
 ```typescript
-import { useState, useEffect } from 'react';
-import type { WeekCalendarResponseDto, ErrorResponseDto } from '@/types';
+import { useState, useEffect } from "react";
+import type { WeekCalendarResponseDto, ErrorResponseDto } from "@/types";
 
 interface UseMealPlanOptions {
   enabled?: boolean; // Whether to fetch immediately
@@ -49,10 +49,7 @@ interface UseMealPlanResult {
  * @example
  * const { data, loading, error, refetch } = useMealPlan('2025-01-20');
  */
-export function useMealPlan(
-  weekStartDate: string,
-  options: UseMealPlanOptions = {}
-): UseMealPlanResult {
+export function useMealPlan(weekStartDate: string, options: UseMealPlanOptions = {}): UseMealPlanResult {
   const { enabled = true, refetchInterval } = options;
 
   const [data, setData] = useState<WeekCalendarResponseDto | null>(null);
@@ -64,9 +61,7 @@ export function useMealPlan(
       setLoading(true);
       setError(null);
 
-      const response = await fetch(
-        `/api/meal-plan?week_start_date=${weekStartDate}`
-      );
+      const response = await fetch(`/api/meal-plan?week_start_date=${weekStartDate}`);
 
       if (!response.ok) {
         const errorData: ErrorResponseDto = await response.json();
@@ -76,7 +71,7 @@ export function useMealPlan(
       const result: WeekCalendarResponseDto = await response.json();
       setData(result);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      const errorMessage = err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
       setData(null);
     } finally {
@@ -112,20 +107,20 @@ export function useMealPlan(
 Create file: `src/components/MealPlanCalendar.tsx`
 
 ```tsx
-import { useMealPlan } from '@/components/hooks/useMealPlan';
-import type { MealPlanAssignmentDto } from '@/types';
+import { useMealPlan } from "@/components/hooks/useMealPlan";
+import type { MealPlanAssignmentDto } from "@/types";
 
 interface MealPlanCalendarProps {
   weekStartDate: string; // YYYY-MM-DD
 }
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const MEAL_TYPES = {
-  breakfast: 'Breakfast',
-  second_breakfast: 'Second Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
+  breakfast: "Breakfast",
+  second_breakfast: "Second Breakfast",
+  lunch: "Lunch",
+  dinner: "Dinner",
 } as const;
 
 export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
@@ -147,10 +142,7 @@ export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <h3 className="text-red-800 font-semibold">Error loading meal plan</h3>
         <p className="text-red-600 mt-1">{error}</p>
-        <button
-          onClick={refetch}
-          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-        >
+        <button onClick={refetch} className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
           Retry
         </button>
       </div>
@@ -166,7 +158,9 @@ export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
           Week: {data?.week_start_date} - {data?.week_end_date}
         </p>
         <button
-          onClick={() => {/* Navigate to add meal */}}
+          onClick={() => {
+            /* Navigate to add meal */
+          }}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Add Meal
@@ -176,13 +170,16 @@ export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
   }
 
   // Group assignments by day
-  const assignmentsByDay = data.assignments.reduce((acc, assignment) => {
-    if (!acc[assignment.day_of_week]) {
-      acc[assignment.day_of_week] = [];
-    }
-    acc[assignment.day_of_week].push(assignment);
-    return acc;
-  }, {} as Record<number, MealPlanAssignmentDto[]>);
+  const assignmentsByDay = data.assignments.reduce(
+    (acc, assignment) => {
+      if (!acc[assignment.day_of_week]) {
+        acc[assignment.day_of_week] = [];
+      }
+      acc[assignment.day_of_week].push(assignment);
+      return acc;
+    },
+    {} as Record<number, MealPlanAssignmentDto[]>
+  );
 
   return (
     <div className="space-y-4">
@@ -190,10 +187,7 @@ export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
         <h2 className="text-xl font-bold">
           Week: {data.week_start_date} - {data.week_end_date}
         </h2>
-        <button
-          onClick={refetch}
-          className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
-        >
+        <button onClick={refetch} className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300">
           Refresh
         </button>
       </div>
@@ -202,26 +196,17 @@ export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
       <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
         {[1, 2, 3, 4, 5, 6, 7].map((dayOfWeek) => (
           <div key={dayOfWeek} className="border rounded-lg p-3">
-            <h3 className="font-semibold text-sm text-gray-700 mb-2">
-              {DAYS_OF_WEEK[dayOfWeek - 1]}
-            </h3>
+            <h3 className="font-semibold text-sm text-gray-700 mb-2">{DAYS_OF_WEEK[dayOfWeek - 1]}</h3>
 
             <div className="space-y-2">
               {assignmentsByDay[dayOfWeek]?.map((assignment) => (
-                <div
-                  key={assignment.id}
-                  className="bg-blue-50 border border-blue-200 rounded p-2 text-sm"
-                >
-                  <div className="font-medium text-blue-900">
-                    {MEAL_TYPES[assignment.meal_type]}
-                  </div>
+                <div key={assignment.id} className="bg-blue-50 border border-blue-200 rounded p-2 text-sm">
+                  <div className="font-medium text-blue-900">{MEAL_TYPES[assignment.meal_type]}</div>
                   <div className="text-blue-700 truncate" title={assignment.recipe_name}>
                     {assignment.recipe_name}
                   </div>
                 </div>
-              )) || (
-                <div className="text-gray-400 text-xs italic">No meals</div>
-              )}
+              )) || <div className="text-gray-400 text-xs italic">No meals</div>}
             </div>
           </div>
         ))}
@@ -243,11 +228,11 @@ export function MealPlanCalendar({ weekStartDate }: MealPlanCalendarProps) {
 ### Comprehensive Error Handling Hook
 
 ```typescript
-import { useState, useEffect } from 'react';
-import type { WeekCalendarResponseDto, ErrorResponseDto, ValidationErrorResponseDto } from '@/types';
+import { useState, useEffect } from "react";
+import type { WeekCalendarResponseDto, ErrorResponseDto, ValidationErrorResponseDto } from "@/types";
 
 interface ApiError {
-  type: 'validation' | 'auth' | 'server' | 'network';
+  type: "validation" | "auth" | "server" | "network";
   message: string;
   details?: Record<string, string[]>;
 }
@@ -263,33 +248,31 @@ export function useMealPlanWithErrors(weekStartDate: string) {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
-          `/api/meal-plan?week_start_date=${weekStartDate}`
-        );
+        const response = await fetch(`/api/meal-plan?week_start_date=${weekStartDate}`);
 
         // Handle different error types
         if (!response.ok) {
           if (response.status === 400) {
             const errorData: ValidationErrorResponseDto = await response.json();
             setError({
-              type: 'validation',
-              message: 'Invalid request parameters',
+              type: "validation",
+              message: "Invalid request parameters",
               details: errorData.details,
             });
           } else if (response.status === 401) {
             setError({
-              type: 'auth',
-              message: 'Please log in to view your meal plan',
+              type: "auth",
+              message: "Please log in to view your meal plan",
             });
           } else if (response.status === 500) {
             setError({
-              type: 'server',
-              message: 'Server error. Please try again later.',
+              type: "server",
+              message: "Server error. Please try again later.",
             });
           } else {
             setError({
-              type: 'server',
-              message: 'An unexpected error occurred',
+              type: "server",
+              message: "An unexpected error occurred",
             });
           }
           return;
@@ -299,8 +282,8 @@ export function useMealPlanWithErrors(weekStartDate: string) {
         setData(result);
       } catch (err) {
         setError({
-          type: 'network',
-          message: 'Network error. Please check your connection.',
+          type: "network",
+          message: "Network error. Please check your connection.",
         });
       } finally {
         setLoading(false);
@@ -317,7 +300,7 @@ export function useMealPlanWithErrors(weekStartDate: string) {
 ### Error Display Component
 
 ```tsx
-import type { ApiError } from './useMealPlanWithErrors';
+import type { ApiError } from "./useMealPlanWithErrors";
 
 interface ErrorDisplayProps {
   error: ApiError;
@@ -326,17 +309,17 @@ interface ErrorDisplayProps {
 
 export function ErrorDisplay({ error, onRetry }: ErrorDisplayProps) {
   const errorStyles = {
-    validation: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-    auth: 'bg-red-50 border-red-200 text-red-800',
-    server: 'bg-red-50 border-red-200 text-red-800',
-    network: 'bg-orange-50 border-orange-200 text-orange-800',
+    validation: "bg-yellow-50 border-yellow-200 text-yellow-800",
+    auth: "bg-red-50 border-red-200 text-red-800",
+    server: "bg-red-50 border-red-200 text-red-800",
+    network: "bg-orange-50 border-orange-200 text-orange-800",
   };
 
   const errorIcons = {
-    validation: '⚠️',
-    auth: '🔒',
-    server: '❌',
-    network: '📡',
+    validation: "⚠️",
+    auth: "🔒",
+    server: "❌",
+    network: "📡",
   };
 
   return (
@@ -347,32 +330,26 @@ export function ErrorDisplay({ error, onRetry }: ErrorDisplayProps) {
           <h3 className="font-semibold">{error.message}</h3>
 
           {/* Validation errors details */}
-          {error.type === 'validation' && error.details && (
+          {error.type === "validation" && error.details && (
             <ul className="mt-2 text-sm space-y-1">
               {Object.entries(error.details).map(([field, errors]) => (
                 <li key={field}>
-                  <strong>{field}:</strong> {errors.join(', ')}
+                  <strong>{field}:</strong> {errors.join(", ")}
                 </li>
               ))}
             </ul>
           )}
 
           {/* Auth error - redirect to login */}
-          {error.type === 'auth' && (
-            <a
-              href="/login"
-              className="inline-block mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            >
+          {error.type === "auth" && (
+            <a href="/login" className="inline-block mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
               Log In
             </a>
           )}
 
           {/* Other errors - show retry button */}
-          {error.type !== 'auth' && onRetry && (
-            <button
-              onClick={onRetry}
-              className="mt-2 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-            >
+          {error.type !== "auth" && onRetry && (
+            <button onClick={onRetry} className="mt-2 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
               Try Again
             </button>
           )}
@@ -418,14 +395,14 @@ export function MealPlanSkeleton() {
 ### Using React Query (Recommended)
 
 ```typescript
-import { useQuery } from '@tanstack/react-query';
-import type { WeekCalendarResponseDto } from '@/types';
+import { useQuery } from "@tanstack/react-query";
+import type { WeekCalendarResponseDto } from "@/types";
 
 async function fetchMealPlan(weekStartDate: string): Promise<WeekCalendarResponseDto> {
   const response = await fetch(`/api/meal-plan?week_start_date=${weekStartDate}`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch meal plan');
+    throw new Error("Failed to fetch meal plan");
   }
 
   return response.json();
@@ -433,7 +410,7 @@ async function fetchMealPlan(weekStartDate: string): Promise<WeekCalendarRespons
 
 export function useMealPlanQuery(weekStartDate: string) {
   return useQuery({
-    queryKey: ['meal-plan', weekStartDate],
+    queryKey: ["meal-plan", weekStartDate],
     queryFn: () => fetchMealPlan(weekStartDate),
     staleTime: 5 * 60 * 1000, // 5 minutes
     cacheTime: 30 * 60 * 1000, // 30 minutes
@@ -511,20 +488,20 @@ export function WeekNavigator({ currentWeek, onWeekChange }: {
 ### Meal Type Utilities
 
 ```typescript
-import type { MealType } from '@/types';
+import type { MealType } from "@/types";
 
 export const MEAL_TYPE_LABELS: Record<MealType, string> = {
-  breakfast: 'Breakfast',
-  second_breakfast: 'Second Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
+  breakfast: "Breakfast",
+  second_breakfast: "Second Breakfast",
+  lunch: "Lunch",
+  dinner: "Dinner",
 };
 
 export const MEAL_TYPE_ICONS: Record<MealType, string> = {
-  breakfast: '🍳',
-  second_breakfast: '🥪',
-  lunch: '🍽️',
-  dinner: '🍲',
+  breakfast: "🍳",
+  second_breakfast: "🥪",
+  lunch: "🍽️",
+  dinner: "🍲",
 };
 
 export function getMealTypeLabel(mealType: MealType): string {
@@ -532,7 +509,7 @@ export function getMealTypeLabel(mealType: MealType): string {
 }
 
 export function getMealTypeIcon(mealType: MealType): string {
-  return MEAL_TYPE_ICONS[mealType] || '🍴';
+  return MEAL_TYPE_ICONS[mealType] || "🍴";
 }
 ```
 
@@ -541,16 +518,14 @@ export function getMealTypeIcon(mealType: MealType): string {
 ## Complete Example: Full Page Component
 
 ```tsx
-import { useState } from 'react';
-import { useMealPlan } from '@/components/hooks/useMealPlan';
-import { MealPlanSkeleton } from '@/components/MealPlanSkeleton';
-import { ErrorDisplay } from '@/components/ErrorDisplay';
-import { WeekNavigator, getWeekStartDate, addWeeks } from '@/lib/date-utils';
+import { useState } from "react";
+import { useMealPlan } from "@/components/hooks/useMealPlan";
+import { MealPlanSkeleton } from "@/components/MealPlanSkeleton";
+import { ErrorDisplay } from "@/components/ErrorDisplay";
+import { WeekNavigator, getWeekStartDate, addWeeks } from "@/lib/date-utils";
 
 export function MealPlanPage() {
-  const [weekStartDate, setWeekStartDate] = useState(() =>
-    getWeekStartDate(new Date())
-  );
+  const [weekStartDate, setWeekStartDate] = useState(() => getWeekStartDate(new Date()));
 
   const { data, loading, error, refetch } = useMealPlan(weekStartDate);
 
@@ -559,27 +534,17 @@ export function MealPlanPage() {
       <h1 className="text-3xl font-bold mb-6">My Meal Plan</h1>
 
       {/* Week Navigation */}
-      <WeekNavigator
-        currentWeek={weekStartDate}
-        onWeekChange={setWeekStartDate}
-      />
+      <WeekNavigator currentWeek={weekStartDate} onWeekChange={setWeekStartDate} />
 
       <div className="mt-8">
         {/* Loading State */}
         {loading && <MealPlanSkeleton />}
 
         {/* Error State */}
-        {error && (
-          <ErrorDisplay
-            error={{ type: 'server', message: error }}
-            onRetry={refetch}
-          />
-        )}
+        {error && <ErrorDisplay error={{ type: "server", message: error }} onRetry={refetch} />}
 
         {/* Success State */}
-        {!loading && !error && data && (
-          <MealPlanCalendar weekStartDate={weekStartDate} />
-        )}
+        {!loading && !error && data && <MealPlanCalendar weekStartDate={weekStartDate} />}
       </div>
     </div>
   );
@@ -597,6 +562,7 @@ GET /api/meal-plan?week_start_date=YYYY-MM-DD
 ```
 
 **Query Parameters:**
+
 - `week_start_date` (required): ISO date string (YYYY-MM-DD)
 
 **Authentication:** Required (Supabase session cookie)
@@ -604,6 +570,7 @@ GET /api/meal-plan?week_start_date=YYYY-MM-DD
 ### Response
 
 **Success (200 OK):**
+
 ```typescript
 {
   week_start_date: string;
@@ -613,6 +580,7 @@ GET /api/meal-plan?week_start_date=YYYY-MM-DD
 ```
 
 **Error Responses:**
+
 - `400` - Validation error
 - `401` - Unauthorized (not logged in)
 - `500` - Server error
@@ -624,7 +592,7 @@ GET /api/meal-plan?week_start_date=YYYY-MM-DD
 ```typescript
 // Test in browser console
 async function testMealPlanAPI() {
-  const response = await fetch('/api/meal-plan?week_start_date=2025-01-20');
+  const response = await fetch("/api/meal-plan?week_start_date=2025-01-20");
   const data = await response.json();
   console.log(data);
 }

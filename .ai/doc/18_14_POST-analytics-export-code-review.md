@@ -11,6 +11,7 @@
 Implementation of tracking endpoint for shopping list export events (PDF/TXT). MVP approach using console logging, extensible for future analytics integration.
 
 **Files Modified:**
+
 - ✅ `src/lib/validation/analytics.schema.ts` (NEW)
 - ✅ `src/lib/services/analytics.service.ts` (NEW)
 - ✅ `src/pages/api/analytics/export.ts` (NEW)
@@ -21,18 +22,21 @@ Implementation of tracking endpoint for shopping list export events (PDF/TXT). M
 ## Implementation Quality Checklist
 
 ### ✅ Code Structure
+
 - [x] Clear separation of concerns (validation, service, endpoint)
 - [x] Follows project structure conventions
 - [x] Proper file naming and organization
 - [x] Consistent with existing codebase patterns
 
 ### ✅ Type Safety
+
 - [x] Zod schema with TypeScript inference
 - [x] Proper use of `TrackExportDto` from `src/types.ts`
 - [x] Type-safe Supabase client usage
 - [x] APIRoute type from Astro
 
 ### ✅ Security
+
 - [x] **Authentication check** - Guards against unauthenticated access
 - [x] **Authorization check** - Ownership verification via `user_id` filter
 - [x] **Input validation** - Zod strict mode prevents extra fields
@@ -43,6 +47,7 @@ Implementation of tracking endpoint for shopping list export events (PDF/TXT). M
 **Security Score:** 9/10 (Excellent for MVP)
 
 ### ✅ Error Handling
+
 - [x] Guard clause for authentication (401)
 - [x] Zod validation with detailed error messages (400)
 - [x] Database error handling (404)
@@ -51,6 +56,7 @@ Implementation of tracking endpoint for shopping list export events (PDF/TXT). M
 - [x] User-friendly error messages
 
 ### ✅ Code Quality
+
 - [x] **ESLint compliance:** 0 errors, 2 intentional warnings (console.log)
 - [x] **Prettier formatting:** All auto-fixed
 - [x] **JSDoc comments:** Comprehensive documentation
@@ -58,6 +64,7 @@ Implementation of tracking endpoint for shopping list export events (PDF/TXT). M
 - [x] **Naming conventions:** Consistent and descriptive
 
 **ESLint Results:**
+
 ```
 ✖ 2 problems (0 errors, 2 warnings)
 
@@ -67,6 +74,7 @@ Warnings (intentional):
 ```
 
 ### ✅ Best Practices
+
 - [x] Early returns (guard clauses)
 - [x] Happy path last
 - [x] Proper async/await usage
@@ -75,6 +83,7 @@ Warnings (intentional):
 - [x] Single Responsibility Principle
 
 ### ✅ Performance
+
 - [x] Lightweight database query (only `id` field)
 - [x] No N+1 queries
 - [x] Minimal overhead (console.log = ~0ms)
@@ -83,6 +92,7 @@ Warnings (intentional):
 **Expected Latency:** <200ms
 
 ### ✅ Testing Readiness
+
 - [x] Clear test scenarios documented
 - [x] Testable error paths
 - [x] Predictable behavior
@@ -92,14 +102,14 @@ Warnings (intentional):
 
 ## Compliance with Implementation Plan
 
-| Plan Step | Status | Notes |
-|-----------|--------|-------|
-| 1. Zod Schema | ✅ | `analytics.schema.ts` - UUID + enum validation + strict mode |
-| 2. Analytics Service | ✅ | `analytics.service.ts` - console.log MVP, extensible design |
-| 3. API Endpoint | ✅ | `export.ts` - Full flow: Auth → Validation → Authorization → Tracking → 204 |
-| 4. TypeScript Check | ✅ | Compiles without errors, dev server running |
-| 5. Manual Tests | ⚠️ | Test plan created, basic test executed (401 validated) |
-| 6. Code Review | ✅ | This document |
+| Plan Step            | Status | Notes                                                                       |
+| -------------------- | ------ | --------------------------------------------------------------------------- |
+| 1. Zod Schema        | ✅     | `analytics.schema.ts` - UUID + enum validation + strict mode                |
+| 2. Analytics Service | ✅     | `analytics.service.ts` - console.log MVP, extensible design                 |
+| 3. API Endpoint      | ✅     | `export.ts` - Full flow: Auth → Validation → Authorization → Tracking → 204 |
+| 4. TypeScript Check  | ✅     | Compiles without errors, dev server running                                 |
+| 5. Manual Tests      | ⚠️     | Test plan created, basic test executed (401 validated)                      |
+| 6. Code Review       | ✅     | This document                                                               |
 
 ---
 
@@ -156,14 +166,17 @@ Warnings (intentional):
 ## Security Review
 
 ### Authentication & Authorization
+
 ✅ **PASS** - Proper implementation of auth checks and ownership verification
 
 **Flow:**
+
 1. Check `locals.user` exists → 401 if not
 2. Validate shopping_list_id belongs to user → 404 if not
 3. Both checks prevent unauthorized access
 
 **Potential Attack Vectors Mitigated:**
+
 - ✅ Unauthenticated access
 - ✅ Cross-user data access
 - ✅ Information disclosure (list existence)
@@ -171,17 +184,21 @@ Warnings (intentional):
 - ✅ Invalid input (Zod validation)
 
 ### Data Validation
+
 ✅ **PASS** - Comprehensive input validation with Zod
 
 **Validated:**
+
 - ✅ shopping_list_id: UUID format
 - ✅ format: Enum ("pdf" | "txt")
 - ✅ No extra fields (strict mode)
 
 ### Information Security
+
 ✅ **PASS** - No sensitive data exposed
 
 **Logged Data:**
+
 - ✅ User ID (needed for analytics)
 - ✅ Shopping list ID (needed for analytics)
 - ✅ Format (needed for analytics)
@@ -194,6 +211,7 @@ Warnings (intentional):
 ## Performance Review
 
 ### Database Queries
+
 ✅ **Optimized**
 
 ```typescript
@@ -207,6 +225,7 @@ Warnings (intentional):
 **Expected Query Time:** <50ms
 
 ### Response Time Breakdown
+
 - Auth check: ~1ms (memory lookup)
 - Zod validation: ~1ms
 - DB query: ~50ms (indexed)
@@ -215,7 +234,9 @@ Warnings (intentional):
 - **Total:** ~53ms ✅ (well under 200ms target)
 
 ### Scalability
+
 ✅ **Good for MVP**
+
 - Lightweight operation
 - No heavy computations
 - Stateless (horizontal scaling ready)
@@ -226,9 +247,11 @@ Warnings (intentional):
 ## Testing Status
 
 ### Unit Tests
+
 ⏳ **Pending** - Recommended for Zod schema
 
 **Test Cases:**
+
 - [ ] Valid UUID + "pdf" → passes
 - [ ] Valid UUID + "txt" → passes
 - [ ] Invalid UUID → fails with message
@@ -236,9 +259,11 @@ Warnings (intentional):
 - [ ] Extra fields → fails (strict mode)
 
 ### Integration Tests
+
 ⏳ **Pending** - Full endpoint testing required
 
 **Manual Test Results:**
+
 - [x] Test 1.1: No authentication → 401 ✅
 - [ ] Test 2.1-2.4: Validation tests
 - [ ] Test 3.1-3.2: Authorization tests
@@ -251,6 +276,7 @@ Warnings (intentional):
 ## Recommendations
 
 ### Before Merging to Main:
+
 1. ✅ Complete manual testing with authenticated user
 2. ✅ Verify console logs appear correctly
 3. ✅ Test both PDF and TXT formats
@@ -258,6 +284,7 @@ Warnings (intentional):
 5. ✅ Verify endpoint works in production-like environment
 
 ### Post-MVP Enhancements:
+
 1. Add persistent analytics storage (Supabase table or external service)
 2. Implement rate limiting per user
 3. Add request ID for error tracking
@@ -268,15 +295,15 @@ Warnings (intentional):
 
 ## Compliance Summary
 
-| Category | Score | Status |
-|----------|-------|--------|
-| Security | 9/10 | ✅ Excellent |
-| Code Quality | 10/10 | ✅ Perfect |
-| Error Handling | 10/10 | ✅ Perfect |
-| Performance | 9/10 | ✅ Excellent |
-| Documentation | 10/10 | ✅ Perfect |
-| Testing | 6/10 | ⚠️ In Progress |
-| **Overall** | **9/10** | ✅ **Ready for Testing** |
+| Category       | Score    | Status                   |
+| -------------- | -------- | ------------------------ |
+| Security       | 9/10     | ✅ Excellent             |
+| Code Quality   | 10/10    | ✅ Perfect               |
+| Error Handling | 10/10    | ✅ Perfect               |
+| Performance    | 9/10     | ✅ Excellent             |
+| Documentation  | 10/10    | ✅ Perfect               |
+| Testing        | 6/10     | ⚠️ In Progress           |
+| **Overall**    | **9/10** | ✅ **Ready for Testing** |
 
 ---
 
@@ -290,6 +317,7 @@ Warnings (intentional):
 **Performance:** Optimized
 
 **Next Steps:**
+
 1. Complete manual testing with authenticated session
 2. Verify console logging works as expected
 3. Test edge cases (non-existent lists, wrong ownership)

@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
 
 **Method:** `POST`
 **Path:** `/api/meal-plan`
@@ -63,10 +63,12 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - UNIQUE constraint: one recipe per (user_id, week_start_date, day_of_week, meal_type)
 
 ---
+
 </route_api_specification>
 
 2. Related database resources:
    <related_db_resources>
+
 ### Tabela: `meal_plan`
 
 **Opis:** Kalendarz tygodniowy - przypisania przepisów do dni i posiłków
@@ -87,7 +89,6 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - CASCADE DELETE przy usunięciu przepisu (FR-005)
 - Brak `updated_at` - przypisania są tylko dodawane/usuwane, nie edytowane
 - `week_start_date` przechowuje zawsze poniedziałek, `day_of_week` określa przesunięcie
-
 
 </related_db_resources>
 

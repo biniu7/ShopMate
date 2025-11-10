@@ -5,6 +5,7 @@
 Endpoint GET `/api/meal-plan` zwraca wszystkie przypisania posiłków (meal plan assignments) dla zalogowanego użytkownika w określonym tygodniu. Tydzień jest zdefiniowany przez datę poniedziałku (`week_start_date`). Endpoint łączy dane z tabel `meal_plan` i `recipes` aby dostarczyć pełne informacje o każdym przypisaniu, włączając nazwę przepisu.
 
 **Główne funkcje:**
+
 - Pobieranie przypisań posiłków dla określonego tygodnia
 - Automatyczne obliczanie daty końca tygodnia (niedziela)
 - Zwracanie nazw przepisów wraz z przypisaniami (JOIN z tabelą recipes)
@@ -22,6 +23,7 @@ Endpoint GET `/api/meal-plan` zwraca wszystkie przypisania posiłków (meal plan
 ### Query Parameters:
 
 **Wymagane:**
+
 - `week_start_date` (string): Data poniedziałku w formacie ISO (YYYY-MM-DD)
   - Format: YYYY-MM-DD (np. "2025-01-20")
   - Walidacja: regex `/^\d{4}-\d{2}-\d{2}$/`
@@ -32,11 +34,13 @@ Endpoint GET `/api/meal-plan` zwraca wszystkie przypisania posiłków (meal plan
 **Request Body:** N/A (metoda GET)
 
 **Headers:**
+
 - Cookie zawierający sesję Supabase (automatyczne przez middleware)
 
 ## 3. Wykorzystywane typy
 
 ### Query Parameters:
+
 ```typescript
 // Zaimportowany z src/types.ts (line 356-358)
 export interface MealPlanQueryParams {
@@ -45,24 +49,25 @@ export interface MealPlanQueryParams {
 ```
 
 ### Response DTO:
+
 ```typescript
 // Zaimportowany z src/types.ts (line 163-167)
 export interface WeekCalendarResponseDto {
-  week_start_date: string;     // YYYY-MM-DD
-  week_end_date: string;        // YYYY-MM-DD (zawsze niedziela)
+  week_start_date: string; // YYYY-MM-DD
+  week_end_date: string; // YYYY-MM-DD (zawsze niedziela)
   assignments: MealPlanAssignmentDto[];
 }
 
 // Zaimportowany z src/types.ts (line 148-157)
 export interface MealPlanAssignmentDto {
-  id: string;                   // UUID
-  user_id: string;              // UUID
-  recipe_id: string;            // UUID
-  recipe_name: string;          // Nazwa przepisu (z JOIN)
-  week_start_date: string;      // YYYY-MM-DD
-  day_of_week: number;          // 1-7 (1=Pon, 7=Niedz)
-  meal_type: MealType;          // breakfast | second_breakfast | lunch | dinner
-  created_at: string;           // ISO 8601
+  id: string; // UUID
+  user_id: string; // UUID
+  recipe_id: string; // UUID
+  recipe_name: string; // Nazwa przepisu (z JOIN)
+  week_start_date: string; // YYYY-MM-DD
+  day_of_week: number; // 1-7 (1=Pon, 7=Niedz)
+  meal_type: MealType; // breakfast | second_breakfast | lunch | dinner
+  created_at: string; // ISO 8601
 }
 
 // Zaimportowany z src/types.ts (line 40)
@@ -70,6 +75,7 @@ export type MealType = "breakfast" | "second_breakfast" | "lunch" | "dinner";
 ```
 
 ### Error Response:
+
 ```typescript
 // Zaimportowany z src/types.ts (line 373-376)
 export interface ErrorResponseDto {
@@ -85,6 +91,7 @@ export interface ValidationErrorResponseDto {
 ```
 
 ### Validation Schema (do utworzenia):
+
 ```typescript
 // src/lib/validation/meal-plan.schema.ts
 import { z } from "zod";
@@ -93,10 +100,7 @@ export const mealPlanQuerySchema = z.object({
   week_start_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Expected YYYY-MM-DD")
-    .refine(
-      (date) => !isNaN(Date.parse(date)),
-      "Invalid date. Must be a valid ISO date"
-    ),
+    .refine((date) => !isNaN(Date.parse(date)), "Invalid date. Must be a valid ISO date"),
 });
 
 export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
@@ -136,6 +140,7 @@ export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
 ```
 
 **Uwagi:**
+
 - Puste tygodnie zwracają pustą tablicę `assignments: []`
 - Assignments są posortowane według `day_of_week` (1-7) i `meal_type` (w kolejności: breakfast, second_breakfast, lunch, dinner)
 - `week_end_date` jest automatycznie obliczany jako `week_start_date + 6 dni`
@@ -143,6 +148,7 @@ export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
 ### Error Responses:
 
 **400 Bad Request - Brak wymaganego parametru:**
+
 ```json
 {
   "error": "Validation failed",
@@ -153,6 +159,7 @@ export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
 ```
 
 **400 Bad Request - Nieprawidłowy format daty:**
+
 ```json
 {
   "error": "Validation failed",
@@ -163,6 +170,7 @@ export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
 ```
 
 **401 Unauthorized - Brak autentykacji:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -171,6 +179,7 @@ export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
 ```
 
 **500 Internal Server Error:**
+
 ```json
 {
   "error": "Internal server error",
@@ -245,12 +254,14 @@ Response (JSON)
 ### 6.1 Authentication & Authorization
 
 **Authentication:**
+
 - Endpoint wymaga zalogowanego użytkownika
 - Sprawdzanie przez `locals.supabase.auth.getUser()`
 - Jeśli brak sesji → zwróć 401 Unauthorized
 - Session zarządzana przez Astro middleware i Supabase cookies
 
 **Authorization:**
+
 - RLS (Row Level Security) na tabeli `meal_plan` zapewnia, że użytkownik widzi tylko swoje dane
 - Policy RLS: `auth.uid() = user_id`
 - Dodatkowy filtr w query: `.eq("user_id", userId)`
@@ -259,6 +270,7 @@ Response (JSON)
 ### 6.2 Input Validation
 
 **Query Parameter Validation:**
+
 - Zod schema waliduje `week_start_date`:
   - Format: YYYY-MM-DD (regex)
   - Prawidłowa data ISO (Date.parse)
@@ -267,23 +279,27 @@ Response (JSON)
 - Zapobiega nieprawidłowym formatom dat
 
 **Sanitization:**
+
 - Supabase client automatycznie sanitizes wszystkie parametry
 - Używamy `.eq()` i `.select()` z parametrami, nigdy raw SQL strings
 
 ### 6.3 Data Access Control
 
 **RLS Policies:**
+
 - Tabela `meal_plan`: Użytkownik może czytać tylko swoje rekordy (user_id = auth.uid())
 - Tabela `recipes`: Użytkownik może czytać tylko swoje przepisy (user_id = auth.uid())
 - JOIN automatycznie respektuje RLS policies
 
 **Sensitive Data:**
+
 - Response nie zawiera wrażliwych danych oprócz user_id (który należy do zalogowanego użytkownika)
 - Nie ma ryzyka wycieku danych innych użytkowników dzięki RLS
 
 ### 6.4 Rate Limiting & Abuse Prevention
 
 **Recommendations (future):**
+
 - Implementacja rate limiting na poziomie Vercel (100 requests/minute per IP)
 - Monitoring nietypowych wzorców zapytań (Sentry)
 - Cache responses per user (opcjonalne, jeśli wydajność stanie się problemem)
@@ -293,6 +309,7 @@ Response (JSON)
 ### 7.1 Validation Errors (400 Bad Request)
 
 **Scenariusz 1: Brak parametru `week_start_date`**
+
 ```typescript
 // Query: GET /api/meal-plan
 // Response: 400
@@ -305,6 +322,7 @@ Response (JSON)
 ```
 
 **Scenariusz 2: Nieprawidłowy format daty**
+
 ```typescript
 // Query: GET /api/meal-plan?week_start_date=20250120
 // Response: 400
@@ -317,6 +335,7 @@ Response (JSON)
 ```
 
 **Scenariusz 3: Nieprawidłowa data**
+
 ```typescript
 // Query: GET /api/meal-plan?week_start_date=2025-13-40
 // Response: 400
@@ -331,6 +350,7 @@ Response (JSON)
 ### 7.2 Authentication Errors (401 Unauthorized)
 
 **Scenariusz: Brak sesji użytkownika**
+
 ```typescript
 // User nie zalogowany lub sesja wygasła
 // Response: 401
@@ -341,12 +361,14 @@ Response (JSON)
 ```
 
 **Handling:**
+
 - Frontend powinien przekierować do strony logowania
 - Display user-friendly message: "Sesja wygasła. Zaloguj się ponownie."
 
 ### 7.3 Server Errors (500 Internal Server Error)
 
 **Scenariusz 1: Błąd bazy danych**
+
 ```typescript
 // Database connection issue, query timeout, etc.
 // Response: 500
@@ -357,6 +379,7 @@ Response (JSON)
 ```
 
 **Scenariusz 2: JOIN error (recipe deleted but assignment exists)**
+
 ```typescript
 // Orphaned meal_plan record (recipe was deleted)
 // Response: 500 (lub obsługa w service - pominąć takie rekordy)
@@ -367,6 +390,7 @@ Response (JSON)
 ```
 
 **Handling:**
+
 - Log error do console i Sentry (TODO w implementacji)
 - Zwróć ogólny komunikat bez szczegółów technicznych
 - Monitor frequency w Sentry dashboard
@@ -374,6 +398,7 @@ Response (JSON)
 ### 7.4 Edge Cases
 
 **Przypadek 1: Pusty tydzień (brak przypisań)**
+
 ```typescript
 // Response: 200 OK
 {
@@ -382,15 +407,18 @@ Response (JSON)
   "assignments": []
 }
 ```
+
 **Handling:** To jest prawidłowa odpowiedź, nie błąd.
 
 **Przypadek 2: Data z przeszłości lub przyszłości**
+
 ```typescript
 // Response: 200 OK (endpoint akceptuje dowolną datę)
 // Business logic nie ogranicza zakresu dat
 ```
 
 **Przypadek 3: Data nie jest poniedziałkiem**
+
 ```typescript
 // Response: 200 OK (endpoint akceptuje dowolną datę jako week_start_date)
 // Odpowiedzialność za przekazanie poniedziałku leży po stronie frontendu
@@ -425,11 +453,13 @@ catch (error) {
 ### 8.1 Database Query Optimization
 
 **Indeksy wymagane:**
+
 - Index na `meal_plan(user_id, week_start_date)` - compound index dla szybkiego filtrowania
 - Index na `meal_plan(recipe_id)` - dla JOIN z recipes
 - Index na `recipes(id)` - PRIMARY KEY, już istnieje
 
 **Query Performance:**
+
 - JOIN z recipes jest efektywny (indexed foreign key)
 - Filtrowanie po user_id + week_start_date jest szybkie (compound index)
 - Tydzień zawiera max 28 przypisań (7 dni × 4 posiłki), więc payload jest mały
@@ -439,6 +469,7 @@ catch (error) {
 ### 8.2 Response Size
 
 **Typical Response:**
+
 - Empty week: ~100 bytes
 - Full week (28 assignments): ~5-8 KB
 - Bardzo mały payload, nie wymaga compression
@@ -446,11 +477,13 @@ catch (error) {
 ### 8.3 Caching Considerations
 
 **Server-side caching:**
+
 - **Nie zalecane** dla tego endpointa
 - Dane zmieniają się często (użytkownik może edytować meal plan)
 - Cache invalidation byłby skomplikowany
 
 **Client-side caching:**
+
 - Frontend może cache'ować response per week (SWR, React Query)
 - Revalidate on focus lub co 5 minut
 - Cache key: `meal-plan-${week_start_date}`
@@ -458,20 +491,24 @@ catch (error) {
 ### 8.4 N+1 Query Prevention
 
 **Potencjalny problem:**
+
 - NIE występuje - używamy JOIN w pojedynczym query
 - Recipes są fetch'owane jednocześnie z meal_plan assignments
 
 **Implementacja:**
+
 ```typescript
 // Service używa single query z JOIN:
 const { data, error } = await supabase
   .from("meal_plan")
-  .select(`
+  .select(
+    `
     *,
     recipes (
       name
     )
-  `)
+  `
+  )
   .eq("user_id", userId)
   .eq("week_start_date", weekStartDate)
   .order("day_of_week", { ascending: true });
@@ -480,11 +517,13 @@ const { data, error } = await supabase
 ### 8.5 Scalability
 
 **Current MVP:**
+
 - User ma max ~100 recipes
 - Meal plan max 28 assignments/tydzień
 - Query zwraca max 28 rekordów → bardzo szybkie
 
 **Future considerations (>10K users):**
+
 - Database indexes wystarczą dla 10K-100K users
 - Consider connection pooling (Supabase ma to built-in)
 - Monitor slow queries w Supabase dashboard
@@ -492,6 +531,7 @@ const { data, error } = await supabase
 ### 8.6 Potential Bottlenecks
 
 **Identyfikowane wąskie gardła:**
+
 1. **Database connection latency** (50-100ms)
    - Mitigation: Supabase edge functions (future)
 2. **Cold start (Vercel serverless)** (500ms-2s)
@@ -516,10 +556,7 @@ export const mealPlanQuerySchema = z.object({
   week_start_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format. Expected YYYY-MM-DD")
-    .refine(
-      (date) => !isNaN(Date.parse(date)),
-      "Invalid date. Must be a valid ISO date"
-    )
+    .refine((date) => !isNaN(Date.parse(date)), "Invalid date. Must be a valid ISO date")
     .describe("ISO date string for Monday of the week (YYYY-MM-DD)"),
 });
 
@@ -527,6 +564,7 @@ export type MealPlanQueryInput = z.infer<typeof mealPlanQuerySchema>;
 ```
 
 **Testowanie:**
+
 - Valid: `"2025-01-20"` ✓
 - Invalid format: `"20250120"` ✗
 - Invalid date: `"2025-13-40"` ✗
@@ -593,7 +631,8 @@ export async function getMealPlanForWeek(
   // Step 1: Query meal_plan with JOIN to recipes
   const { data, error } = await supabase
     .from("meal_plan")
-    .select(`
+    .select(
+      `
       id,
       user_id,
       recipe_id,
@@ -604,7 +643,8 @@ export async function getMealPlanForWeek(
       recipes (
         name
       )
-    `)
+    `
+    )
     .eq("user_id", userId)
     .eq("week_start_date", weekStartDate)
     .order("day_of_week", { ascending: true });
@@ -647,6 +687,7 @@ export async function getMealPlanForWeek(
 ```
 
 **Uwagi implementacyjne:**
+
 - `calculateWeekEndDate` używa natywnego Date API (brak external dependencies)
 - Sortowanie jest dwupoziomowe: day_of_week → meal_type
 - Obsługa edge case: jeśli recipe nie istnieje (orphaned assignment) → `"Unknown Recipe"`
@@ -755,6 +796,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
 ```
 
 **Uwagi:**
+
 - `export const prerender = false` - wymagane dla API routes w Astro
 - Kolejność kroków: Parse → Validate → Auth → Service → Response
 - Early returns dla error conditions (guard clauses)
@@ -765,6 +807,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
 ### Krok 4: Testowanie manualne
 
 **Test 1: Successful request**
+
 ```bash
 # Request
 curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=2025-01-20' \
@@ -779,6 +822,7 @@ curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=2025-01-20' \
 ```
 
 **Test 2: Empty week**
+
 ```bash
 # Request for week with no assignments
 curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=2025-02-01' \
@@ -793,6 +837,7 @@ curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=2025-02-01' \
 ```
 
 **Test 3: Missing parameter**
+
 ```bash
 # Request without week_start_date
 curl -X GET 'http://localhost:3000/api/meal-plan' \
@@ -808,6 +853,7 @@ curl -X GET 'http://localhost:3000/api/meal-plan' \
 ```
 
 **Test 4: Invalid date format**
+
 ```bash
 # Request with invalid format
 curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=20250120' \
@@ -823,6 +869,7 @@ curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=20250120' \
 ```
 
 **Test 5: Unauthorized**
+
 ```bash
 # Request without session cookie
 curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=2025-01-20'
@@ -839,6 +886,7 @@ curl -X GET 'http://localhost:3000/api/meal-plan?week_start_date=2025-01-20'
 ### Krok 5: Weryfikacja database indexes
 
 **Sprawdź istniejące indeksy:**
+
 ```sql
 -- W Supabase SQL Editor:
 SELECT
@@ -849,6 +897,7 @@ WHERE tablename = 'meal_plan';
 ```
 
 **Jeśli brakuje compound index na (user_id, week_start_date), utwórz:**
+
 ```sql
 -- Migration file lub Supabase SQL Editor:
 CREATE INDEX IF NOT EXISTS idx_meal_plan_user_week
@@ -860,6 +909,7 @@ ON meal_plan(recipe_id);
 ```
 
 **Weryfikacja performance:**
+
 ```sql
 -- Explain query plan:
 EXPLAIN ANALYZE
@@ -884,8 +934,8 @@ ORDER BY meal_plan.day_of_week;
 
 ```typescript
 // src/components/hooks/useMealPlan.ts
-import { useState, useEffect } from 'react';
-import type { WeekCalendarResponseDto, ErrorResponseDto } from '@/types';
+import { useState, useEffect } from "react";
+import type { WeekCalendarResponseDto, ErrorResponseDto } from "@/types";
 
 export function useMealPlan(weekStartDate: string) {
   const [data, setData] = useState<WeekCalendarResponseDto | null>(null);
@@ -896,9 +946,7 @@ export function useMealPlan(weekStartDate: string) {
     async function fetchMealPlan() {
       try {
         setLoading(true);
-        const response = await fetch(
-          `/api/meal-plan?week_start_date=${weekStartDate}`
-        );
+        const response = await fetch(`/api/meal-plan?week_start_date=${weekStartDate}`);
 
         if (!response.ok) {
           const errorData: ErrorResponseDto = await response.json();
@@ -909,7 +957,7 @@ export function useMealPlan(weekStartDate: string) {
         setData(result);
         setError(null);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
         setData(null);
       } finally {
         setLoading(false);
@@ -993,11 +1041,13 @@ catch (error) {
 ### Krok 8: Documentation update
 
 **Aktualizuj API documentation:**
+
 - Dodaj endpoint do README.md lub API docs
 - Dokumentuj query parameters i response format
 - Przykłady curl commands
 
 **Update types.ts (jeśli potrzebne):**
+
 - Wszystkie typy już istnieją w `src/types.ts`
 - Sprawdź czy wszystkie DTOs są exported
 
@@ -1006,12 +1056,14 @@ catch (error) {
 ## 10. Podsumowanie i Checklist
 
 ### Pre-Implementation Checklist:
+
 - [ ] Przejrzyj plan implementacji z zespołem
 - [ ] Potwierdź że wszystkie wymagane typy istnieją w `src/types.ts`
 - [ ] Sprawdź istniejące database indexes
 - [ ] Upewnij się że Supabase RLS policies są włączone
 
 ### Implementation Checklist:
+
 - [ ] **Krok 1:** Utwórz `src/lib/validation/meal-plan.schema.ts`
 - [ ] **Krok 2:** Utwórz `src/lib/services/meal-plan.service.ts`
 - [ ] **Krok 3:** Utwórz `src/pages/api/meal-plan/index.ts`
@@ -1020,6 +1072,7 @@ catch (error) {
 - [ ] **Krok 6:** Dostarcz dokumentację dla zespołu frontend
 
 ### Post-Implementation Checklist:
+
 - [ ] Run `npm run lint` i popraw błędy
 - [ ] Testuj endpoint w dev environment
 - [ ] Code review z zespołem
@@ -1032,12 +1085,14 @@ catch (error) {
 ## 11. Dodatkowe uwagi
 
 ### Performance Baseline (Expected):
+
 - Cold start (first request): ~500ms-1s
 - Warm requests: ~50-150ms
 - Empty week response: ~50ms
 - Full week (28 assignments): ~100-150ms
 
 ### Future Enhancements (Out of MVP scope):
+
 1. **Caching:** Implementacja Redis cache dla często pobieranych tygodni
 2. **Bulk fetch:** Endpoint do pobierania wielu tygodni jednocześnie (np. miesiąc)
 3. **Filtering:** Query params dla filtrowania po meal_type
@@ -1045,6 +1100,7 @@ catch (error) {
 5. **Optimistic UI:** Frontend mutations z instant feedback
 
 ### Related Endpoints (To be implemented):
+
 - `POST /api/meal-plan` - Create meal plan assignment
 - `DELETE /api/meal-plan/:id` - Delete meal plan assignment
 - `PUT /api/meal-plan/:id` - Update meal plan assignment (if needed)

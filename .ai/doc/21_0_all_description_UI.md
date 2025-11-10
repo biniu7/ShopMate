@@ -1,4 +1,3 @@
-
 2.2.1 Dashboard
 Ścieżka: /dashboard
 
@@ -90,7 +89,7 @@ TanStack Query:
 const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
 queryKey: ['recipes', search, sort],
 queryFn: ({ pageParam = 1 }) => fetchRecipes({ page: pageParam, search, sort }),
-staleTime: 5 * 60 * 1000, // 5 minut
+staleTime: 5 _ 60 _ 1000, // 5 minut
 });
 2.2.3 Recipe Create
 Ścieżka: /recipes/new
@@ -214,7 +213,7 @@ TanStack Query:
 const { data: recipe } = useQuery({
 queryKey: ['recipe', recipeId],
 queryFn: () => api.getRecipe(recipeId),
-staleTime: 10 * 60 * 1000,
+staleTime: 10 _ 60 _ 1000,
 });
 
 const deleteRecipe = useMutation({

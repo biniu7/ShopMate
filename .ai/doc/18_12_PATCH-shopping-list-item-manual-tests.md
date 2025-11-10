@@ -7,11 +7,13 @@
 ## Prerequisites
 
 1. **Start development server:**
+
    ```bash
    npm run dev
    ```
 
 2. **Start Supabase local instance:**
+
    ```bash
    npx supabase start
    ```
@@ -29,7 +31,9 @@
 ## Test Scenarios
 
 ### Test Setup
+
 Replace these placeholders with actual values:
+
 - `{LIST_ID}` - UUID of your test shopping list
 - `{ITEM_ID}` - UUID of an item in that list
 - `{AUTH_TOKEN}` - Your authentication token
@@ -42,6 +46,7 @@ Replace these placeholders with actual values:
 **Description:** Update item checked status with valid data
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -50,8 +55,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 200 OK
 - **Body:** Full shopping list item with `is_checked: true`
+
 ```json
 {
   "id": "950e8400-e29b-41d4-a716-446655440000",
@@ -66,6 +73,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Verification:**
+
 - [ ] Status is 200
 - [ ] Response contains updated item
 - [ ] `is_checked` field matches request value
@@ -78,6 +86,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Send request with invalid UUID format for list_id
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/invalid-uuid/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -86,8 +95,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/invalid-uuid/items/{ITEM_
 ```
 
 **Expected Response:**
+
 - **Status:** 400 Bad Request
 - **Body:**
+
 ```json
 {
   "error": "Validation Error",
@@ -98,6 +109,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/invalid-uuid/items/{ITEM_
 ```
 
 **Verification:**
+
 - [ ] Status is 400
 - [ ] Error message mentions UUID format
 - [ ] Request was rejected before database query
@@ -109,6 +121,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/invalid-uuid/items/{ITEM_
 **Description:** Send request with invalid UUID format for item_id
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/not-a-uuid \
   -H "Content-Type: application/json" \
@@ -117,8 +130,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/not-a-uui
 ```
 
 **Expected Response:**
+
 - **Status:** 400 Bad Request
 - **Body:**
+
 ```json
 {
   "error": "Validation Error",
@@ -129,6 +144,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/not-a-uui
 ```
 
 **Verification:**
+
 - [ ] Status is 400
 - [ ] Error specifically for item_id
 - [ ] list_id validation passed (only item_id failed)
@@ -140,6 +156,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/not-a-uui
 **Description:** Send request without `is_checked` field
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -148,8 +165,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 400 Bad Request
 - **Body:**
+
 ```json
 {
   "error": "Validation Error",
@@ -160,6 +179,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Verification:**
+
 - [ ] Status is 400
 - [ ] Error mentions required field
 - [ ] Polish error message displayed
@@ -171,6 +191,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Send `is_checked` as string instead of boolean
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -179,8 +200,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 400 Bad Request
 - **Body:**
+
 ```json
 {
   "error": "Validation Error",
@@ -191,6 +214,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Verification:**
+
 - [ ] Status is 400
 - [ ] Error mentions type mismatch
 - [ ] Zod validation working correctly
@@ -202,6 +226,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Send additional fields beyond `is_checked`
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -214,8 +239,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 400 Bad Request
 - **Body:**
+
 ```json
 {
   "error": "Validation Error",
@@ -226,6 +253,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Verification:**
+
 - [ ] Status is 400
 - [ ] Schema.strict() prevents extra fields
 - [ ] Mass assignment attack prevented
@@ -237,6 +265,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Send malformed JSON
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -245,8 +274,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 400 Bad Request
 - **Body:**
+
 ```json
 {
   "error": "Bad Request",
@@ -255,6 +286,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Verification:**
+
 - [ ] Status is 400
 - [ ] Error caught before validation
 - [ ] Helpful error message
@@ -266,6 +298,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Send request without authentication
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -273,8 +306,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 401 Unauthorized
 - **Body:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -283,6 +318,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Verification:**
+
 - [ ] Status is 401
 - [ ] Auth check happens before business logic
 - [ ] Polish error message
@@ -294,6 +330,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Use valid UUID that doesn't exist in database
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/00000000-0000-0000-0000-000000000000/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -302,8 +339,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/00000000-0000-0000-0000-0
 ```
 
 **Expected Response:**
+
 - **Status:** 404 Not Found
 - **Body:**
+
 ```json
 {
   "error": "Not Found",
@@ -312,6 +351,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/00000000-0000-0000-0000-0
 ```
 
 **Verification:**
+
 - [ ] Status is 404
 - [ ] Service layer throws NOT_FOUND
 - [ ] Doesn't reveal if list exists (security)
@@ -323,6 +363,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/00000000-0000-0000-0000-0
 **Description:** Valid list_id but non-existent item_id
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/00000000-0000-0000-0000-000000000000 \
   -H "Content-Type: application/json" \
@@ -331,8 +372,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/00000000-
 ```
 
 **Expected Response:**
+
 - **Status:** 404 Not Found
 - **Body:**
+
 ```json
 {
   "error": "Not Found",
@@ -341,6 +384,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/00000000-
 ```
 
 **Verification:**
+
 - [ ] Status is 404
 - [ ] Same error as test 9 (doesn't leak info)
 - [ ] Item doesn't exist in database
@@ -352,12 +396,14 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/00000000-
 **Description:** Attempt to update item from another user's list (critical security test)
 
 **Prerequisites:**
+
 - Create second test user
 - Create shopping list with item for second user
 - Get second user's list_id and item_id
 - Use **first user's** auth token
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{OTHER_USER_LIST_ID}/items/{OTHER_USER_ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -366,8 +412,10 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{OTHER_USER_LIST_ID}/item
 ```
 
 **Expected Response:**
+
 - **Status:** 404 Not Found (NOT 403!)
 - **Body:**
+
 ```json
 {
   "error": "Not Found",
@@ -376,6 +424,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{OTHER_USER_LIST_ID}/item
 ```
 
 **Verification:**
+
 - [ ] Status is 404 (security best practice: don't reveal resource existence)
 - [ ] RLS policy blocks access at database level
 - [ ] Application-level check also prevents access
@@ -389,6 +438,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{OTHER_USER_LIST_ID}/item
 **Description:** Update unchecked item to checked
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -397,10 +447,12 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 200 OK
 - **Body:** Item with `is_checked: true`
 
 **Verification:**
+
 - [ ] Item updated successfully
 - [ ] Value changed from false to true
 
@@ -411,6 +463,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Update checked item back to unchecked
 
 **Request:**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -419,10 +472,12 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response:**
+
 - **Status:** 200 OK
 - **Body:** Item with `is_checked: false`
 
 **Verification:**
+
 - [ ] Item updated successfully
 - [ ] Value changed from true to false
 - [ ] Idempotent operation works both ways
@@ -434,6 +489,7 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 **Description:** Send same request twice, verify idempotent behavior
 
 **Request (run twice):**
+
 ```bash
 curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID} \
   -H "Content-Type: application/json" \
@@ -442,10 +498,12 @@ curl -X PATCH http://localhost:4321/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ```
 
 **Expected Response (both times):**
+
 - **Status:** 200 OK
 - **Body:** Same item with `is_checked: true`
 
 **Verification:**
+
 - [ ] First request: updates item
 - [ ] Second request: returns same result (already true)
 - [ ] No errors on duplicate requests
@@ -460,6 +518,7 @@ After running the above tests, verify in Supabase Studio:
 ### Verify RLS Policies
 
 1. **Check policies exist:**
+
    ```sql
    SELECT schemaname, tablename, policyname, cmd, qual, with_check
    FROM pg_policies
@@ -470,6 +529,7 @@ After running the above tests, verify in Supabase Studio:
    **Expected:** Should see `shopping_lists_all` and `shopping_list_items_all` policies
 
 2. **Test RLS as different user:**
+
    ```sql
    -- Run in Supabase Studio SQL Editor
    -- Set role to simulate authenticated user
@@ -487,6 +547,7 @@ After running the above tests, verify in Supabase Studio:
 ### Verify Data Integrity
 
 1. **Check item not modified by unauthorized user:**
+
    ```sql
    SELECT id, ingredient_name, is_checked, shopping_list_id
    FROM shopping_list_items
@@ -494,6 +555,7 @@ After running the above tests, verify in Supabase Studio:
    ```
 
 2. **Verify snapshot pattern (list metadata unchanged):**
+
    ```sql
    SELECT id, name, created_at, updated_at
    FROM shopping_lists
@@ -507,6 +569,7 @@ After running the above tests, verify in Supabase Studio:
 ## Test Summary Checklist
 
 ### Validation Tests
+
 - [ ] Test 1: Happy path (200 OK)
 - [ ] Test 2: Invalid list_id UUID (400)
 - [ ] Test 3: Invalid item_id UUID (400)
@@ -516,19 +579,23 @@ After running the above tests, verify in Supabase Studio:
 - [ ] Test 7: Invalid JSON format (400)
 
 ### Authentication Tests
+
 - [ ] Test 8: No auth token (401)
 
 ### Authorization Tests
+
 - [ ] Test 9: Non-existent list (404)
 - [ ] Test 10: Non-existent item (404)
 - [ ] Test 11: IDOR attack blocked (404) ⚠️ **CRITICAL**
 
 ### Functionality Tests
+
 - [ ] Test 12: Toggle false → true (200)
 - [ ] Test 13: Toggle true → false (200)
 - [ ] Test 14: Idempotency (200)
 
 ### Database Tests
+
 - [ ] RLS policies active
 - [ ] IDOR blocked at database level
 - [ ] Snapshot pattern preserved
@@ -581,7 +648,7 @@ done | awk '{sum+=$1; count++} END {print "Average:", sum/count*1000, "ms"}'
 
 ---
 
-**Test Execution Date:** _________
-**Tester:** _________
+**Test Execution Date:** ****\_****
+**Tester:** ****\_****
 **Result:** PASS / FAIL
-**Notes:** _________
+**Notes:** ****\_****

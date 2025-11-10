@@ -17,17 +17,20 @@ Zaimplementowano endpoint REST API do aktualizacji statusu checked elementu list
 ### 1. Nowe Pliki
 
 #### API Route Handler
+
 - **Plik**: `src/pages/api/shopping-lists/[list_id]/items/[item_id].ts`
 - **Linie kodu**: 144
 - **Funkcje**: PATCH handler z 7-stopniową walidacją i obsługą błędów
 
 #### Migracja Bazy Danych (KRYTYCZNA POPRAWKA BEZPIECZEŃSTWA)
+
 - **Plik**: `supabase/migrations/20250205100100_re_enable_shopping_lists_rls_policies.sql`
 - **Powód**: Wykryto wyłączone RLS policies dla `shopping_lists` i `shopping_list_items`
 - **Działanie**: Przywrócono policies dla ochrony przed IDOR
 - **Status**: ✅ Zastosowano (`npx supabase migration up`)
 
 #### Dokumentacja
+
 - **Plan testów manualnych**: `.ai/doc/18_12_PATCH-shopping-list-item-manual-tests.md`
   - 14 scenariuszy testowych
   - Gotowe polecenia curl
@@ -40,6 +43,7 @@ Zaimplementowano endpoint REST API do aktualizacji statusu checked elementu list
 ### 2. Zmodyfikowane Pliki
 
 #### Validation Schema
+
 - **Plik**: `src/lib/validation/shopping-list.schema.ts`
 - **Dodano**:
   - `uuidParamSchema` (linie 83-85) - walidacja UUID w path params
@@ -48,6 +52,7 @@ Zaimplementowano endpoint REST API do aktualizacji statusu checked elementu list
 - **Naprawiono**: Zmieniono enum category z type assertion na literal tuple
 
 #### Service Layer
+
 - **Plik**: `src/lib/services/shopping-list.service.ts`
 - **Dodano**:
   - `updateItemCheckedStatus()` (61 linii, linie 259-319)
@@ -56,6 +61,7 @@ Zaimplementowano endpoint REST API do aktualizacji statusu checked elementu list
   - Szczegółowa obsługa błędów (NOT_FOUND, DATABASE_ERROR)
 
 #### Type Definitions
+
 - **Plik**: `src/types.ts`
 - **Zmodyfikowano**:
   - `SaveShoppingListDto.week_start_date`: dodano `?` (linia 264)
@@ -64,6 +70,7 @@ Zaimplementowano endpoint REST API do aktualizacji statusu checked elementu list
   - **Powód**: Dopasowanie do Zod `.nullable().optional()`
 
 #### Database Client
+
 - **Plik**: `src/db/supabase.client.ts`
 - **Dodano**: Export typu `SupabaseClient` (linia 12)
 - **Powód**: Naprawienie błędu TypeScript
@@ -71,9 +78,11 @@ Zaimplementowano endpoint REST API do aktualizacji statusu checked elementu list
 ## 🔒 Kluczowe Decyzje Techniczne
 
 ### 1. Defense-in-Depth Security Pattern
+
 Implementacja dwuwarstwowej ochrony przed IDOR:
 
 **Warstwa 1: Application-level** (shopping-list.service.ts:268-276)
+
 ```typescript
 const { data: list, error: listError } = await supabase
   .from("shopping_lists")
@@ -84,6 +93,7 @@ const { data: list, error: listError } = await supabase
 ```
 
 **Warstwa 2: Database-level** (RLS policies)
+
 ```sql
 create policy shopping_list_items_all on shopping_list_items
   for all to authenticated
@@ -97,6 +107,7 @@ create policy shopping_list_items_all on shopping_list_items
 ```
 
 ### 2. Mass Assignment Protection
+
 ```typescript
 export const updateShoppingListItemSchema = z
   .object({
@@ -106,7 +117,9 @@ export const updateShoppingListItemSchema = z
 ```
 
 ### 3. Early Returns Pattern
+
 Wszystkie walidacje przed wykonaniem business logic:
+
 1. UUID format validation
 2. JSON parse validation
 3. Schema validation
@@ -116,7 +129,9 @@ Wszystkie walidacje przed wykonaniem business logic:
 7. Error handling
 
 ### 4. Error Granularity
+
 Rozróżnienie typów błędów:
+
 - `400` - Validation Error (UUID, JSON, schema)
 - `401` - Unauthorized
 - `404` - Not Found (item lub list nie istnieje lub nie należy do usera)
@@ -125,6 +140,7 @@ Rozróżnienie typów błędów:
 ## 🐛 Naprawione Błędy
 
 ### 1. ESLint (89 → 1 error, 49 warnings)
+
 - ✅ Auto-fix: 37 Prettier errors (`npm run lint:fix`)
 - ✅ Usunięto nieużywany import `MEAL_TYPES`
 - ✅ Zamieniono non-null assertion na safe access pattern
@@ -132,20 +148,23 @@ Rozróżnienie typów błędów:
 - ⚠️ 49 warnings (console.error - akceptowalne dla logging)
 
 ### 2. TypeScript (5 errors → 0 errors)
-| Error | Plik | Fix |
-|-------|------|-----|
-| SupabaseClient not exported | supabase.client.ts | Dodano export typu |
-| INGREDIENT_CATEGORIES type | shopping-list.schema.ts | Type assertion → literal tuple |
-| reduce accumulator type | shopping-list-preview.service.ts | Dodano generic `<number>` |
-| week_start_date type | types.ts | Dodano `?` do property |
-| quantity/unit type | types.ts | Dodano `?` do properties |
+
+| Error                       | Plik                             | Fix                            |
+| --------------------------- | -------------------------------- | ------------------------------ |
+| SupabaseClient not exported | supabase.client.ts               | Dodano export typu             |
+| INGREDIENT_CATEGORIES type  | shopping-list.schema.ts          | Type assertion → literal tuple |
+| reduce accumulator type     | shopping-list-preview.service.ts | Dodano generic `<number>`      |
+| week_start_date type        | types.ts                         | Dodano `?` do property         |
+| quantity/unit type          | types.ts                         | Dodano `?` do properties       |
 
 ### 3. KRYTYCZNA LUKA BEZPIECZEŃSTWA
+
 **Problem**: RLS policies dla `shopping_lists` i `shopping_list_items` były wyłączone w migracji 20250125100100
 
 **Impact**: Każdy zalogowany użytkownik mógł czytać/modyfikować listy innych użytkowników
 
 **Fix**:
+
 - Utworzono migrację `20250205100100_re_enable_shopping_lists_rls_policies.sql`
 - Przywrócono policies z EXISTS subquery dla ownership check
 - Zastosowano migrację: `npx supabase migration up`
@@ -153,37 +172,43 @@ Rozróżnienie typów błędów:
 ## ✅ Quality Checks
 
 ### Linting
+
 ```bash
 npm run lint
 ```
+
 **Wynik**: ✅ Passed (1 error poza scope, 49 akceptowalnych warnings)
 
 ### Type Checking
+
 ```bash
 npx tsc --noEmit
 ```
+
 **Wynik**: ✅ Passed (0 errors)
 
 ### Code Review
+
 **Wynik**: ✅ 10/10 (wszystkie checkpointy passed)
 
 ## 📊 Metryki
 
-| Metryka | Wartość |
-|---------|---------|
-| Nowe pliki | 4 |
-| Zmodyfikowane pliki | 4 |
-| Linie kodu (endpoint) | 144 |
-| Linie kodu (service) | 61 |
-| Linie kodu (validation) | 22 |
-| Scenariusze testowe | 14 |
-| Naprawione ESLint errors | 37 auto + 2 manual |
-| Naprawione TypeScript errors | 5 |
-| Security vulnerabilities fixed | 1 (CRITICAL) |
+| Metryka                        | Wartość            |
+| ------------------------------ | ------------------ |
+| Nowe pliki                     | 4                  |
+| Zmodyfikowane pliki            | 4                  |
+| Linie kodu (endpoint)          | 144                |
+| Linie kodu (service)           | 61                 |
+| Linie kodu (validation)        | 22                 |
+| Scenariusze testowe            | 14                 |
+| Naprawione ESLint errors       | 37 auto + 2 manual |
+| Naprawione TypeScript errors   | 5                  |
+| Security vulnerabilities fixed | 1 (CRITICAL)       |
 
 ## 🧪 Następne Kroki - Testy Manualne
 
 ### Wymagania
+
 1. Serwer dev uruchomiony: `npm run dev`
 2. Zalogowany użytkownik (JWT token w zmiennej `$TOKEN`)
 3. Istniejąca lista zakupów (`$LIST_ID`) z itemem (`$ITEM_ID`)
@@ -191,6 +216,7 @@ npx tsc --noEmit
 ### Kluczowe Testy Do Wykonania
 
 #### 1. Happy Path
+
 ```bash
 curl -X PATCH http://localhost:3000/api/shopping-lists/$LIST_ID/items/$ITEM_ID \
   -H "Authorization: Bearer $TOKEN" \
@@ -199,6 +225,7 @@ curl -X PATCH http://localhost:3000/api/shopping-lists/$LIST_ID/items/$ITEM_ID \
 ```
 
 #### 2. IDOR Attack Prevention
+
 ```bash
 # Użyj innego user_id i sprawdź czy zwraca 404
 curl -X PATCH http://localhost:3000/api/shopping-lists/$OTHER_USER_LIST_ID/items/$ITEM_ID \
@@ -206,15 +233,18 @@ curl -X PATCH http://localhost:3000/api/shopping-lists/$OTHER_USER_LIST_ID/items
   -H "Content-Type: application/json" \
   -d '{"is_checked": true}'
 ```
+
 **Oczekiwane**: `404 Not Found`
 
 #### 3. Mass Assignment Protection
+
 ```bash
 curl -X PATCH http://localhost:3000/api/shopping-lists/$LIST_ID/items/$ITEM_ID \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"is_checked": true, "category": "Inne"}'
 ```
+
 **Oczekiwane**: `400 Validation Error` (extra field)
 
 Pełna lista testów: `.ai/doc/18_12_PATCH-shopping-list-item-manual-tests.md`
@@ -224,29 +254,31 @@ Pełna lista testów: `.ai/doc/18_12_PATCH-shopping-list-item-manual-tests.md`
 ### Before → After
 
 #### SaveShoppingListDto
+
 ```typescript
 // Before
 export interface SaveShoppingListDto {
   name: string;
-  week_start_date: string | null;  // ❌ Nie pasuje do Zod .optional()
+  week_start_date: string | null; // ❌ Nie pasuje do Zod .optional()
   items: SaveShoppingListItemDto[];
 }
 
 // After
 export interface SaveShoppingListDto {
   name: string;
-  week_start_date?: string | null;  // ✅ Pasuje do Zod
+  week_start_date?: string | null; // ✅ Pasuje do Zod
   items: SaveShoppingListItemDto[];
 }
 ```
 
 #### SaveShoppingListItemDto
+
 ```typescript
 // Before
 export interface SaveShoppingListItemDto {
   ingredient_name: string;
-  quantity: number | null;  // ❌ Nie pasuje do Zod .optional()
-  unit: string | null;      // ❌ Nie pasuje do Zod .optional()
+  quantity: number | null; // ❌ Nie pasuje do Zod .optional()
+  unit: string | null; // ❌ Nie pasuje do Zod .optional()
   category: IngredientCategory;
   sort_order: number;
 }
@@ -254,8 +286,8 @@ export interface SaveShoppingListItemDto {
 // After
 export interface SaveShoppingListItemDto {
   ingredient_name: string;
-  quantity?: number | null;  // ✅ Pasuje do Zod
-  unit?: string | null;      // ✅ Pasuje do Zod
+  quantity?: number | null; // ✅ Pasuje do Zod
+  unit?: string | null; // ✅ Pasuje do Zod
   category: IngredientCategory;
   sort_order: number;
 }
@@ -290,6 +322,7 @@ Wszystkie 8 kroków z planu implementacji zostały wykonane:
 **Status**: ✅ READY FOR DEPLOYMENT
 
 ### Pre-deployment Checklist
+
 - [x] Kod przeszedł linting
 - [x] Kod przeszedł type checking
 - [x] Code review completed (10/10)
@@ -299,6 +332,7 @@ Wszystkie 8 kroków z planu implementacji zostały wykonane:
 - [x] Plan testów manualnych przygotowany
 
 ### Required Before Production Deploy
+
 - [ ] Wykonanie testów manualnych (wymaga running dev server)
 - [ ] Verification RLS policies w Supabase Dashboard
 - [ ] Smoke test na staging environment

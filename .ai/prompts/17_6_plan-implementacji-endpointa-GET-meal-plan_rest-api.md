@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `GET`
    **Path:** `/api/meal-plan`
    **Description:** Get meal plan assignments for a specific week
@@ -62,6 +62,7 @@ GET /api/meal-plan?week_start_date=2025-01-20
 
 2. Related database resources:
    <related_db_resources>
+
 ### Tabela: `meal_plan`
 
 **Opis:** Kalendarz tygodniowy - przypisania przepisów do dni i posiłków
@@ -82,7 +83,6 @@ GET /api/meal-plan?week_start_date=2025-01-20
 - CASCADE DELETE przy usunięciu przepisu (FR-005)
 - Brak `updated_at` - przypisania są tylko dodawane/usuwane, nie edytowane
 - `week_start_date` przechowuje zawsze poniedziałek, `day_of_week` określa przesunięcie
-
 
 </related_db_resources>
 

@@ -9,9 +9,9 @@ Najpierw przejrzyj plan implementacji:
 Teraz przejrzyj zasady implementacji:
 
 <implementation_rules>
-@.cursor/rules/shared.mdc, 
-@.cursor/rules/frontend.mdc, 
-@.cursor/rules/astro.mdc, 
+@.cursor/rules/shared.mdc,
+@.cursor/rules/frontend.mdc,
+@.cursor/rules/astro.mdc,
 @.cursor/rules/react.mdc,
 @.cursor/rules/ui-shadcn-helper.mdc
 </implementation_rules>

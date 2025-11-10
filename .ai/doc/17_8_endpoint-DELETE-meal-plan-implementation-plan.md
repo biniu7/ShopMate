@@ -5,11 +5,13 @@
 Endpoint służy do usuwania przypisania przepisu z kalendarza tygodniowego. Operacja usuwa tylko wpis w tabeli `meal_plan` i **nie usuwa** samego przepisu z tabeli `recipes`. Jest to operacja typu "soft unassignment" - przepis pozostaje w systemie, ale przestaje być przypisany do konkretnego dnia i posiłku.
 
 **Przypadki użycia:**
+
 - Użytkownik chce zmienić posiłek w kalendarzu i usuwa obecne przypisanie
 - Użytkownik rezygnuje z zaplanowanego posiłku
 - Użytkownik koryguje błąd w planowaniu tygodnia
 
 **Kluczowe wymagania:**
+
 - Tylko właściciel przypisania może je usunąć (user_id validation)
 - Musi być obsłużone przez RLS w Supabase + explicit check w kodzie
 - Operacja atomowa (nie może pozostawić niespójności)
@@ -34,12 +36,15 @@ Endpoint służy do usuwania przypisania przepisu z kalendarza tygodniowego. Ope
   - Brak
 
 **Headers:**
+
 - `Authorization: Bearer <token>` - Token JWT z Supabase Auth (automatycznie obsługiwany przez Supabase client w context.locals)
 
 **Request Body:**
+
 - Brak (DELETE request bez body)
 
 **Przykład żądania:**
+
 ```http
 DELETE /api/meal-plan/550e8400-e29b-41d4-a716-446655440000 HTTP/1.1
 Host: shopmate.vercel.app
@@ -81,6 +86,7 @@ Nie są wymagane nowe typy DTO. Możemy wykorzystać istniejące.
 **Content-Type:** `application/json`
 
 **Body:**
+
 ```json
 {
   "message": "Assignment removed successfully"
@@ -162,21 +168,16 @@ Nie są wymagane nowe typy DTO. Możemy wykorzystać istniejące.
 
 ```typescript
 // Service function flow
-async function deleteMealPlanAssignment(
-  supabase: SupabaseClient,
-  userId: string,
-  assignmentId: string
-): Promise<void> {
-
+async function deleteMealPlanAssignment(supabase: SupabaseClient, userId: string, assignmentId: string): Promise<void> {
   // 1. Wykonaj DELETE query z warunkami:
   //    - id = assignmentId
   //    - user_id = userId (security check)
 
   const { data, error, count } = await supabase
-    .from('meal_plan')
-    .delete({ count: 'exact' })
-    .eq('id', assignmentId)
-    .eq('user_id', userId);
+    .from("meal_plan")
+    .delete({ count: "exact" })
+    .eq("id", assignmentId)
+    .eq("user_id", userId);
 
   // 2. Sprawdź błędy Supabase
   if (error) {
@@ -185,7 +186,7 @@ async function deleteMealPlanAssignment(
 
   // 3. Sprawdź czy coś zostało usunięte
   if (count === 0) {
-    throw new NotFoundError('Assignment not found or access denied');
+    throw new NotFoundError("Assignment not found or access denied");
   }
 
   // 4. Success - return void
@@ -196,6 +197,7 @@ async function deleteMealPlanAssignment(
 ### Database interaction:
 
 **Query wykonywane przez Supabase:**
+
 ```sql
 DELETE FROM meal_plan
 WHERE id = $1 AND user_id = $2
@@ -203,6 +205,7 @@ RETURNING *;
 ```
 
 **RLS Policy (powinien być już skonfigurowany):**
+
 ```sql
 -- Policy: Users can only delete their own meal plan assignments
 CREATE POLICY "Users can delete own assignments"
@@ -219,21 +222,26 @@ USING (auth.uid() = user_id);
 ### 1. Uwierzytelnianie (Authentication)
 
 **Mechanizm:**
+
 - Supabase JWT token w Authorization header (automatycznie obsługiwany przez middleware)
 - Weryfikacja przez `context.locals.supabase.auth.getUser()`
 
 **Implementacja:**
+
 ```typescript
 // W API route
-const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
+const {
+  data: { user },
+  error: authError,
+} = await context.locals.supabase.auth.getUser();
 
 if (authError || !user) {
   return new Response(
     JSON.stringify({
-      error: 'Unauthorized',
-      message: 'You must be logged in to perform this action'
+      error: "Unauthorized",
+      message: "You must be logged in to perform this action",
     }),
-    { status: 401, headers: { 'Content-Type': 'application/json' } }
+    { status: 401, headers: { "Content-Type": "application/json" } }
   );
 }
 ```
@@ -241,6 +249,7 @@ if (authError || !user) {
 ### 2. Autoryzacja (Authorization)
 
 **Problem: IDOR (Insecure Direct Object Reference)**
+
 - User może próbować usunąć przypisanie innego użytkownika przez zgadywanie UUID
 
 **Mitigation strategy (Defense in Depth):**
@@ -258,37 +267,39 @@ if (authError || !user) {
    - User dostaje 404 zarówno gdy assignment nie istnieje, jak i gdy nie ma do niego dostępu
 
 **Implementacja:**
+
 ```typescript
 // W service
 const { count } = await supabase
-  .from('meal_plan')
-  .delete({ count: 'exact' })
-  .eq('id', assignmentId)
-  .eq('user_id', userId); // <-- Explicit check
+  .from("meal_plan")
+  .delete({ count: "exact" })
+  .eq("id", assignmentId)
+  .eq("user_id", userId); // <-- Explicit check
 
 if (count === 0) {
   // Nie rozróżniamy czy nie istnieje czy brak dostępu
-  throw new NotFoundError('Assignment not found');
+  throw new NotFoundError("Assignment not found");
 }
 ```
 
 ### 3. Walidacja danych wejściowych
 
 **UUID Validation:**
-```typescript
-import { z } from 'zod';
 
-const uuidSchema = z.string().uuid('Invalid assignment ID format');
+```typescript
+import { z } from "zod";
+
+const uuidSchema = z.string().uuid("Invalid assignment ID format");
 
 // W API route
 const idValidation = uuidSchema.safeParse(id);
 if (!idValidation.success) {
   return new Response(
     JSON.stringify({
-      error: 'Invalid assignment ID format',
-      message: 'Assignment ID must be a valid UUID'
+      error: "Invalid assignment ID format",
+      message: "Assignment ID must be a valid UUID",
     }),
-    { status: 400, headers: { 'Content-Type': 'application/json' } }
+    { status: 400, headers: { "Content-Type": "application/json" } }
   );
 }
 ```
@@ -296,44 +307,52 @@ if (!idValidation.success) {
 ### 4. SQL Injection Prevention
 
 **Mechanizm:**
+
 - Supabase client używa parametrized queries
 - Brak string concatenation w queries
 - Automatic escaping przez PostgREST
 
 **Bezpieczne:**
+
 ```typescript
 .eq('id', assignmentId) // ✅ Parametrized
 ```
 
 **NIE robić:**
+
 ```typescript
 // ❌ NIGDY nie używać raw SQL z user input
-supabase.rpc('delete_assignment', { raw_sql: `DELETE FROM meal_plan WHERE id = '${id}'` })
+supabase.rpc("delete_assignment", { raw_sql: `DELETE FROM meal_plan WHERE id = '${id}'` });
 ```
 
 ### 5. Rate Limiting
 
 **Supabase default limits:**
+
 - Free tier: 50 req/s
 - Pro tier: 200 req/s
 
 **Dodatkowe zabezpieczenie (opcjonalne dla MVP):**
+
 - Middleware rate limiting per user (np. max 100 DELETE operations/hour)
 - Implementacja w `src/middleware/index.ts` z użyciem Redis lub in-memory store
 
 ### 6. Logging & Monitoring
 
 **Co logować:**
+
 - Próby nieautoryzowanego dostępu (401)
 - Próby dostępu do nie swoich zasobów (404)
 - Database errors (500)
 
 **Czego NIE logować:**
+
 - JWT tokens
 - Pełne session data
 - Hasła (oczywiście)
 
 **Implementacja:**
+
 ```typescript
 // W service (dla błędów)
 catch (error) {
@@ -363,6 +382,7 @@ catch (error) {
 ### Error Handling Strategy
 
 **Zasady:**
+
 1. Early returns dla walidacji i auth
 2. Service layer rzuca typed errors
 3. API route łapie i konwertuje na HTTP responses
@@ -375,8 +395,9 @@ catch (error) {
 **Trigger:** Nieprawidłowy format UUID w URL
 
 **Walidacja:**
+
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 const uuidSchema = z.string().uuid();
 const result = uuidSchema.safeParse(id);
@@ -386,6 +407,7 @@ if (!result.success) {
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Invalid assignment ID format",
@@ -396,19 +418,25 @@ if (!result.success) {
 #### 2. Unauthorized (401)
 
 **Trigger:**
+
 - Brak tokenu auth
 - Expired/invalid token
 - User nie zalogowany
 
 **Check:**
+
 ```typescript
-const { data: { user }, error: authError } = await supabase.auth.getUser();
+const {
+  data: { user },
+  error: authError,
+} = await supabase.auth.getUser();
 if (authError || !user) {
   // Return 401
 }
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -419,16 +447,14 @@ if (authError || !user) {
 #### 3. Not Found (404)
 
 **Trigger:**
+
 - Assignment nie istnieje w bazie
 - Assignment należy do innego użytkownika
 
 **Check:**
+
 ```typescript
-const { count } = await supabase
-  .from('meal_plan')
-  .delete({ count: 'exact' })
-  .eq('id', id)
-  .eq('user_id', userId);
+const { count } = await supabase.from("meal_plan").delete({ count: "exact" }).eq("id", id).eq("user_id", userId);
 
 if (count === 0) {
   // Return 404
@@ -436,6 +462,7 @@ if (count === 0) {
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Assignment not found",
@@ -448,16 +475,18 @@ if (count === 0) {
 #### 4. Internal Server Error (500)
 
 **Trigger:**
+
 - Database connection error
 - Supabase query error
 - Unexpected exception
 
 **Handling:**
+
 ```typescript
 try {
   await deleteMealPlanAssignment(supabase, user.id, id);
 } catch (error) {
-  console.error('[DELETE /api/meal-plan/:id] Error:', error);
+  console.error("[DELETE /api/meal-plan/:id] Error:", error);
 
   // Sentry logging w production
   if (import.meta.env.PROD) {
@@ -467,15 +496,16 @@ try {
   // Return 500
   return new Response(
     JSON.stringify({
-      error: 'Internal server error',
-      message: 'An unexpected error occurred while deleting the assignment'
+      error: "Internal server error",
+      message: "An unexpected error occurred while deleting the assignment",
     }),
-    { status: 500, headers: { 'Content-Type': 'application/json' } }
+    { status: 500, headers: { "Content-Type": "application/json" } }
   );
 }
 ```
 
 **Response:**
+
 ```json
 {
   "error": "Internal server error",
@@ -486,14 +516,16 @@ try {
 ### Error Response Pattern
 
 **Wszystkie błędy zwracają:**
+
 ```typescript
 interface ErrorResponse {
-  error: string;        // Machine-readable error code
-  message?: string;     // Human-readable description (optional)
+  error: string; // Machine-readable error code
+  message?: string; // Human-readable description (optional)
 }
 ```
 
 **Consistency:**
+
 - Zawsze `Content-Type: application/json`
 - Zawsze structured error object (nie plain text)
 - Consistent field naming (error, message)
@@ -505,16 +537,19 @@ interface ErrorResponse {
 ### 1. Query Performance
 
 **Aktualna sytuacja:**
+
 ```sql
 DELETE FROM meal_plan
 WHERE id = $1 AND user_id = $2
 ```
 
 **Indexy potrzebne:**
+
 - ✅ Primary Key na `id` (UUID) - automatyczny index
 - ✅ Index na `user_id` - powinien już istnieć (zgodnie z database schema notes)
 
 **Verify indexes:**
+
 ```sql
 -- Sprawdzenie czy indexy istnieją
 SELECT indexname, indexdef
@@ -523,6 +558,7 @@ WHERE tablename = 'meal_plan';
 ```
 
 **Expected indexes:**
+
 ```sql
 CREATE INDEX idx_meal_plan_user_id ON meal_plan(user_id);
 CREATE UNIQUE INDEX idx_meal_plan_unique_assignment
@@ -530,6 +566,7 @@ CREATE UNIQUE INDEX idx_meal_plan_unique_assignment
 ```
 
 **Performance metrics:**
+
 - Single row DELETE by PK: **< 10ms** (SSD storage)
 - With user_id filter: **< 15ms** (with index)
 - Expected load: ~0.1-1 deletes/user/day (very light)
@@ -537,11 +574,13 @@ CREATE UNIQUE INDEX idx_meal_plan_unique_assignment
 ### 2. Database Locks
 
 **PostgreSQL behavior:**
+
 - DELETE operation = ROW EXCLUSIVE lock
 - Lock tylko na deleted row (nie całą tabelę)
 - Automatyczne release po transaction commit
 
 **Brak problemu dla MVP:**
+
 - Single row operations
 - Brak concurrent deletes tego samego assignment (one user = one session)
 - Supabase auto-manages transactions
@@ -549,16 +588,19 @@ CREATE UNIQUE INDEX idx_meal_plan_unique_assignment
 ### 3. RLS Policy Overhead
 
 **Koszt:**
+
 - RLS policy evaluation dodaje ~2-5ms do query time
 - Akceptowalny overhead dla security benefit
 
 **Optimization (jeśli potrzebne w przyszłości):**
+
 - Service layer już robi explicit `.eq('user_id', userId)` check
 - RLS jest backup security layer (defense in depth)
 
 ### 4. Network Latency
 
 **Komponenty:**
+
 1. Client → Vercel Edge (10-50ms depending on geography)
 2. Vercel → Supabase (10-30ms)
 3. Supabase query execution (<15ms)
@@ -568,6 +610,7 @@ CREATE UNIQUE INDEX idx_meal_plan_unique_assignment
 **Total expected latency: 50-175ms**
 
 **Optimization strategies:**
+
 - ✅ Vercel Edge Functions (już planned w tech stack)
 - ✅ Supabase connection pooling (automatic w Supabase)
 - Possible future: Aggressive caching (nie dotyczy DELETE, ale dla GET endpoints)
@@ -575,27 +618,32 @@ CREATE UNIQUE INDEX idx_meal_plan_unique_assignment
 ### 5. Cascade Delete Implications
 
 **Z database schema:**
+
 ```sql
 recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE
 ```
 
 **Behavior:**
+
 - Gdy recipe jest usuwany → wszystkie jego assignments w meal_plan też są usuwane
 - **NIE dotyczy tego endpointa** - my usuwamy assignment, nie recipe
 
 **Performance note:**
+
 - CASCADE DELETE jest handled przez PostgreSQL triggers
 - Brak impactu na performance tego endpointa
 
 ### 6. Monitoring Metrics
 
 **Metryki do trackowania (Sentry + custom):**
+
 - Response time percentiles (p50, p95, p99)
 - Error rate by status code
 - Throughput (deletes/minute)
 - Database query duration
 
 **Alerts:**
+
 - p95 latency > 500ms
 - Error rate > 5%
 - Spike w 404 errors (możliwy attack attempt)
@@ -607,11 +655,13 @@ recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE
 ### Krok 1: Przygotowanie środowiska i validacja struktury
 
 **Zadania:**
+
 1. ✅ Sprawdzenie czy typy w `src/types.ts` są dostępne:
    - `DeleteMealPlanResponseDto`
    - `ErrorResponseDto`
 
 2. ✅ Weryfikacja database schema i RLS policies:
+
    ```sql
    -- Sprawdzenie RLS policy
    SELECT * FROM pg_policies WHERE tablename = 'meal_plan';
@@ -630,6 +680,7 @@ recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE
    ```
 
 **Weryfikacja:**
+
 - [ ] RLS policy dla DELETE istnieje na tabeli meal_plan
 - [ ] Indexy na `id` i `user_id` są created
 - [ ] TypeScript types są accessible
@@ -643,7 +694,7 @@ recipe_id UUID NOT NULL REFERENCES recipes(id) ON DELETE CASCADE
 **Implementacja:**
 
 ```typescript
-import type { SupabaseClient } from '@/db/supabase.client';
+import type { SupabaseClient } from "@/db/supabase.client";
 
 /**
  * Custom error classes dla lepszego error handling
@@ -651,14 +702,14 @@ import type { SupabaseClient } from '@/db/supabase.client';
 export class NotFoundError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'NotFoundError';
+    this.name = "NotFoundError";
   }
 }
 
 export class DatabaseError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'DatabaseError';
+    this.name = "DatabaseError";
   }
 }
 
@@ -679,32 +730,28 @@ export async function deleteMealPlanAssignment(
 ): Promise<void> {
   // Query z count option do sprawdzenia affected rows
   const { error, count } = await supabase
-    .from('meal_plan')
-    .delete({ count: 'exact' })
-    .eq('id', assignmentId)
-    .eq('user_id', userId); // Explicit authorization check
+    .from("meal_plan")
+    .delete({ count: "exact" })
+    .eq("id", assignmentId)
+    .eq("user_id", userId); // Explicit authorization check
 
   // Handle database errors
   if (error) {
-    console.error('[meal-plan.service] Delete query failed:', {
+    console.error("[meal-plan.service] Delete query failed:", {
       assignmentId,
       userId,
       error: error.message,
       code: error.code,
     });
 
-    throw new DatabaseError(
-      `Failed to delete meal plan assignment: ${error.message}`
-    );
+    throw new DatabaseError(`Failed to delete meal plan assignment: ${error.message}`);
   }
 
   // Check if anything was deleted
   if (count === 0) {
     // Assignment nie istnieje LUB user nie ma do niego dostępu
     // Celowo nie rozróżniamy (security best practice)
-    throw new NotFoundError(
-      'Assignment not found or you don\'t have permission to delete it'
-    );
+    throw new NotFoundError("Assignment not found or you don't have permission to delete it");
   }
 
   // Success - return void
@@ -716,64 +763,59 @@ export async function deleteMealPlanAssignment(
 
 ```typescript
 // tests/services/meal-plan.service.test.ts
-import { describe, it, expect, vi } from 'vitest';
-import { deleteMealPlanAssignment, NotFoundError, DatabaseError } from '@/lib/services/meal-plan.service';
+import { describe, it, expect, vi } from "vitest";
+import { deleteMealPlanAssignment, NotFoundError, DatabaseError } from "@/lib/services/meal-plan.service";
 
-describe('deleteMealPlanAssignment', () => {
-  it('should successfully delete assignment', async () => {
+describe("deleteMealPlanAssignment", () => {
+  it("should successfully delete assignment", async () => {
     const mockSupabase = {
       from: vi.fn().mockReturnValue({
         delete: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockResolvedValue({ error: null, count: 1 })
-          })
-        })
-      })
+            eq: vi.fn().mockResolvedValue({ error: null, count: 1 }),
+          }),
+        }),
+      }),
     };
 
-    await expect(
-      deleteMealPlanAssignment(mockSupabase, 'user-123', 'assignment-456')
-    ).resolves.toBeUndefined();
+    await expect(deleteMealPlanAssignment(mockSupabase, "user-123", "assignment-456")).resolves.toBeUndefined();
   });
 
-  it('should throw NotFoundError when assignment does not exist', async () => {
+  it("should throw NotFoundError when assignment does not exist", async () => {
     const mockSupabase = {
       from: vi.fn().mockReturnValue({
         delete: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            eq: vi.fn().mockResolvedValue({ error: null, count: 0 })
-          })
-        })
-      })
+            eq: vi.fn().mockResolvedValue({ error: null, count: 0 }),
+          }),
+        }),
+      }),
     };
 
-    await expect(
-      deleteMealPlanAssignment(mockSupabase, 'user-123', 'assignment-456')
-    ).rejects.toThrow(NotFoundError);
+    await expect(deleteMealPlanAssignment(mockSupabase, "user-123", "assignment-456")).rejects.toThrow(NotFoundError);
   });
 
-  it('should throw DatabaseError on query failure', async () => {
+  it("should throw DatabaseError on query failure", async () => {
     const mockSupabase = {
       from: vi.fn().mockReturnValue({
         delete: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
             eq: vi.fn().mockResolvedValue({
-              error: { message: 'Connection failed', code: 'PGRST500' },
-              count: null
-            })
-          })
-        })
-      })
+              error: { message: "Connection failed", code: "PGRST500" },
+              count: null,
+            }),
+          }),
+        }),
+      }),
     };
 
-    await expect(
-      deleteMealPlanAssignment(mockSupabase, 'user-123', 'assignment-456')
-    ).rejects.toThrow(DatabaseError);
+    await expect(deleteMealPlanAssignment(mockSupabase, "user-123", "assignment-456")).rejects.toThrow(DatabaseError);
   });
 });
 ```
 
 **Weryfikacja:**
+
 - [ ] Service function obsługuje wszystkie error cases
 - [ ] Logging jest zaimplementowany
 - [ ] TypeScript types są poprawne
@@ -788,17 +830,10 @@ describe('deleteMealPlanAssignment', () => {
 **Implementacja:**
 
 ```typescript
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
-import {
-  deleteMealPlanAssignment,
-  NotFoundError,
-  DatabaseError
-} from '@/lib/services/meal-plan.service';
-import type {
-  DeleteMealPlanResponseDto,
-  ErrorResponseDto
-} from '@/types';
+import type { APIRoute } from "astro";
+import { z } from "zod";
+import { deleteMealPlanAssignment, NotFoundError, DatabaseError } from "@/lib/services/meal-plan.service";
+import type { DeleteMealPlanResponseDto, ErrorResponseDto } from "@/types";
 
 // Disable prerendering (wymagane dla API routes)
 export const prerender = false;
@@ -823,12 +858,12 @@ export const DELETE: APIRoute = async (context) => {
 
   if (!assignmentId) {
     const errorResponse: ErrorResponseDto = {
-      error: 'Missing assignment ID',
-      message: 'Assignment ID is required in URL path',
+      error: "Missing assignment ID",
+      message: "Assignment ID is required in URL path",
     };
     return new Response(JSON.stringify(errorResponse), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -836,33 +871,36 @@ export const DELETE: APIRoute = async (context) => {
   const idValidation = uuidSchema.safeParse(assignmentId);
   if (!idValidation.success) {
     const errorResponse: ErrorResponseDto = {
-      error: 'Invalid assignment ID format',
-      message: 'Assignment ID must be a valid UUID',
+      error: "Invalid assignment ID format",
+      message: "Assignment ID must be a valid UUID",
     };
     return new Response(JSON.stringify(errorResponse), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
   // ===================================================================
   // Step 2: Authentication check
   // ===================================================================
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    console.warn('[DELETE /api/meal-plan/:id] Unauthorized access attempt:', {
+    console.warn("[DELETE /api/meal-plan/:id] Unauthorized access attempt:", {
       assignmentId,
       authError: authError?.message,
     });
 
     const errorResponse: ErrorResponseDto = {
-      error: 'Unauthorized',
-      message: 'You must be logged in to perform this action',
+      error: "Unauthorized",
+      message: "You must be logged in to perform this action",
     };
     return new Response(JSON.stringify(errorResponse), {
       status: 401,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -874,14 +912,13 @@ export const DELETE: APIRoute = async (context) => {
 
     // Success response
     const successResponse: DeleteMealPlanResponseDto = {
-      message: 'Assignment removed successfully',
+      message: "Assignment removed successfully",
     };
 
     return new Response(JSON.stringify(successResponse), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error) {
     // ===================================================================
     // Step 4: Error handling
@@ -890,18 +927,18 @@ export const DELETE: APIRoute = async (context) => {
     // Not Found Error (404)
     if (error instanceof NotFoundError) {
       const errorResponse: ErrorResponseDto = {
-        error: 'Assignment not found',
+        error: "Assignment not found",
         message: error.message,
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // Database Error (500)
     if (error instanceof DatabaseError) {
-      console.error('[DELETE /api/meal-plan/:id] Database error:', {
+      console.error("[DELETE /api/meal-plan/:id] Database error:", {
         assignmentId,
         userId: user.id,
         error: error.message,
@@ -914,17 +951,17 @@ export const DELETE: APIRoute = async (context) => {
       }
 
       const errorResponse: ErrorResponseDto = {
-        error: 'Internal server error',
-        message: 'An unexpected error occurred while deleting the assignment',
+        error: "Internal server error",
+        message: "An unexpected error occurred while deleting the assignment",
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // Unexpected errors (500)
-    console.error('[DELETE /api/meal-plan/:id] Unexpected error:', {
+    console.error("[DELETE /api/meal-plan/:id] Unexpected error:", {
       assignmentId,
       userId: user.id,
       error,
@@ -935,24 +972,26 @@ export const DELETE: APIRoute = async (context) => {
     }
 
     const errorResponse: ErrorResponseDto = {
-      error: 'Internal server error',
-      message: 'An unexpected error occurred',
+      error: "Internal server error",
+      message: "An unexpected error occurred",
     };
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };
 ```
 
 **Uwagi implementacyjne:**
+
 - Early returns dla wszystkich error cases (zgodnie z coding standards)
 - Explicit error typing (NotFoundError, DatabaseError)
 - Comprehensive logging (ale bez sensitive data)
 - Type-safe responses (wszystkie używają DTO types)
 
 **Weryfikacja:**
+
 - [ ] Endpoint jest dostępny pod `/api/meal-plan/[id]`
 - [ ] Wszystkie error cases są handled
 - [ ] Responses mają proper Content-Type headers
@@ -963,6 +1002,7 @@ export const DELETE: APIRoute = async (context) => {
 ### Krok 4: Testy manualne (end-to-end)
 
 **Setup:**
+
 1. Uruchom development server: `npm run dev`
 2. Zaloguj się jako test user
 3. Stwórz test assignment w kalendarzu (przez POST /api/meal-plan)
@@ -970,6 +1010,7 @@ export const DELETE: APIRoute = async (context) => {
 **Test cases:**
 
 #### Test 1: Sukces - usunięcie własnego assignment
+
 ```bash
 # 1. Create assignment first
 curl -X POST http://localhost:3000/api/meal-plan \
@@ -995,6 +1036,7 @@ curl -X DELETE http://localhost:3000/api/meal-plan/ASSIGNMENT_UUID \
 ```
 
 #### Test 2: Error - brak authorization
+
 ```bash
 curl -X DELETE http://localhost:3000/api/meal-plan/ASSIGNMENT_UUID
 
@@ -1006,6 +1048,7 @@ curl -X DELETE http://localhost:3000/api/meal-plan/ASSIGNMENT_UUID
 ```
 
 #### Test 3: Error - nieprawidłowy UUID format
+
 ```bash
 curl -X DELETE http://localhost:3000/api/meal-plan/invalid-uuid \
   -H "Authorization: Bearer YOUR_TOKEN"
@@ -1018,6 +1061,7 @@ curl -X DELETE http://localhost:3000/api/meal-plan/invalid-uuid \
 ```
 
 #### Test 4: Error - assignment nie istnieje
+
 ```bash
 curl -X DELETE http://localhost:3000/api/meal-plan/550e8400-e29b-41d4-a716-446655440000 \
   -H "Authorization: Bearer YOUR_TOKEN"
@@ -1030,6 +1074,7 @@ curl -X DELETE http://localhost:3000/api/meal-plan/550e8400-e29b-41d4-a716-44665
 ```
 
 #### Test 5: Security - próba usunięcia cudzego assignment
+
 ```bash
 # 1. User A creates assignment (get assignment_id)
 # 2. User B tries to delete it
@@ -1045,6 +1090,7 @@ curl -X DELETE http://localhost:3000/api/meal-plan/USER_A_ASSIGNMENT_UUID \
 ```
 
 **Weryfikacja:**
+
 - [ ] Wszystkie test cases zwracają expected responses
 - [ ] Status codes są prawidłowe
 - [ ] Error messages są user-friendly
@@ -1073,6 +1119,7 @@ WHERE tablename = 'meal_plan'
 ```
 
 **Expected policy:**
+
 ```sql
 policyname: "Users can delete own assignments"
 cmd: DELETE
@@ -1094,6 +1141,7 @@ USING (auth.uid() = user_id);
 ```
 
 **Weryfikacja:**
+
 - [ ] RLS jest włączony na tabeli meal_plan
 - [ ] DELETE policy istnieje i jest poprawny
 - [ ] Policy używa `auth.uid() = user_id` check
@@ -1106,7 +1154,7 @@ USING (auth.uid() = user_id);
 
 **Dodaj sekcję:**
 
-```markdown
+````markdown
 ### DELETE /api/meal-plan/:id
 
 **Description:** Remove recipe assignment from calendar (does NOT delete the recipe itself)
@@ -1114,18 +1162,22 @@ USING (auth.uid() = user_id);
 **Authentication:** Required (JWT token)
 
 **Parameters:**
+
 - `id` (path, UUID, required) - Meal plan assignment ID
 
 **Success Response (200 OK):**
+
 ```json
 {
   "message": "Assignment removed successfully"
 }
 ```
+````
 
 **Error Responses:**
 
 - **400 Bad Request** - Invalid UUID format
+
   ```json
   {
     "error": "Invalid assignment ID format",
@@ -1134,6 +1186,7 @@ USING (auth.uid() = user_id);
   ```
 
 - **401 Unauthorized** - Not authenticated
+
   ```json
   {
     "error": "Unauthorized",
@@ -1142,6 +1195,7 @@ USING (auth.uid() = user_id);
   ```
 
 - **404 Not Found** - Assignment not found or access denied
+
   ```json
   {
     "error": "Assignment not found",
@@ -1158,16 +1212,19 @@ USING (auth.uid() = user_id);
   ```
 
 **Example (cURL):**
+
 ```bash
 curl -X DELETE https://shopmate.vercel.app/api/meal-plan/550e8400-e29b-41d4-a716-446655440000 \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 **Notes:**
+
 - Deleting an assignment does NOT delete the recipe from recipes table
 - Users can only delete their own assignments (RLS enforced)
 - CASCADE DELETE: If recipe is deleted, all its assignments are automatically removed
-```
+
+````
 
 **Weryfikacja:**
 - [ ] Dokumentacja jest complete
@@ -1244,9 +1301,10 @@ Closes #ISSUE_NUMBER"
 
 # Push and create PR
 git push origin feature/delete-meal-plan-endpoint
-```
+````
 
 **Deployment (Vercel):**
+
 - GitHub push → automatic Vercel deployment (już skonfigurowane w tech stack)
 - Preview deployment dla PR review
 - Production deployment po merge do main
@@ -1254,6 +1312,7 @@ git push origin feature/delete-meal-plan-endpoint
 **Post-deployment monitoring:**
 
 1. **Verify endpoint w production:**
+
 ```bash
 curl -X DELETE https://shopmate.vercel.app/api/meal-plan/TEST_UUID \
   -H "Authorization: Bearer PROD_TOKEN"
@@ -1274,11 +1333,13 @@ curl -X DELETE https://shopmate.vercel.app/api/meal-plan/TEST_UUID \
    - Verify RLS policy enforcement (audit logs)
 
 **Rollback plan (jeśli problemy):**
+
 1. Vercel: instant rollback do previous deployment (1-click w dashboard)
 2. Database: RLS policies pozostają (safe), no schema changes w tym endpointcie
 3. Notify users jeśli downtime > 5 minut
 
 **Weryfikacja:**
+
 - [ ] Endpoint działa w production
 - [ ] Monitoring jest set up (Sentry, Vercel Analytics)
 - [ ] No errors w production logs (pierwsze 24h)
@@ -1288,25 +1349,27 @@ curl -X DELETE https://shopmate.vercel.app/api/meal-plan/TEST_UUID \
 
 ## Podsumowanie kroków implementacji
 
-| Krok | Zadanie | Status | Estimated Time |
-|------|---------|--------|----------------|
-| 1 | Przygotowanie środowiska i validacja struktury | ⏳ | 15 min |
-| 2 | Implementacja Service Layer | ⏳ | 45 min |
-| 3 | Implementacja API Route Handler | ⏳ | 60 min |
-| 4 | Testy manualne (end-to-end) | ⏳ | 30 min |
-| 5 | Weryfikacja RLS Policies | ⏳ | 15 min |
-| 6 | Dodanie do dokumentacji API | ⏳ | 20 min |
-| 7 | Code Review Checklist | ⏳ | 30 min |
-| 8 | Deployment i Monitoring | ⏳ | 30 min |
-| **TOTAL** | | | **~4 godziny** |
+| Krok      | Zadanie                                        | Status | Estimated Time |
+| --------- | ---------------------------------------------- | ------ | -------------- |
+| 1         | Przygotowanie środowiska i validacja struktury | ⏳     | 15 min         |
+| 2         | Implementacja Service Layer                    | ⏳     | 45 min         |
+| 3         | Implementacja API Route Handler                | ⏳     | 60 min         |
+| 4         | Testy manualne (end-to-end)                    | ⏳     | 30 min         |
+| 5         | Weryfikacja RLS Policies                       | ⏳     | 15 min         |
+| 6         | Dodanie do dokumentacji API                    | ⏳     | 20 min         |
+| 7         | Code Review Checklist                          | ⏳     | 30 min         |
+| 8         | Deployment i Monitoring                        | ⏳     | 30 min         |
+| **TOTAL** |                                                |        | **~4 godziny** |
 
 **Critical path:**
+
 1. Service Layer (Step 2)
 2. API Route (Step 3)
 3. Manual Testing (Step 4)
 4. Deployment (Step 8)
 
 **Parallel tasks możliwe:**
+
 - Step 5 (RLS) i Step 6 (Docs) można robić równolegle z testami
 
 ---
@@ -1353,12 +1416,14 @@ WHERE id = '550e8400-e29b-41d4-a716-446655440000'
 // ✅ CORRECT - używamy client z context.locals
 export const DELETE: APIRoute = async (context) => {
   const supabase = context.locals.supabase;
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   // ...
 };
 
 // ❌ WRONG - nie importujemy supabaseClient directly
-import { supabaseClient } from '@/db/supabase.client';
+import { supabaseClient } from "@/db/supabase.client";
 // Ten client nie ma auth context z request!
 ```
 
@@ -1366,13 +1431,13 @@ import { supabaseClient } from '@/db/supabase.client';
 
 ```typescript
 // ✅ CORRECT - używamy type imports
-import type { APIRoute } from 'astro';
-import type { SupabaseClient } from '@/db/supabase.client';
-import type { DeleteMealPlanResponseDto } from '@/types';
+import type { APIRoute } from "astro";
+import type { SupabaseClient } from "@/db/supabase.client";
+import type { DeleteMealPlanResponseDto } from "@/types";
 
 // ✅ CORRECT - runtime imports dla functions/classes
-import { deleteMealPlanAssignment } from '@/lib/services/meal-plan.service';
-import { z } from 'zod';
+import { deleteMealPlanAssignment } from "@/lib/services/meal-plan.service";
+import { z } from "zod";
 ```
 
 ---

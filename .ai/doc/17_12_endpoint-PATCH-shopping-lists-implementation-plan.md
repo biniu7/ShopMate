@@ -5,6 +5,7 @@
 Endpoint umożliwia aktualizację statusu `is_checked` pojedynczego elementu na liście zakupów (oznaczenie jako zakupione/niezakupione). Jest to **jedyna dozwolona mutacja** na zapisanych listach zakupów zgodnie ze wzorcem snapshot pattern. Endpoint wymaga autentykacji oraz weryfikacji, że zarówno lista, jak i item należą do zalogowanego użytkownika.
 
 **Kluczowe cechy:**
+
 - Atomowa operacja aktualizacji pojedynczego pola
 - Nie narusza immutability listy (snapshot pattern)
 - Wymaga weryfikacji własności zasobu (authorization)
@@ -13,9 +14,11 @@ Endpoint umożliwia aktualizację statusu `is_checked` pojedynczego elementu na 
 ## 2. Szczegóły żądania
 
 ### Metoda HTTP
+
 `PATCH`
 
 ### Struktura URL
+
 ```
 /api/shopping-lists/:list_id/items/:item_id
 ```
@@ -23,10 +26,12 @@ Endpoint umożliwia aktualizację statusu `is_checked` pojedynczego elementu na 
 ### Parametry
 
 **Path Parameters (wymagane):**
+
 - `list_id` (UUID) - identyfikator listy zakupów
 - `item_id` (UUID) - identyfikator elementu na liście
 
 **Request Body (wymagane):**
+
 ```typescript
 {
   "is_checked": boolean
@@ -34,10 +39,12 @@ Endpoint umożliwia aktualizację statusu `is_checked` pojedynczego elementu na 
 ```
 
 **Headers:**
+
 - `Content-Type: application/json`
 - Cookie z session token (Supabase Auth automatycznie obsługuje przez `context.locals.supabase`)
 
 ### Przykład żądania
+
 ```http
 PATCH /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000/items/950e8400-e29b-41d4-a716-446655440000
 Content-Type: application/json
@@ -50,6 +57,7 @@ Content-Type: application/json
 ## 3. Wykorzystywane typy
 
 ### Command Model (Request)
+
 ```typescript
 // src/types.ts (już istnieje, lines 298-300)
 export interface UpdateShoppingListItemDto {
@@ -58,6 +66,7 @@ export interface UpdateShoppingListItemDto {
 ```
 
 ### Response DTO
+
 ```typescript
 // src/types.ts (już istnieje, line 272)
 export type ShoppingListItemDto = ShoppingListItem;
@@ -78,25 +87,29 @@ export type ShoppingListItem = Database["public"]["Tables"]["shopping_list_items
 ```
 
 ### Validation Schema (do stworzenia)
+
 ```typescript
 // src/lib/validation/shopping-list.schema.ts
 import { z } from "zod";
 
-export const updateShoppingListItemSchema = z.object({
-  is_checked: z.boolean({
-    required_error: "Pole is_checked jest wymagane",
-    invalid_type_error: "Pole is_checked musi być typu boolean"
+export const updateShoppingListItemSchema = z
+  .object({
+    is_checked: z.boolean({
+      required_error: "Pole is_checked jest wymagane",
+      invalid_type_error: "Pole is_checked musi być typu boolean",
+    }),
   })
-}).strict(); // strict() zapobiega dodatkowym polom (mass assignment)
+  .strict(); // strict() zapobiega dodatkowym polom (mass assignment)
 
 export const uuidParamSchema = z.string().uuid({
-  message: "Nieprawidłowy format UUID"
+  message: "Nieprawidłowy format UUID",
 });
 ```
 
 ## 4. Szczegóły odpowiedzi
 
 ### Pomyślna odpowiedź (200 OK)
+
 ```json
 {
   "id": "950e8400-e29b-41d4-a716-446655440000",
@@ -113,6 +126,7 @@ export const uuidParamSchema = z.string().uuid({
 ### Odpowiedzi błędów
 
 **400 Bad Request** - Nieprawidłowe dane wejściowe
+
 ```json
 {
   "error": "Validation Error",
@@ -123,6 +137,7 @@ export const uuidParamSchema = z.string().uuid({
 ```
 
 **401 Unauthorized** - Użytkownik nie zalogowany
+
 ```json
 {
   "error": "Unauthorized",
@@ -131,6 +146,7 @@ export const uuidParamSchema = z.string().uuid({
 ```
 
 **404 Not Found** - Item lub lista nie istnieje/nie należy do użytkownika
+
 ```json
 {
   "error": "Not Found",
@@ -139,6 +155,7 @@ export const uuidParamSchema = z.string().uuid({
 ```
 
 **500 Internal Server Error** - Błąd serwera
+
 ```json
 {
   "error": "Internal Server Error",
@@ -222,15 +239,19 @@ export const uuidParamSchema = z.string().uuid({
 ## 6. Względy bezpieczeństwa
 
 ### Autentykacja
+
 - Endpoint wymaga zalogowanego użytkownika
 - Weryfikacja przez `supabase.auth.getUser()` w middleware lub bezpośrednio w endpointcie
 - Session token przechowywany w httpOnly cookie (automatyczne przez Supabase Auth)
 
 ### Autoryzacja (IDOR Protection)
+
 **Zagrożenie:** Użytkownik A może próbować zaktualizować item z listy użytkownika B przez manipulację UUID w URL
 
 **Mitigation:**
+
 1. **Database Level (Primary):** RLS policy na `shopping_list_items`:
+
    ```sql
    CREATE POLICY "Users can update only their own list items"
    ON shopping_list_items FOR UPDATE
@@ -242,33 +263,37 @@ export const uuidParamSchema = z.string().uuid({
    ```
 
 2. **Application Level (Secondary):** Explicit verification w service layer:
+
    ```typescript
    // Najpierw sprawdź czy lista należy do użytkownika
    const { data: list } = await supabase
-     .from('shopping_lists')
-     .select('id')
-     .eq('id', listId)
-     .eq('user_id', userId)
+     .from("shopping_lists")
+     .select("id")
+     .eq("id", listId)
+     .eq("user_id", userId)
      .single();
 
    if (!list) {
-     throw new Error('NOT_FOUND'); // 404
+     throw new Error("NOT_FOUND"); // 404
    }
 
    // Następnie update item
    ```
 
 ### Input Validation
+
 - **UUID Validation:** Użycie `z.string().uuid()` zapobiega SQL injection przez malformed IDs
 - **Boolean Validation:** Strict type checking dla `is_checked`
 - **Strict Schema:** `z.object().strict()` zapobiega mass assignment attacks
 - **Sanitization:** Nie dotyczy (tylko boolean update, brak user input strings)
 
 ### Rate Limiting
+
 - Supabase default: 100 requests/minute (free tier), 200 req/min (pro tier)
 - Dla dodatkowej ochrony można dodać middleware z rate limiting (np. `@upstash/ratelimit`)
 
 ### CORS
+
 - Vercel automatycznie konfiguruje CORS dla API routes
 - Ograniczenie do trusted origins w production (konfiguracja w `astro.config.mjs`)
 
@@ -276,17 +301,17 @@ export const uuidParamSchema = z.string().uuid({
 
 ### Klasyfikacja błędów
 
-| Kod | Scenariusz | Warunek | Response |
-|-----|-----------|---------|----------|
-| 400 | Bad Request | Nieprawidłowy UUID format | `{ error: "Validation Error", details: { list_id: ["Nieprawidłowy format UUID"] } }` |
-| 400 | Bad Request | Brak `is_checked` w body | `{ error: "Validation Error", details: { is_checked: ["Pole is_checked jest wymagane"] } }` |
-| 400 | Bad Request | `is_checked` nie jest boolean | `{ error: "Validation Error", details: { is_checked: ["Pole is_checked musi być typu boolean"] } }` |
-| 401 | Unauthorized | Użytkownik nie zalogowany | `{ error: "Unauthorized", message: "Musisz być zalogowany..." }` |
-| 404 | Not Found | Lista nie istnieje | `{ error: "Not Found", message: "Element listy nie został znaleziony" }` |
-| 404 | Not Found | Item nie istnieje w tej liście | j.w. |
-| 404 | Not Found | Lista nie należy do użytkownika | j.w. (security: nie ujawniamy czy istnieje) |
-| 500 | Server Error | Błąd bazy danych | `{ error: "Internal Server Error", message: "Wystąpił błąd..." }` |
-| 500 | Server Error | Supabase connection timeout | j.w. |
+| Kod | Scenariusz   | Warunek                         | Response                                                                                            |
+| --- | ------------ | ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 400 | Bad Request  | Nieprawidłowy UUID format       | `{ error: "Validation Error", details: { list_id: ["Nieprawidłowy format UUID"] } }`                |
+| 400 | Bad Request  | Brak `is_checked` w body        | `{ error: "Validation Error", details: { is_checked: ["Pole is_checked jest wymagane"] } }`         |
+| 400 | Bad Request  | `is_checked` nie jest boolean   | `{ error: "Validation Error", details: { is_checked: ["Pole is_checked musi być typu boolean"] } }` |
+| 401 | Unauthorized | Użytkownik nie zalogowany       | `{ error: "Unauthorized", message: "Musisz być zalogowany..." }`                                    |
+| 404 | Not Found    | Lista nie istnieje              | `{ error: "Not Found", message: "Element listy nie został znaleziony" }`                            |
+| 404 | Not Found    | Item nie istnieje w tej liście  | j.w.                                                                                                |
+| 404 | Not Found    | Lista nie należy do użytkownika | j.w. (security: nie ujawniamy czy istnieje)                                                         |
+| 500 | Server Error | Błąd bazy danych                | `{ error: "Internal Server Error", message: "Wystąpił błąd..." }`                                   |
+| 500 | Server Error | Supabase connection timeout     | j.w.                                                                                                |
 
 ### Strategia obsługi błędów
 
@@ -296,49 +321,62 @@ try {
   // 1. Validation errors (400)
   const paramsValidation = uuidParamSchema.safeParse(list_id);
   if (!paramsValidation.success) {
-    return new Response(JSON.stringify({
-      error: "Validation Error",
-      details: paramsValidation.error.flatten()
-    }), { status: 400 });
+    return new Response(
+      JSON.stringify({
+        error: "Validation Error",
+        details: paramsValidation.error.flatten(),
+      }),
+      { status: 400 }
+    );
   }
 
   // 2. Auth errors (401)
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
   if (authError || !user) {
-    return new Response(JSON.stringify({
-      error: "Unauthorized",
-      message: "Musisz być zalogowany aby wykonać tę operację"
-    }), { status: 401 });
+    return new Response(
+      JSON.stringify({
+        error: "Unauthorized",
+        message: "Musisz być zalogowany aby wykonać tę operację",
+      }),
+      { status: 401 }
+    );
   }
 
   // 3. Business logic (404 lub 500)
-  const updatedItem = await updateItemCheckedStatus(
-    supabase, list_id, item_id, user.id, is_checked
-  );
+  const updatedItem = await updateItemCheckedStatus(supabase, list_id, item_id, user.id, is_checked);
 
   return new Response(JSON.stringify(updatedItem), { status: 200 });
-
 } catch (error) {
   // 4. Rozróżnienie NOT_FOUND vs SERVER_ERROR
-  if (error.message === 'NOT_FOUND') {
-    return new Response(JSON.stringify({
-      error: "Not Found",
-      message: "Element listy nie został znaleziony"
-    }), { status: 404 });
+  if (error.message === "NOT_FOUND") {
+    return new Response(
+      JSON.stringify({
+        error: "Not Found",
+        message: "Element listy nie został znaleziony",
+      }),
+      { status: 404 }
+    );
   }
 
   // 5. Logowanie do Sentry (jeśli skonfigurowany)
-  console.error('Error updating shopping list item:', error);
+  console.error("Error updating shopping list item:", error);
   // Sentry.captureException(error);
 
-  return new Response(JSON.stringify({
-    error: "Internal Server Error",
-    message: "Wystąpił błąd podczas aktualizacji elementu"
-  }), { status: 500 });
+  return new Response(
+    JSON.stringify({
+      error: "Internal Server Error",
+      message: "Wystąpił błąd podczas aktualizacji elementu",
+    }),
+    { status: 500 }
+  );
 }
 ```
 
 ### Error Logging
+
 - Console.error dla wszystkich błędów 500
 - Sentry integration (jeśli skonfigurowany) dla production errors
 - Nie logować błędów 400/401/404 (user errors, nie system errors)
@@ -348,6 +386,7 @@ try {
 ### Optymalizacje bazy danych
 
 **Indexes (już powinny istnieć):**
+
 ```sql
 -- Composite index dla szybkiego lookup
 CREATE INDEX idx_shopping_list_items_list_id
@@ -359,11 +398,13 @@ ON shopping_lists(user_id);
 ```
 
 **Query Optimization:**
+
 - Single UPDATE query z JOIN/subquery zamiast SELECT + UPDATE (2 queries)
 - RETURNING clause eliminuje potrzebę dodatkowego SELECT po UPDATE
 - RLS policies używają indexes (shopping_list_id, user_id)
 
 ### Caching
+
 - **Brak server-side cache:** Item status jest mutable, cache byłby counter-productive
 - **Client-side optimistic updates:** React Query / SWR może zaktualizować UI przed response (lepsze UX)
 
@@ -386,6 +427,7 @@ ON shopping_lists(user_id);
    - Mitigation: Vercel Edge Functions (opcjonalne, dla premium tier)
 
 ### Monitoring
+
 - Response time target: <200ms (p95)
 - Error rate target: <0.1%
 - Monitoring via Vercel Analytics lub Sentry Performance
@@ -393,6 +435,7 @@ ON shopping_lists(user_id);
 ## 9. Etapy wdrożenia
 
 ### Krok 1: Przygotowanie validation schemas
+
 **Plik:** `src/lib/validation/shopping-list.schema.ts`
 
 ```typescript
@@ -400,15 +443,17 @@ import { z } from "zod";
 
 // Dodaj do istniejącego pliku (jeśli istnieje) lub stwórz nowy
 
-export const updateShoppingListItemSchema = z.object({
-  is_checked: z.boolean({
-    required_error: "Pole is_checked jest wymagane",
-    invalid_type_error: "Pole is_checked musi być typu boolean"
+export const updateShoppingListItemSchema = z
+  .object({
+    is_checked: z.boolean({
+      required_error: "Pole is_checked jest wymagane",
+      invalid_type_error: "Pole is_checked musi być typu boolean",
+    }),
   })
-}).strict();
+  .strict();
 
 export const uuidParamSchema = z.string().uuid({
-  message: "Nieprawidłowy format UUID"
+  message: "Nieprawidłowy format UUID",
 });
 ```
 
@@ -417,6 +462,7 @@ export const uuidParamSchema = z.string().uuid({
 ---
 
 ### Krok 2: Implementacja service layer
+
 **Plik:** `src/lib/services/shopping-list.service.ts` (rozszerz istniejący lub stwórz nowy)
 
 ```typescript
@@ -460,7 +506,8 @@ export async function updateItemCheckedStatus(
 
   if (updateError) {
     // Rozróżnienie NOT_FOUND (no rows) vs inne błędy
-    if (updateError.code === "PGRST116") { // PostgREST: no rows returned
+    if (updateError.code === "PGRST116") {
+      // PostgREST: no rows returned
       throw new Error("NOT_FOUND");
     }
     throw new Error("DATABASE_ERROR");
@@ -479,6 +526,7 @@ export async function updateItemCheckedStatus(
 ---
 
 ### Krok 3: Utworzenie struktury folderów dla API route
+
 **Struktura:** `src/pages/api/shopping-lists/[list_id]/items/[item_id].ts`
 
 ```bash
@@ -489,6 +537,7 @@ mkdir -p src/pages/api/shopping-lists/[list_id]/items
 ---
 
 ### Krok 4: Implementacja API route handler
+
 **Plik:** `src/pages/api/shopping-lists/[list_id]/items/[item_id].ts`
 
 ```typescript
@@ -510,7 +559,7 @@ export const PATCH: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "Validation Error",
-        details: { list_id: ["Nieprawidłowy format UUID"] }
+        details: { list_id: ["Nieprawidłowy format UUID"] },
       }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
@@ -520,7 +569,7 @@ export const PATCH: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "Validation Error",
-        details: { item_id: ["Nieprawidłowy format UUID"] }
+        details: { item_id: ["Nieprawidłowy format UUID"] },
       }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
@@ -534,7 +583,7 @@ export const PATCH: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "Bad Request",
-        message: "Nieprawidłowy format JSON"
+        message: "Nieprawidłowy format JSON",
       }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
@@ -546,19 +595,22 @@ export const PATCH: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "Validation Error",
-        details: bodyValidation.error.flatten().fieldErrors
+        details: bodyValidation.error.flatten().fieldErrors,
       }),
       { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 
   // 4. Autentykacja
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
   if (authError || !user) {
     return new Response(
       JSON.stringify({
         error: "Unauthorized",
-        message: "Musisz być zalogowany aby wykonać tę operację"
+        message: "Musisz być zalogowany aby wykonać tę operację",
       }),
       { status: 401, headers: { "Content-Type": "application/json" } }
     );
@@ -574,17 +626,14 @@ export const PATCH: APIRoute = async (context) => {
       bodyValidation.data.is_checked
     );
 
-    return new Response(
-      JSON.stringify(updatedItem),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify(updatedItem), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (error) {
     // 6. Obsługa błędów z service layer
     if (error instanceof Error && error.message === "NOT_FOUND") {
       return new Response(
         JSON.stringify({
           error: "Not Found",
-          message: "Element listy nie został znaleziony"
+          message: "Element listy nie został znaleziony",
         }),
         { status: 404, headers: { "Content-Type": "application/json" } }
       );
@@ -598,7 +647,7 @@ export const PATCH: APIRoute = async (context) => {
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",
-        message: "Wystąpił błąd podczas aktualizacji elementu"
+        message: "Wystąpił błąd podczas aktualizacji elementu",
       }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
@@ -611,6 +660,7 @@ export const PATCH: APIRoute = async (context) => {
 ---
 
 ### Krok 5: Weryfikacja RLS policies
+
 **Plik:** Sprawdź w Supabase Dashboard → Authentication → Policies
 
 Upewnij się że istnieją policies:
@@ -680,11 +730,13 @@ curl -X PATCH http://localhost:3000/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ### Krok 7: Dokumentacja i cleanup
 
 **Aktualizuj:**
+
 - `README.md` - dodaj endpoint do API docs (jeśli istnieje sekcja)
 - Dodaj JSDoc comments w service functions
 - Opcjonalnie: OpenAPI/Swagger spec (jeśli używane)
 
 **Code review checklist:**
+
 - [ ] Wszystkie edge cases obsłużone
 - [ ] Proper error messages (user-friendly, nie technical details)
 - [ ] No console.log w production code (tylko console.error dla errors)
@@ -698,11 +750,13 @@ curl -X PATCH http://localhost:3000/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 ### Krok 8: Deployment
 
 **Pre-deployment:**
+
 1. Run linter: `npm run lint`
 2. Run type check: `npx tsc --noEmit`
 3. Manual testing na local environment
 
 **Deployment (Vercel):**
+
 1. Commit changes: `git add . && git commit -m "feat: implement PATCH shopping-list-item endpoint"`
 2. Push to GitHub: `git push origin feature/shopping-list-item-update`
 3. Vercel auto-deploys preview environment
@@ -710,6 +764,7 @@ curl -X PATCH http://localhost:3000/api/shopping-lists/{LIST_ID}/items/{ITEM_ID}
 5. Merge to main → production deployment
 
 **Post-deployment:**
+
 1. Monitor Vercel logs dla 500 errors
 2. Test na production environment
 3. Monitor performance (response times)

@@ -25,7 +25,9 @@ export AUTH_TOKEN="your-jwt-token-here"
 **Scenario:** User successfully deletes their own meal plan assignment
 
 **Steps:**
+
 1. First, create a test assignment:
+
 ```bash
 curl -X POST http://localhost:3001/api/meal-plan \
   -H "Authorization: Bearer $AUTH_TOKEN" \
@@ -39,6 +41,7 @@ curl -X POST http://localhost:3001/api/meal-plan \
 ```
 
 2. Note the `id` from response, then delete it:
+
 ```bash
 curl -X DELETE http://localhost:3001/api/meal-plan/ASSIGNMENT_UUID \
   -H "Authorization: Bearer $AUTH_TOKEN" \
@@ -46,8 +49,10 @@ curl -X DELETE http://localhost:3001/api/meal-plan/ASSIGNMENT_UUID \
 ```
 
 **Expected Response:**
+
 - **Status Code:** `200 OK`
 - **Body:**
+
 ```json
 {
   "message": "Assignment removed successfully"
@@ -55,6 +60,7 @@ curl -X DELETE http://localhost:3001/api/meal-plan/ASSIGNMENT_UUID \
 ```
 
 **Verification:**
+
 - Assignment is removed from database
 - GET /api/meal-plan for that week no longer shows the assignment
 
@@ -70,8 +76,10 @@ curl -X DELETE http://localhost:3001/api/meal-plan/550e8400-e29b-41d4-a716-44665
 ```
 
 **Expected Response:**
+
 - **Status Code:** `401 Unauthorized`
 - **Body:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -80,6 +88,7 @@ curl -X DELETE http://localhost:3001/api/meal-plan/550e8400-e29b-41d4-a716-44665
 ```
 
 **Verification:**
+
 - No data is deleted from database
 - Proper security logging (check console for warning)
 
@@ -96,8 +105,10 @@ curl -X DELETE http://localhost:3001/api/meal-plan/invalid-uuid-format \
 ```
 
 **Expected Response:**
+
 - **Status Code:** `400 Bad Request`
 - **Body:**
+
 ```json
 {
   "error": "Invalid assignment ID format",
@@ -106,6 +117,7 @@ curl -X DELETE http://localhost:3001/api/meal-plan/invalid-uuid-format \
 ```
 
 **Verification:**
+
 - No database queries executed
 - Validation happens before auth check
 
@@ -123,8 +135,10 @@ curl -X DELETE http://localhost:3001/api/meal-plan/550e8400-e29b-41d4-a716-44665
 ```
 
 **Expected Response:**
+
 - **Status Code:** `404 Not Found`
 - **Body:**
+
 ```json
 {
   "error": "Assignment not found",
@@ -133,6 +147,7 @@ curl -X DELETE http://localhost:3001/api/meal-plan/550e8400-e29b-41d4-a716-44665
 ```
 
 **Verification:**
+
 - Service layer `deleteMealPlanAssignment` throws `NotFoundError`
 - Count = 0 from Supabase DELETE query
 
@@ -143,6 +158,7 @@ curl -X DELETE http://localhost:3001/api/meal-plan/550e8400-e29b-41d4-a716-44665
 **Scenario:** User A tries to delete User B's assignment
 
 **Steps:**
+
 1. User A creates an assignment (save the ID)
 2. User B attempts to delete it using User A's assignment ID
 
@@ -154,8 +170,10 @@ curl -X DELETE http://localhost:3001/api/meal-plan/USER_A_ASSIGNMENT_UUID \
 ```
 
 **Expected Response:**
+
 - **Status Code:** `404 Not Found` (NOT 403 Forbidden - security best practice)
 - **Body:**
+
 ```json
 {
   "error": "Assignment not found",
@@ -164,6 +182,7 @@ curl -X DELETE http://localhost:3001/api/meal-plan/USER_A_ASSIGNMENT_UUID \
 ```
 
 **Verification:**
+
 - User A's assignment remains in database (unchanged)
 - RLS policy + explicit user_id check prevents unauthorized access
 - Response doesn't reveal whether assignment exists (information disclosure prevention)
@@ -189,8 +208,10 @@ curl -X DELETE http://localhost:3001/api/meal-plan/ \
 **Scenario:** Database temporarily unavailable
 
 **Expected Response:**
+
 - **Status Code:** `500 Internal Server Error`
 - **Body:**
+
 ```json
 {
   "error": "Internal server error",
@@ -221,6 +242,7 @@ After running all tests, verify:
 ## Performance Verification
 
 Check response times:
+
 ```bash
 # Run Test 1 multiple times and check timing
 time curl -X DELETE http://localhost:3001/api/meal-plan/ASSIGNMENT_UUID \
@@ -234,6 +256,7 @@ time curl -X DELETE http://localhost:3001/api/meal-plan/ASSIGNMENT_UUID \
 ## Cleanup
 
 After testing, clean up test data:
+
 ```bash
 # Get list of assignments
 curl http://localhost:3001/api/meal-plan?week_start_date=2025-11-04 \

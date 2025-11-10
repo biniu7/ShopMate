@@ -3,11 +3,14 @@
 ## 1. Przegląd punktów końcowych
 
 ### Endpoint 1: POST /api/shopping-lists
+
 Zapisuje listę zakupów jako niezmiennego snapshota po edycji przez użytkownika w podglądzie. Implementuje snapshot pattern - zapisana lista NIE aktualizuje się przy późniejszych edycjach przepisów. Lista może pochodzić z dwóch źródeł:
+
 - **Mode 1**: Z kalendarza posiłków (week_start_date wypełnione)
 - **Mode 2**: Z wybranych przepisów (week_start_date = NULL)
 
 ### Endpoint 2: GET /api/shopping-lists
+
 Pobiera historię zapisanych list zakupów użytkownika z paginacją. Zwraca uproszczone obiekty list (bez pełnej listy itemów) posortowane po dacie utworzenia (najnowsze najpierw).
 
 ---
@@ -21,10 +24,12 @@ Pobiera historię zapisanych list zakupów użytkownika z paginacją. Zwraca upr
 **Struktura URL:** `/api/shopping-lists`
 
 **Headers:**
+
 - `Content-Type: application/json`
 - `Authorization: Bearer {access_token}` (automatycznie przez Supabase client)
 
 **Request Body:**
+
 ```typescript
 {
   name?: string;              // max 200 chars, default "Lista zakupów"
@@ -40,6 +45,7 @@ Pobiera historię zapisanych list zakupów użytkownika z paginacją. Zwraca upr
 ```
 
 **Parametry:**
+
 - Wymagane:
   - `items` (array): Lista składników do zapisania
     - `ingredient_name`: Nazwa składnika
@@ -58,9 +64,11 @@ Pobiera historię zapisanych list zakupów użytkownika z paginacją. Zwraca upr
 **Struktura URL:** `/api/shopping-lists?page={page}&limit={limit}`
 
 **Headers:**
+
 - `Authorization: Bearer {access_token}` (automatycznie przez Supabase client)
 
 **Query Parameters:**
+
 - Opcjonalne:
   - `page` (number): Numer strony (default: 1, min: 1)
   - `limit` (number): Liczba elementów na stronę (default: 20, min: 1, max: 100)
@@ -72,6 +80,7 @@ Pobiera historię zapisanych list zakupów użytkownika z paginacją. Zwraca upr
 ### Command Models (Input DTOs)
 
 **SaveShoppingListDto** - już zdefiniowany w `src/types.ts:262-266`
+
 ```typescript
 export interface SaveShoppingListDto {
   name: string;
@@ -81,6 +90,7 @@ export interface SaveShoppingListDto {
 ```
 
 **SaveShoppingListItemDto** - już zdefiniowany w `src/types.ts:250-256`
+
 ```typescript
 export interface SaveShoppingListItemDto {
   ingredient_name: string;
@@ -92,6 +102,7 @@ export interface SaveShoppingListItemDto {
 ```
 
 **ShoppingListQueryParams** - już zdefiniowany w `src/types.ts:364`
+
 ```typescript
 export type ShoppingListQueryParams = PaginationParams; // { page?: number; limit?: number; }
 ```
@@ -99,6 +110,7 @@ export type ShoppingListQueryParams = PaginationParams; // { page?: number; limi
 ### Response DTOs
 
 **ShoppingListResponseDto** - już zdefiniowany w `src/types.ts:278-280`
+
 ```typescript
 export interface ShoppingListResponseDto extends ShoppingList {
   items: ShoppingListItemDto[];
@@ -106,6 +118,7 @@ export interface ShoppingListResponseDto extends ShoppingList {
 ```
 
 **ShoppingListListItemDto** - już zdefiniowany w `src/types.ts:286-292`
+
 ```typescript
 export interface ShoppingListListItemDto {
   id: string;
@@ -117,6 +130,7 @@ export interface ShoppingListListItemDto {
 ```
 
 **PaginatedResponse** - już zdefiniowany w `src/types.ts:334-337`
+
 ```typescript
 export interface PaginatedResponse<T> {
   data: T[];
@@ -142,6 +156,7 @@ export interface PaginatedResponse<T> {
 ### POST /api/shopping-lists
 
 **Status 201 Created:**
+
 ```json
 {
   "id": "850e8400-e29b-41d4-a716-446655440000",
@@ -166,6 +181,7 @@ export interface PaginatedResponse<T> {
 ```
 
 **Status 400 Bad Request:**
+
 ```json
 {
   "error": "Validation failed",
@@ -177,6 +193,7 @@ export interface PaginatedResponse<T> {
 ```
 
 **Status 401 Unauthorized:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -185,6 +202,7 @@ export interface PaginatedResponse<T> {
 ```
 
 **Status 500 Internal Server Error:**
+
 ```json
 {
   "error": "Internal server error",
@@ -195,6 +213,7 @@ export interface PaginatedResponse<T> {
 ### GET /api/shopping-lists
 
 **Status 200 OK:**
+
 ```json
 {
   "data": [
@@ -216,6 +235,7 @@ export interface PaginatedResponse<T> {
 ```
 
 **Status 400 Bad Request:**
+
 ```json
 {
   "error": "Validation failed",
@@ -227,6 +247,7 @@ export interface PaginatedResponse<T> {
 ```
 
 **Status 401 Unauthorized:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -340,10 +361,14 @@ sequenceDiagram
 ## 6. Względy bezpieczeństwa
 
 ### 1. Uwierzytelnianie (Authentication)
+
 - **Wymaganie:** User MUSI być zalogowany (token JWT w Authorization header)
 - **Implementacja:**
   ```typescript
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error || !user) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
@@ -351,6 +376,7 @@ sequenceDiagram
 - **Lokalizacja:** Na początku każdego endpointu (POST i GET)
 
 ### 2. Autoryzacja (Authorization)
+
 - **Row Level Security (RLS):** MUSI być włączone na tabelach
   - `shopping_lists`: Policy `auth.uid() = user_id` (SELECT, INSERT, DELETE)
   - `shopping_list_items`: Policy via shopping_lists ownership (CASCADE)
@@ -365,6 +391,7 @@ sequenceDiagram
   ```
 
 ### 3. Walidacja danych (Input Validation)
+
 - **Zod schemas:** Ścisła walidacja wszystkich inputów
   - POST: `SaveShoppingListDto` schema
   - GET: `ShoppingListQueryParams` schema
@@ -377,29 +404,35 @@ sequenceDiagram
   - Pagination limits (page >= 1, limit 1-100)
 
 ### 4. SQL Injection Protection
+
 - **Supabase Client:** Automatyczna ochrona przez prepared statements
 - **Nie używać raw SQL queries:** Zawsze używać Supabase query builder
 
 ### 5. Mass Assignment Protection
+
 - **DTO Mapping:** Tylko pola z DTO są mapowane do bazy
 - **Blocked fields:** `id`, `created_at`, `updated_at` są auto-generowane przez bazę
 - **User ID:** Zawsze brane z `auth.uid()`, NIGDY z request body
 
 ### 6. Rate Limiting
+
 - **Supabase default:** 100 requests/minute (Free tier), 200 req/min (Pro)
 - **Implementacja:** Handled by Supabase (no custom code needed for MVP)
 
 ### 7. Data Sanitization
+
 - **Trim whitespace:** Na stringach (name, ingredient_name, unit)
 - **Case preservation:** ingredient_name zachowuje oryginalne case
 - **No HTML:** Brak potrzeby sanitizacji HTML (plain text only)
 
 ### 8. Error Information Disclosure
+
 - **Nie ujawniać:** Stack traces, database schema details, internal errors
 - **Generic messages:** "Internal server error" dla 500 errors
 - **Specific messages:** Tylko dla validation errors (400) - bezpieczne
 
 ### 9. HTTPS Enforcement
+
 - **Vercel:** Automatyczne HTTPS + SSL certificates
 - **Cookies:** httpOnly, secure, sameSite (handled by Supabase Auth)
 
@@ -409,46 +442,48 @@ sequenceDiagram
 
 ### POST /api/shopping-lists
 
-| Kod | Scenariusz | Response | Handling |
-|-----|-----------|----------|----------|
-| **201** | Sukces | Pełna lista z items | Return created list |
-| **400** | Puste items array | `{ error: "Validation failed", details: { items: ["At least 1 item required"] } }` | Zod validation |
-| **400** | Więcej niż 100 items | `{ error: "Validation failed", details: { items: ["Maximum 100 items allowed"] } }` | Zod validation |
-| **400** | Nieprawidłowa category | `{ error: "Validation failed", details: { "items.0.category": ["Invalid category"] } }` | Zod enum validation |
-| **400** | name > 200 chars | `{ error: "Validation failed", details: { name: ["Name must not exceed 200 characters"] } }` | Zod validation |
-| **400** | ingredient_name puste | `{ error: "Validation failed", details: { "items.0.ingredient_name": ["Required"] } }` | Zod validation |
-| **400** | ingredient_name > 100 chars | `{ error: "Validation failed", details: { "items.0.ingredient_name": ["Max 100 characters"] } }` | Zod validation |
-| **400** | quantity <= 0 (gdy not null) | `{ error: "Validation failed", details: { "items.0.quantity": ["Must be positive"] } }` | Zod validation |
-| **400** | Nieprawidłowy format week_start_date | `{ error: "Validation failed", details: { week_start_date: ["Invalid date format"] } }` | Zod regex validation |
-| **400** | sort_order < 0 | `{ error: "Validation failed", details: { "items.0.sort_order": ["Must be non-negative"] } }` | Zod validation |
-| **401** | Brak auth token | `{ error: "Unauthorized", message: "You must be logged in" }` | getUser() check |
-| **401** | Nieprawidłowy token | `{ error: "Unauthorized", message: "Invalid authentication token" }` | getUser() error |
-| **500** | Database error (insert failed) | `{ error: "Internal server error", message: "Failed to create shopping list" }` | Try-catch, rollback transaction |
-| **500** | Transaction failed | `{ error: "Internal server error", message: "Failed to create shopping list" }` | Try-catch, rollback |
-| **500** | Unexpected error | `{ error: "Internal server error" }` | Try-catch, log to Sentry |
+| Kod     | Scenariusz                           | Response                                                                                         | Handling                        |
+| ------- | ------------------------------------ | ------------------------------------------------------------------------------------------------ | ------------------------------- |
+| **201** | Sukces                               | Pełna lista z items                                                                              | Return created list             |
+| **400** | Puste items array                    | `{ error: "Validation failed", details: { items: ["At least 1 item required"] } }`               | Zod validation                  |
+| **400** | Więcej niż 100 items                 | `{ error: "Validation failed", details: { items: ["Maximum 100 items allowed"] } }`              | Zod validation                  |
+| **400** | Nieprawidłowa category               | `{ error: "Validation failed", details: { "items.0.category": ["Invalid category"] } }`          | Zod enum validation             |
+| **400** | name > 200 chars                     | `{ error: "Validation failed", details: { name: ["Name must not exceed 200 characters"] } }`     | Zod validation                  |
+| **400** | ingredient_name puste                | `{ error: "Validation failed", details: { "items.0.ingredient_name": ["Required"] } }`           | Zod validation                  |
+| **400** | ingredient_name > 100 chars          | `{ error: "Validation failed", details: { "items.0.ingredient_name": ["Max 100 characters"] } }` | Zod validation                  |
+| **400** | quantity <= 0 (gdy not null)         | `{ error: "Validation failed", details: { "items.0.quantity": ["Must be positive"] } }`          | Zod validation                  |
+| **400** | Nieprawidłowy format week_start_date | `{ error: "Validation failed", details: { week_start_date: ["Invalid date format"] } }`          | Zod regex validation            |
+| **400** | sort_order < 0                       | `{ error: "Validation failed", details: { "items.0.sort_order": ["Must be non-negative"] } }`    | Zod validation                  |
+| **401** | Brak auth token                      | `{ error: "Unauthorized", message: "You must be logged in" }`                                    | getUser() check                 |
+| **401** | Nieprawidłowy token                  | `{ error: "Unauthorized", message: "Invalid authentication token" }`                             | getUser() error                 |
+| **500** | Database error (insert failed)       | `{ error: "Internal server error", message: "Failed to create shopping list" }`                  | Try-catch, rollback transaction |
+| **500** | Transaction failed                   | `{ error: "Internal server error", message: "Failed to create shopping list" }`                  | Try-catch, rollback             |
+| **500** | Unexpected error                     | `{ error: "Internal server error" }`                                                             | Try-catch, log to Sentry        |
 
 ### GET /api/shopping-lists
 
-| Kod | Scenariusz | Response | Handling |
-|-----|-----------|----------|----------|
-| **200** | Sukces | Paginated lists | Return PaginatedResponse |
-| **200** | Brak list (empty) | `{ data: [], pagination: {...} }` | Empty array, valid pagination |
-| **400** | page < 1 | `{ error: "Validation failed", details: { page: ["Must be at least 1"] } }` | Zod validation |
-| **400** | limit < 1 | `{ error: "Validation failed", details: { limit: ["Must be at least 1"] } }` | Zod validation |
-| **400** | limit > 100 | `{ error: "Validation failed", details: { limit: ["Must not exceed 100"] } }` | Zod validation |
-| **400** | Nieprawidłowy typ (page/limit not number) | `{ error: "Validation failed", details: { page: ["Expected number"] } }` | Zod validation |
-| **401** | Brak auth token | `{ error: "Unauthorized", message: "You must be logged in" }` | getUser() check |
-| **401** | Nieprawidłowy token | `{ error: "Unauthorized", message: "Invalid authentication token" }` | getUser() error |
-| **500** | Database error (select failed) | `{ error: "Internal server error", message: "Failed to fetch shopping lists" }` | Try-catch, log to Sentry |
-| **500** | Unexpected error | `{ error: "Internal server error" }` | Try-catch, log to Sentry |
+| Kod     | Scenariusz                                | Response                                                                        | Handling                      |
+| ------- | ----------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------- |
+| **200** | Sukces                                    | Paginated lists                                                                 | Return PaginatedResponse      |
+| **200** | Brak list (empty)                         | `{ data: [], pagination: {...} }`                                               | Empty array, valid pagination |
+| **400** | page < 1                                  | `{ error: "Validation failed", details: { page: ["Must be at least 1"] } }`     | Zod validation                |
+| **400** | limit < 1                                 | `{ error: "Validation failed", details: { limit: ["Must be at least 1"] } }`    | Zod validation                |
+| **400** | limit > 100                               | `{ error: "Validation failed", details: { limit: ["Must not exceed 100"] } }`   | Zod validation                |
+| **400** | Nieprawidłowy typ (page/limit not number) | `{ error: "Validation failed", details: { page: ["Expected number"] } }`        | Zod validation                |
+| **401** | Brak auth token                           | `{ error: "Unauthorized", message: "You must be logged in" }`                   | getUser() check               |
+| **401** | Nieprawidłowy token                       | `{ error: "Unauthorized", message: "Invalid authentication token" }`            | getUser() error               |
+| **500** | Database error (select failed)            | `{ error: "Internal server error", message: "Failed to fetch shopping lists" }` | Try-catch, log to Sentry      |
+| **500** | Unexpected error                          | `{ error: "Internal server error" }`                                            | Try-catch, log to Sentry      |
 
 ### Error Logging Strategy
 
 **Development:**
+
 - Console.error() dla wszystkich błędów
 - Stack traces w response (tylko dev)
 
 **Production:**
+
 - Sentry dla wszystkich 500 errors
 - Sentry context: user_id, request body (sanitized), timestamp
 - No stack traces w response
@@ -461,23 +496,27 @@ sequenceDiagram
 ### 1. Database Queries Optimization
 
 **POST /api/shopping-lists:**
+
 - **Transaction:** Użycie transakcji PostgreSQL (BEGIN/COMMIT)
 - **Batch Insert:** Wszystkie items w jednym INSERT (nie loop)
+
   ```typescript
   // BAD: N queries
   for (const item of items) {
-    await supabase.from('shopping_list_items').insert(item);
+    await supabase.from("shopping_list_items").insert(item);
   }
 
   // GOOD: 1 query
-  await supabase.from('shopping_list_items').insert(items);
+  await supabase.from("shopping_list_items").insert(items);
   ```
+
 - **Single SELECT:** Pobranie listy z items w jednym query (JOIN lub separate query with .select())
 - **Indexes:** Upewnić się, że istnieją:
   - `shopping_lists.user_id` (B-tree) - dla RLS
   - `shopping_list_items.shopping_list_id` (B-tree) - dla JOIN
 
 **GET /api/shopping-lists:**
+
 - **Pagination:** LIMIT + OFFSET dla redukcji transferu danych
 - **COUNT optimization:** Użyć `count: 'exact'` tylko gdy potrzebne
 - **Aggregate queries:** COUNT items per list w jednym query (subquery lub GROUP BY)
@@ -487,33 +526,34 @@ sequenceDiagram
 
 **Problem:** Pobieranie itemów dla każdej listy osobno
 **Solution:**
+
 - POST: Pobierz listę z items w jednym query
   ```typescript
-  const { data } = await supabase
-    .from('shopping_lists')
-    .select('*, shopping_list_items(*)')
-    .eq('id', listId)
-    .single();
+  const { data } = await supabase.from("shopping_lists").select("*, shopping_list_items(*)").eq("id", listId).single();
   ```
 - GET: Użyj aggregate query (COUNT) zamiast pobierania wszystkich items
 
 ### 3. Payload Size
 
 **POST Request:**
+
 - Max 100 items × ~150 bytes/item = ~15KB body
 - Acceptable (no compression needed)
 
 **POST Response:**
+
 - Max 100 items × ~200 bytes/item = ~20KB response
 - Acceptable dla MVP
 
 **GET Response:**
+
 - 20 items/page × ~100 bytes/item = ~2KB response
 - Very light
 
 ### 4. Connection Pooling
 
 **Supabase:** PgBouncer built-in (connection pooling automatic)
+
 - **No custom pooling needed** dla MVP
 - Monitor connection usage w Supabase dashboard
 
@@ -522,10 +562,11 @@ sequenceDiagram
 **POST:** Nie cachować (mutating operation)
 
 **GET:**
+
 - **Server-side:** Nie cachować dla MVP (dane real-time)
 - **Client-side:** React Query z stale time (5 minutes)
   ```typescript
-  useQuery(['shopping-lists', page], fetchLists, {
+  useQuery(["shopping-lists", page], fetchLists, {
     staleTime: 5 * 60 * 1000, // 5 min
   });
   ```
@@ -533,23 +574,23 @@ sequenceDiagram
 
 ### 6. Potential Bottlenecks
 
-| Bottleneck | Impact | Mitigation |
-|-----------|--------|-----------|
-| **Large items array (100 items)** | Medium | Batch insert (1 query), frontend progress indicator |
-| **High pagination (page 50+)** | Low | Use LIMIT/OFFSET, add cursor pagination post-MVP |
-| **RLS policy evaluation** | Low dla MVP | Proper indexes, monitor query performance |
-| **Concurrent writes** | Low | PostgreSQL handles ACID, transaction isolation |
-| **Database size growth** | Low dla MVP | Archival strategy post-MVP (delete old lists) |
+| Bottleneck                        | Impact      | Mitigation                                          |
+| --------------------------------- | ----------- | --------------------------------------------------- |
+| **Large items array (100 items)** | Medium      | Batch insert (1 query), frontend progress indicator |
+| **High pagination (page 50+)**    | Low         | Use LIMIT/OFFSET, add cursor pagination post-MVP    |
+| **RLS policy evaluation**         | Low dla MVP | Proper indexes, monitor query performance           |
+| **Concurrent writes**             | Low         | PostgreSQL handles ACID, transaction isolation      |
+| **Database size growth**          | Low dla MVP | Archival strategy post-MVP (delete old lists)       |
 
 ### 7. Performance Targets (MVP)
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| **POST response time** | < 500ms (p95) | Vercel Analytics |
-| **GET response time** | < 200ms (p95) | Vercel Analytics |
-| **Database query time** | < 100ms (p95) | Supabase Dashboard |
-| **Payload size** | < 50KB | Network tab |
-| **Concurrent users** | 100 simultaneous requests | Load testing post-MVP |
+| Metric                  | Target                    | Measurement           |
+| ----------------------- | ------------------------- | --------------------- |
+| **POST response time**  | < 500ms (p95)             | Vercel Analytics      |
+| **GET response time**   | < 200ms (p95)             | Vercel Analytics      |
+| **Database query time** | < 100ms (p95)             | Supabase Dashboard    |
+| **Payload size**        | < 50KB                    | Network tab           |
+| **Concurrent users**    | 100 simultaneous requests | Load testing post-MVP |
 
 ---
 
@@ -558,6 +599,7 @@ sequenceDiagram
 ### Faza 1: Przygotowanie walidacji (30 min)
 
 #### Krok 1.1: Sprawdź istniejące schematy Zod
+
 ```bash
 # Sprawdź, czy istnieje plik z schematami shopping list
 ls src/lib/validation/shopping-list.schema.ts
@@ -582,43 +624,22 @@ export const saveShoppingListItemSchema = z.object({
     .min(1, "Ingredient name is required")
     .max(100, "Ingredient name must not exceed 100 characters"),
 
-  quantity: z
-    .number()
-    .positive("Quantity must be positive")
-    .nullable()
-    .optional(),
+  quantity: z.number().positive("Quantity must be positive").nullable().optional(),
 
-  unit: z
-    .string()
-    .trim()
-    .max(50, "Unit must not exceed 50 characters")
-    .nullable()
-    .optional(),
+  unit: z.string().trim().max(50, "Unit must not exceed 50 characters").nullable().optional(),
 
   category: z.enum(INGREDIENT_CATEGORIES, {
     errorMap: () => ({ message: "Invalid ingredient category" }),
   }),
 
-  sort_order: z
-    .number()
-    .int("Sort order must be an integer")
-    .min(0, "Sort order must be non-negative")
-    .default(0),
+  sort_order: z.number().int("Sort order must be an integer").min(0, "Sort order must be non-negative").default(0),
 });
 
 // Schema dla zapisywania listy zakupów
 export const saveShoppingListSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .max(200, "Name must not exceed 200 characters")
-    .default("Lista zakupów"),
+  name: z.string().trim().max(200, "Name must not exceed 200 characters").default("Lista zakupów"),
 
-  week_start_date: z
-    .string()
-    .regex(dateRegex, "Invalid date format. Use YYYY-MM-DD")
-    .nullable()
-    .optional(),
+  week_start_date: z.string().regex(dateRegex, "Invalid date format. Use YYYY-MM-DD").nullable().optional(),
 
   items: z
     .array(saveShoppingListItemSchema)
@@ -628,11 +649,7 @@ export const saveShoppingListSchema = z.object({
 
 // Schema dla query params GET /api/shopping-lists
 export const shoppingListQuerySchema = z.object({
-  page: z
-    .number()
-    .int("Page must be an integer")
-    .min(1, "Page must be at least 1")
-    .default(1),
+  page: z.number().int("Page must be an integer").min(1, "Page must be at least 1").default(1),
 
   limit: z
     .number()
@@ -648,6 +665,7 @@ export type ShoppingListQueryInput = z.infer<typeof shoppingListQuerySchema>;
 ```
 
 #### Krok 1.3: Dodaj testy dla schematów (opcjonalnie, post-MVP)
+
 **Lokalizacja:** `src/lib/validation/__tests__/shopping-list.schema.test.ts`
 
 ---
@@ -703,10 +721,7 @@ export async function createShoppingList(
     is_checked: false, // Default value
   }));
 
-  const { data: items, error: itemsError } = await supabase
-    .from("shopping_list_items")
-    .insert(itemsToInsert)
-    .select();
+  const { data: items, error: itemsError } = await supabase.from("shopping_list_items").insert(itemsToInsert).select();
 
   if (itemsError) {
     // Rollback: delete the list (CASCADE will handle items if any were inserted)
@@ -775,10 +790,13 @@ export async function getUserShoppingLists(
     }
 
     // Count items per list
-    itemsCounts = (itemsData || []).reduce((acc, item) => {
-      acc[item.shopping_list_id] = (acc[item.shopping_list_id] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    itemsCounts = (itemsData || []).reduce(
+      (acc, item) => {
+        acc[item.shopping_list_id] = (acc[item.shopping_list_id] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
   }
 
   // Step 4: Map to response DTO
@@ -807,6 +825,7 @@ export async function getUserShoppingLists(
 #### Krok 2.2: Dodaj error handling i logging
 
 W `shopping-list.service.ts`, dodaj logging dla production:
+
 ```typescript
 // Na początku pliku
 import * as Sentry from "@sentry/astro";
@@ -841,7 +860,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // Step 1: Authentication
     const supabase = locals.supabase;
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       const errorResponse: ErrorResponseDto = {
@@ -918,7 +940,10 @@ export const GET: APIRoute = async ({ request, locals }) => {
   try {
     // Step 1: Authentication
     const supabase = locals.supabase;
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
       const errorResponse: ErrorResponseDto = {
@@ -984,6 +1009,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 ```
 
 **Dodaj import na początku pliku:**
+
 ```typescript
 import { shoppingListQuerySchema } from "@/lib/validation/shopping-list.schema";
 import { getUserShoppingLists } from "@/lib/services/shopping-list.service";
@@ -1074,6 +1100,7 @@ ON shopping_list_items(shopping_list_id);
 #### Krok 5.1: Manual Testing - POST /api/shopping-lists
 
 **Test Case 1: Successful creation**
+
 ```bash
 curl -X POST http://localhost:3000/api/shopping-lists \
   -H "Content-Type: application/json" \
@@ -1103,6 +1130,7 @@ curl -X POST http://localhost:3000/api/shopping-lists \
 ```
 
 **Test Case 2: Validation error - empty items**
+
 ```bash
 curl -X POST http://localhost:3000/api/shopping-lists \
   -H "Content-Type: application/json" \
@@ -1116,6 +1144,7 @@ curl -X POST http://localhost:3000/api/shopping-lists \
 ```
 
 **Test Case 3: Validation error - invalid category**
+
 ```bash
 curl -X POST http://localhost:3000/api/shopping-lists \
   -H "Content-Type: application/json" \
@@ -1134,6 +1163,7 @@ curl -X POST http://localhost:3000/api/shopping-lists \
 ```
 
 **Test Case 4: Unauthorized - no token**
+
 ```bash
 curl -X POST http://localhost:3000/api/shopping-lists \
   -H "Content-Type: application/json" \
@@ -1153,6 +1183,7 @@ curl -X POST http://localhost:3000/api/shopping-lists \
 #### Krok 5.2: Manual Testing - GET /api/shopping-lists
 
 **Test Case 5: Successful fetch - default pagination**
+
 ```bash
 curl -X GET http://localhost:3000/api/shopping-lists \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
@@ -1161,6 +1192,7 @@ curl -X GET http://localhost:3000/api/shopping-lists \
 ```
 
 **Test Case 6: Successful fetch - custom pagination**
+
 ```bash
 curl -X GET "http://localhost:3000/api/shopping-lists?page=1&limit=5" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
@@ -1169,6 +1201,7 @@ curl -X GET "http://localhost:3000/api/shopping-lists?page=1&limit=5" \
 ```
 
 **Test Case 7: Validation error - invalid page**
+
 ```bash
 curl -X GET "http://localhost:3000/api/shopping-lists?page=0" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
@@ -1177,6 +1210,7 @@ curl -X GET "http://localhost:3000/api/shopping-lists?page=0" \
 ```
 
 **Test Case 8: Validation error - limit too high**
+
 ```bash
 curl -X GET "http://localhost:3000/api/shopping-lists?limit=200" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
@@ -1185,6 +1219,7 @@ curl -X GET "http://localhost:3000/api/shopping-lists?limit=200" \
 ```
 
 **Test Case 9: Empty lists**
+
 ```bash
 # Assume new user with no lists
 curl -X GET http://localhost:3000/api/shopping-lists \
@@ -1197,6 +1232,7 @@ curl -X GET http://localhost:3000/api/shopping-lists \
 #### Krok 5.3: RLS Testing
 
 **Test Case 10: Verify user isolation**
+
 ```bash
 # User A creates a list
 curl -X POST http://localhost:3000/api/shopping-lists \
@@ -1213,6 +1249,7 @@ curl -X GET http://localhost:3000/api/shopping-lists \
 #### Krok 5.4: Performance Testing
 
 **Test Case 11: Large items array (100 items)**
+
 ```bash
 # Create payload with 100 items
 # Measure response time (should be < 500ms)
@@ -1233,6 +1270,7 @@ Dokumentuj wszystkie test cases, expected results, i actual results.
 #### Krok 6.1: Self code review checklist
 
 **Przejdź przez checklist:**
+
 - [ ] Wszystkie endpointy zwracają poprawne kody statusu (201, 200, 400, 401, 500)
 - [ ] Walidacja Zod jest kompletna i zgodna ze specyfikacją
 - [ ] RLS policies są włączone i poprawne
@@ -1273,18 +1311,21 @@ Upewnij się, że nie ma błędów TypeScript.
 **Lokalizacja:** `.ai/doc/18_10_POST-GET-shopping-lists-IMPLEMENTATION_SUMMARY.md`
 
 **Zawartość:**
+
 ```markdown
 # Implementation Summary: POST & GET /api/shopping-lists
 
 ## Implemented Endpoints
 
 ### 1. POST /api/shopping-lists
+
 - **Status:** ✅ Completed
 - **File:** `src/pages/api/shopping-lists/index.ts`
 - **Service:** `src/lib/services/shopping-list.service.ts` (`createShoppingList`)
 - **Validation:** `src/lib/validation/shopping-list.schema.ts` (`saveShoppingListSchema`)
 
 ### 2. GET /api/shopping-lists
+
 - **Status:** ✅ Completed
 - **File:** `src/pages/api/shopping-lists/index.ts`
 - **Service:** `src/lib/services/shopping-list.service.ts` (`getUserShoppingLists`)
@@ -1293,10 +1334,12 @@ Upewnij się, że nie ma błędów TypeScript.
 ## Database Changes
 
 ### RLS Policies
+
 - ✅ `shopping_lists`: "Users can access their own shopping lists"
 - ✅ `shopping_list_items`: "Users can access shopping list items via list ownership"
 
 ### Indexes
+
 - ✅ `idx_shopping_lists_user_id` on `shopping_lists(user_id)`
 - ✅ `idx_shopping_lists_user_created` on `shopping_lists(user_id, created_at DESC)`
 - ✅ `idx_shopping_list_items_list_id` on `shopping_list_items(shopping_list_id)`
@@ -1304,6 +1347,7 @@ Upewnij się, że nie ma błędów TypeScript.
 ## Testing Results
 
 ### POST /api/shopping-lists
+
 - ✅ TC1: Successful creation
 - ✅ TC2: Validation error - empty items
 - ✅ TC3: Validation error - invalid category
@@ -1311,6 +1355,7 @@ Upewnij się, że nie ma błędów TypeScript.
 - ✅ TC11: Large items array (100 items)
 
 ### GET /api/shopping-lists
+
 - ✅ TC5: Successful fetch - default pagination
 - ✅ TC6: Successful fetch - custom pagination
 - ✅ TC7: Validation error - invalid page
@@ -1318,15 +1363,16 @@ Upewnij się, że nie ma błędów TypeScript.
 - ✅ TC9: Empty lists
 
 ### Security
+
 - ✅ TC10: User isolation (RLS)
 
 ## Performance Metrics
 
-| Metric | Target | Actual |
-|--------|--------|--------|
+| Metric                   | Target  | Actual           |
+| ------------------------ | ------- | ---------------- |
 | POST response time (p95) | < 500ms | [TO BE MEASURED] |
-| GET response time (p95) | < 200ms | [TO BE MEASURED] |
-| Database query time | < 100ms | [TO BE MEASURED] |
+| GET response time (p95)  | < 200ms | [TO BE MEASURED] |
+| Database query time      | < 100ms | [TO BE MEASURED] |
 
 ## Known Issues / TODOs
 
@@ -1377,6 +1423,7 @@ git push origin [BRANCH_NAME]
 #### Krok 8.3: Verify deployment
 
 Po deployment na Vercel:
+
 1. Sprawdź czy endpoints działają na production
 2. Sprawdź logi w Vercel Dashboard
 3. Sprawdź metryki performance w Vercel Analytics
@@ -1407,6 +1454,7 @@ Po deployment na Vercel:
 ### Szacowany czas implementacji: 4-5 godzin
 
 ### Priorytety:
+
 1. **CRITICAL:** RLS policies (security)
 2. **HIGH:** Validation schemas (data integrity)
 3. **HIGH:** Service layer (business logic)
@@ -1415,6 +1463,7 @@ Po deployment na Vercel:
 6. **LOW:** Documentation (post-implementation)
 
 ### Sukces metrics:
+
 - ✅ Wszystkie test cases przechodzą
 - ✅ Response time < 500ms dla POST, < 200ms dla GET
 - ✅ RLS policies działają (user isolation)

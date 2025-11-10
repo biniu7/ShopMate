@@ -5,6 +5,7 @@
 Widok Shopping Lists History wyświetla historię wszystkich zapisanych list zakupów użytkownika. Umożliwia przeglądanie list, nawigację do szczegółów oraz usuwanie niepotrzebnych list. Listy są sortowane od najnowszych do najstarszych (created_at DESC) i wyświetlane w formie kart w responsywnym grid layout (2 kolumny desktop, 1 mobile).
 
 Każda karta pokazuje:
+
 - Nazwę listy (truncate do 60 znaków)
 - Datę utworzenia (relative time)
 - Zakres dat tygodnia (jeśli lista z kalendarza)
@@ -18,12 +19,14 @@ Kliknięcie karty przenosi do widoku szczegółów listy. Przycisk delete otwier
 **Ścieżka:** `/shopping-lists`
 
 **Query Parameters:**
+
 - `page` (optional) - numer strony dla paginacji (default: 1)
 - `limit` (optional) - items per page (default: 20, max: 100)
 
 **Typ:** Strona Astro z dynamicznym komponentem React (client:load)
 
 **Zabezpieczenia:**
+
 - Middleware sprawdza autentykację
 - RLS zapewnia dostęp tylko do list zalogowanego użytkownika
 
@@ -52,6 +55,7 @@ src/pages/shopping-lists/index.astro (Astro page)
 Główny kontener zarządzający fetchem list zakupów, stanem delete dialog oraz paginacją.
 
 **Główne elementy:**
+
 ```tsx
 <div className="shopping-lists-history-view">
   <ShoppingListsHeader />
@@ -60,9 +64,7 @@ Główny kontener zarządzający fetchem list zakupów, stanem delete dialog ora
 
   {error && <ErrorMessage error={error} />}
 
-  {!isLoading && !error && shoppingLists.length === 0 && (
-    <EmptyState />
-  )}
+  {!isLoading && !error && shoppingLists.length === 0 && <EmptyState />}
 
   {!isLoading && !error && shoppingLists.length > 0 && (
     <ShoppingListsGrid
@@ -84,12 +86,14 @@ Główny kontener zarządzający fetchem list zakupów, stanem delete dialog ora
 ```
 
 **Obsługiwane interakcje:**
+
 - Fetch lists przy montowaniu
 - Open/close delete dialog
 - Delete mutation → invalidate query + toast
 - Infinite scroll / pagination
 
 **Typy:**
+
 - `ShoppingListListItemDto[]`
 
 **Propsy:** Brak (główny kontener)
@@ -100,17 +104,14 @@ Główny kontener zarządzający fetchem list zakupów, stanem delete dialog ora
 Sticky header z breadcrumbs i przyciskiem "Generuj nową listę".
 
 **Główne elementy:**
+
 ```tsx
 <header className="shopping-lists-header sticky top-0 bg-white z-10 border-b shadow-sm">
   <div className="container mx-auto p-4">
-    <Breadcrumbs items={[
-      { label: 'Listy zakupów', href: '/shopping-lists' }
-    ]} />
+    <Breadcrumbs items={[{ label: "Listy zakupów", href: "/shopping-lists" }]} />
 
     <div className="flex items-center justify-between mt-4">
-      <h1 className="text-3xl font-bold text-gray-900">
-        Listy zakupów
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-900">Listy zakupów</h1>
 
       <Button asChild size="lg">
         <Link href="/shopping-lists/generate">
@@ -124,6 +125,7 @@ Sticky header z breadcrumbs i przyciskiem "Generuj nową listę".
 ```
 
 **Obsługiwane interakcje:**
+
 - Click "Generuj nową listę" → nawigacja do `/shopping-lists/generate`
 
 **Propsy:** Brak
@@ -134,26 +136,18 @@ Sticky header z breadcrumbs i przyciskiem "Generuj nową listę".
 Grid layout z kartami list zakupów. Responsywny (2 kolumny desktop, 1 mobile). Obsługuje pagination z infinite scroll lub manual button.
 
 **Główne elementy:**
+
 ```tsx
 <div className="shopping-lists-grid container mx-auto p-4">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
     {shoppingLists.map((list) => (
-      <ShoppingListCard
-        key={list.id}
-        list={list}
-        onDelete={() => onDelete(list.id, list.name)}
-      />
+      <ShoppingListCard key={list.id} list={list} onDelete={() => onDelete(list.id, list.name)} />
     ))}
   </div>
 
   {hasNextPage && (
     <div className="mt-8 flex justify-center">
-      <Button
-        onClick={onLoadMore}
-        disabled={isFetchingNextPage}
-        variant="outline"
-        size="lg"
-      >
+      <Button onClick={onLoadMore} disabled={isFetchingNextPage} variant="outline" size="lg">
         {isFetchingNextPage ? (
           <>
             <Spinner className="h-4 w-4 mr-2" />
@@ -172,11 +166,13 @@ Grid layout z kartami list zakupów. Responsywny (2 kolumny desktop, 1 mobile). 
 ```
 
 **Obsługiwane interakcje:**
+
 - Click karta → nawigacja do `/shopping-lists/:id`
 - Click delete icon → onDelete(id, name)
 - Click "Załaduj więcej" → onLoadMore
 
 **Propsy:**
+
 ```typescript
 interface ShoppingListsGridProps {
   shoppingLists: ShoppingListListItemDto[];
@@ -193,6 +189,7 @@ interface ShoppingListsGridProps {
 Karta pojedynczej listy zakupów wyświetlająca nazwę, metadane, badge z liczbą składników oraz przycisk delete.
 
 **Główne elementy:**
+
 ```tsx
 <article className="shopping-list-card relative">
   <Link href={`/shopping-lists/${list.id}`} className="block">
@@ -216,7 +213,7 @@ Karta pojedynczej listy zakupów wyświetlająca nazwę, metadane, badge z liczb
 
         <Badge variant="secondary" className="flex items-center gap-1">
           <ShoppingCart className="h-3 w-3" />
-          {list.items_count} {list.items_count === 1 ? 'składnik' : 'składników'}
+          {list.items_count} {list.items_count === 1 ? "składnik" : "składników"}
         </Badge>
       </div>
     </div>
@@ -239,11 +236,13 @@ Karta pojedynczej listy zakupów wyświetlająca nazwę, metadane, badge z liczb
 ```
 
 **Obsługiwane interakcje:**
+
 - Click karta (Link) → nawigacja do `/shopping-lists/:id`
 - Click delete button → onDelete() (stopPropagation!)
 - Hover → shadow effect
 
 **Propsy:**
+
 ```typescript
 interface ShoppingListCardProps {
   list: ShoppingListListItemDto;
@@ -257,6 +256,7 @@ interface ShoppingListCardProps {
 Modal potwierdzający usunięcie listy zakupów.
 
 **Główne elementy:**
+
 ```tsx
 <Dialog open={isOpen} onOpenChange={onClose}>
   <DialogContent>
@@ -268,26 +268,18 @@ Modal potwierdzający usunięcie listy zakupów.
     </DialogHeader>
 
     <DialogFooter>
-      <Button
-        variant="ghost"
-        onClick={onClose}
-        disabled={deleteMutation.isLoading}
-      >
+      <Button variant="ghost" onClick={onClose} disabled={deleteMutation.isLoading}>
         Anuluj
       </Button>
 
-      <Button
-        variant="destructive"
-        onClick={handleDelete}
-        disabled={deleteMutation.isLoading}
-      >
+      <Button variant="destructive" onClick={handleDelete} disabled={deleteMutation.isLoading}>
         {deleteMutation.isLoading ? (
           <>
             <Spinner className="h-4 w-4 mr-2" />
             Usuwanie...
           </>
         ) : (
-          'Usuń listę'
+          "Usuń listę"
         )}
       </Button>
     </DialogFooter>
@@ -296,11 +288,13 @@ Modal potwierdzający usunięcie listy zakupów.
 ```
 
 **Obsługiwane interakcje:**
+
 - Click "Anuluj" → onClose
 - Click "Usuń listę" → mutation → invalidate + toast + onClose
 - Escape key → onClose
 
 **Propsy:**
+
 ```typescript
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -316,16 +310,13 @@ interface DeleteConfirmationDialogProps {
 Wyświetlany gdy użytkownik nie ma żadnych list zakupów.
 
 **Główne elementy:**
+
 ```tsx
 <div className="empty-state py-16 text-center">
   <div className="max-w-md mx-auto">
     <ShoppingCart className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-    <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-      Nie masz jeszcze list zakupów
-    </h2>
-    <p className="text-gray-600 mb-6">
-      Wygeneruj pierwszą listę z kalendarza tygodniowego lub wybranych przepisów
-    </p>
+    <h2 className="text-2xl font-semibold text-gray-900 mb-2">Nie masz jeszcze list zakupów</h2>
+    <p className="text-gray-600 mb-6">Wygeneruj pierwszą listę z kalendarza tygodniowego lub wybranych przepisów</p>
     <Button asChild size="lg">
       <Link href="/shopping-lists/generate">
         <Plus className="h-4 w-4 mr-2" />
@@ -344,6 +335,7 @@ Wyświetlany gdy użytkownik nie ma żadnych list zakupów.
 Skeleton loader podczas ładowania list.
 
 **Główne elementy:**
+
 ```tsx
 <div className="shopping-lists-grid-skeleton container mx-auto p-4">
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -410,9 +402,9 @@ export function formatWeekRange(weekStartDate: string): string {
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
 
-  const startDay = format(start, 'd', { locale: pl });
-  const endDay = format(end, 'd', { locale: pl });
-  const month = format(end, 'MMMM', { locale: pl });
+  const startDay = format(start, "d", { locale: pl });
+  const endDay = format(end, "d", { locale: pl });
+  const month = format(end, "MMMM", { locale: pl });
 
   return `Tydzień ${startDay}-${endDay} ${month}`;
 }
@@ -423,7 +415,7 @@ export function formatWeekRange(weekStartDate: string): string {
 ### 6.1. TanStack Query dla list zakupów
 
 ```typescript
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function ShoppingListsHistoryView() {
   const queryClient = useQueryClient();
@@ -434,20 +426,13 @@ export function ShoppingListsHistoryView() {
   });
 
   // Infinite query dla list
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    error,
-  } = useInfiniteQuery({
-    queryKey: ['shopping-lists', 'list'],
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useInfiniteQuery({
+    queryKey: ["shopping-lists", "list"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await fetch(`/api/shopping-lists?page=${pageParam}&limit=20`);
 
       if (!response.ok) {
-        throw new Error('Failed to fetch shopping lists');
+        throw new Error("Failed to fetch shopping lists");
       }
 
       const result: PaginatedResponse<ShoppingListListItemDto> = await response.json();
@@ -455,9 +440,7 @@ export function ShoppingListsHistoryView() {
       return {
         data: result.data,
         pagination: result.pagination,
-        nextPage: result.pagination.page < result.pagination.total_pages
-          ? result.pagination.page + 1
-          : undefined,
+        nextPage: result.pagination.page < result.pagination.total_pages ? result.pagination.page + 1 : undefined,
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
@@ -465,31 +448,28 @@ export function ShoppingListsHistoryView() {
   });
 
   // Flatten pages
-  const shoppingLists = React.useMemo(
-    () => data?.pages.flatMap((page) => page.data) ?? [],
-    [data]
-  );
+  const shoppingLists = React.useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data]);
 
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (listId: string) => {
       const response = await fetch(`/api/shopping-lists/${listId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete shopping list');
+        throw new Error("Failed to delete shopping list");
       }
 
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['shopping-lists']);
-      toast.success('Lista usunięta');
+      queryClient.invalidateQueries(["shopping-lists"]);
+      toast.success("Lista usunięta");
       closeDeleteDialog();
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Nie udało się usunąć listy');
+      toast.error(error.message || "Nie udało się usunąć listy");
     },
   });
 
@@ -516,11 +496,13 @@ export function ShoppingListsHistoryView() {
 ### 7.1. Endpoint: GET /api/shopping-lists
 
 **Request:**
+
 ```
 GET /api/shopping-lists?page=1&limit=20
 ```
 
 **Response (200 OK):**
+
 ```typescript
 PaginatedResponse<ShoppingListListItemDto>
 {
@@ -546,11 +528,13 @@ PaginatedResponse<ShoppingListListItemDto>
 ### 7.2. Endpoint: DELETE /api/shopping-lists/:id
 
 **Request:**
+
 ```
 DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "message": "Shopping list deleted successfully"
@@ -558,6 +542,7 @@ DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ```
 
 **Error Responses:**
+
 - 401 Unauthorized
 - 404 Not Found
 
@@ -566,6 +551,7 @@ DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ### 8.1. Przeglądanie historii list
 
 **Przepływ:**
+
 1. User wchodzi na `/shopping-lists`
 2. Fetch list zakupów (page 1, limit 20)
 3. Wyświetlenie grid z kartami
@@ -574,6 +560,7 @@ DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ### 8.2. Kliknięcie karty listy
 
 **Przepływ:**
+
 1. User klika kartę listy
 2. Nawigacja do `/shopping-lists/:id`
 3. Widok szczegółów listy
@@ -581,6 +568,7 @@ DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ### 8.3. Usuwanie listy
 
 **Przepływ:**
+
 1. User klika ikonę trash na karcie
 2. DeleteConfirmationDialog otwiera się
 3. User klika "Usuń listę" → mutation
@@ -590,6 +578,7 @@ DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ### 8.4. Generowanie nowej listy
 
 **Przepływ:**
+
 1. User klika "Generuj nową listę"
 2. Nawigacja do `/shopping-lists/generate`
 3. Wizard generowania
@@ -597,6 +586,7 @@ DELETE /api/shopping-lists/850e8400-e29b-41d4-a716-446655440000
 ### 8.5. Load more (pagination)
 
 **Przepływ:**
+
 1. User scrolluje do końca lub klika "Załaduj więcej"
 2. fetchNextPage() → fetch page 2
 3. Append do istniejącej listy
@@ -626,13 +616,20 @@ Tylko listy wygenerowane z kalendarza mają `week_start_date`.
 ### 9.3. Pluralization items count
 
 ```typescript
-{list.items_count} {list.items_count === 1 ? 'składnik' : 'składników'}
+{
+  list.items_count;
+}
+{
+  list.items_count === 1 ? "składnik" : "składników";
+}
 ```
 
 ### 9.4. Truncate list name
 
 ```typescript
-{truncate(list.name, 60)}
+{
+  truncate(list.name, 60);
+}
 ```
 
 z full name w title attribute.

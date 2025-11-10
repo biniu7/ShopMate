@@ -13,6 +13,7 @@ Dashboard charakteryzuje się responsywnym układem dostosowanym do różnych ur
 **Typ:** Strona Astro z dynamicznymi komponentami React
 
 **Zabezpieczenia:**
+
 - Middleware sprawdza autentykację użytkownika
 - Brak sesji → przekierowanie do `/login`
 - Row Level Security (RLS) zapewnia dostęp tylko do danych zalogowanego użytkownika
@@ -42,6 +43,7 @@ src/pages/dashboard.astro (Astro page)
 ```
 
 **Hierarchia:**
+
 1. `dashboard.astro` - główna strona Astro
 2. `DashboardView.tsx` - główny kontener React z zarządzaniem stanem
 3. Sekcje (`StatsSection`, `QuickActionsSection`, etc.) - logiczne grupy komponentów
@@ -55,6 +57,7 @@ src/pages/dashboard.astro (Astro page)
 Główny komponent React zarządzający stanem całego dashboardu. Odpowiada za pobieranie danych z API (statystyki, ostatnie przepisy, nadchodzące posiłki), zarządzanie stanem ładowania i błędów oraz warunkowe renderowanie sekcji lub empty state.
 
 **Główne elementy:**
+
 ```tsx
 <div className="dashboard-container">
   {isLoading && <DashboardSkeleton />}
@@ -78,14 +81,17 @@ Główny komponent React zarządzający stanem całego dashboardu. Odpowiada za 
 ```
 
 **Obsługiwane interakcje:**
+
 - Automatyczne ładowanie danych przy montowaniu komponentu
 - Refetch danych przy window focus (TanStack Query)
 
 **Obsługiwana walidacja:**
+
 - Sprawdzenie czy użytkownik jest nowy (`recipesCount === 0`)
 - Walidacja dostępności danych przed renderowaniem
 
 **Typy:**
+
 - `DashboardData` (ViewModel)
 - `DashboardStats` (ViewModel)
 - `UpcomingMealViewModel` (ViewModel)
@@ -99,43 +105,33 @@ Brak (komponent główny)
 Sekcja wyświetlająca trzy karty ze statystykami: liczbę przepisów, liczbę zaplanowanych posiłków w bieżącym tygodniu oraz liczbę zapisanych list zakupów. Karty wyświetlane są w układzie responsywnym (3 kolumny na desktop, 2 na tablet, 1 na mobile).
 
 **Główne elementy:**
+
 ```tsx
 <section className="stats-section" aria-label="Statystyki">
   <div className="stats-grid">
-    <StatCard
-      icon={<ChefHat />}
-      label="Przepisy"
-      value={stats.recipesCount}
-      href="/recipes"
-    />
-    <StatCard
-      icon={<Calendar />}
-      label="Zaplanowane posiłki"
-      value={stats.mealPlansCount}
-      href="/calendar"
-    />
-    <StatCard
-      icon={<ShoppingCart />}
-      label="Listy zakupów"
-      value={stats.shoppingListsCount}
-      href="/shopping-lists"
-    />
+    <StatCard icon={<ChefHat />} label="Przepisy" value={stats.recipesCount} href="/recipes" />
+    <StatCard icon={<Calendar />} label="Zaplanowane posiłki" value={stats.mealPlansCount} href="/calendar" />
+    <StatCard icon={<ShoppingCart />} label="Listy zakupów" value={stats.shoppingListsCount} href="/shopping-lists" />
   </div>
 </section>
 ```
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie karty → nawigacja do odpowiedniej sekcji aplikacji
 - Hover state dla kart (podniesienie, zmiana koloru)
 
 **Obsługiwana walidacja:**
+
 - Wyświetlanie `0` gdy brak danych (nie ukrywanie kart)
 - Liczby całkowite nieujemne
 
 **Typy:**
+
 - `DashboardStats`
 
 **Propsy:**
+
 ```typescript
 interface StatsSectionProps {
   stats: DashboardStats;
@@ -149,6 +145,7 @@ interface StatsSectionProps {
 Pojedyncza karta statystyki wyświetlająca ikonę, etykietę oraz wartość liczbową. Karta jest kliklalna i prowadzi do odpowiedniej sekcji aplikacji.
 
 **Główne elementy:**
+
 ```tsx
 <Link href={href} className="stat-card">
   <div className="stat-card-icon">{icon}</div>
@@ -162,19 +159,23 @@ Pojedyncza karta statystyki wyświetlająca ikonę, etykietę oraz wartość lic
 ```
 
 **Obsługiwane interakcje:**
+
 - Click → nawigacja do `href`
 - Hover → visual feedback (shadow, transform)
 - Focus → keyboard navigation support
 
 **Obsługiwana walidacja:**
+
 - `value` musi być liczbą nieujemną
 
 **Typy:**
+
 - `React.ReactNode` (icon)
 - `string` (label, href)
 - `number` (value)
 
 **Propsy:**
+
 ```typescript
 interface StatCardProps {
   icon: React.ReactNode;
@@ -190,6 +191,7 @@ interface StatCardProps {
 Sekcja z trzema przyciskami CTA umożliwiającymi szybki dostęp do głównych funkcji aplikacji: dodawanie przepisu, planowanie tygodnia oraz generowanie listy zakupów. Na urządzeniach mobilnych sekcja jest sticky (przyklejona do dolnej krawędzi ekranu).
 
 **Główne elementy:**
+
 ```tsx
 <section className="quick-actions-section" aria-label="Szybkie akcje">
   <div className="quick-actions-grid">
@@ -219,6 +221,7 @@ Sekcja z trzema przyciskami CTA umożliwiającymi szybki dostęp do głównych f
 ```
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie przycisku → nawigacja do odpowiedniej ścieżki
 - Hover/focus states
 - Keyboard navigation (Tab, Enter)
@@ -238,6 +241,7 @@ Brak (sekcja standalone)
 Przycisk CTA z ikoną, etykietą główną oraz opisem. Komponent używany w QuickActionsSection.
 
 **Główne elementy:**
+
 ```tsx
 <Link href={href} className={cn("action-button", variant)}>
   <div className="action-button-icon">{icon}</div>
@@ -249,6 +253,7 @@ Przycisk CTA z ikoną, etykietą główną oraz opisem. Komponent używany w Qui
 ```
 
 **Obsługiwane interakcje:**
+
 - Click → nawigacja
 - Hover → visual feedback
 - Focus → keyboard support
@@ -257,13 +262,14 @@ Przycisk CTA z ikoną, etykietą główną oraz opisem. Komponent używany w Qui
 Brak
 
 **Typy:**
+
 ```typescript
 interface ActionButtonProps {
   icon: React.ReactNode;
   label: string;
   description: string;
   href: string;
-  variant: 'primary' | 'secondary';
+  variant: "primary" | "secondary";
 }
 ```
 
@@ -276,6 +282,7 @@ Zgodnie z `ActionButtonProps`
 Sekcja wyświetlająca 3 ostatnio dodane przepisy w formie kart. Każda karta pokazuje nazwę przepisu, liczbę składników oraz datę dodania. Kliknięcie karty przenosi do szczegółów przepisu.
 
 **Główne elementy:**
+
 ```tsx
 <section className="recent-recipes-section">
   <div className="section-header">
@@ -291,27 +298,29 @@ Sekcja wyświetlająca 3 ostatnio dodane przepisy w formie kart. Każda karta po
         cta={{ label: "Dodaj pierwszy przepis", href: "/recipes/new" }}
       />
     ) : (
-      recipes.map(recipe => (
-        <RecipeCard key={recipe.id} recipe={recipe} />
-      ))
+      recipes.map((recipe) => <RecipeCard key={recipe.id} recipe={recipe} />)
     )}
   </div>
 </section>
 ```
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie "Zobacz wszystkie" → nawigacja do `/recipes`
 - Kliknięcie karty przepisu → nawigacja do `/recipes/:id`
 - Hover state na kartach
 
 **Obsługiwana walidacja:**
+
 - Sprawdzenie czy `recipes.length > 0`
 - Wyświetlanie empty state gdy brak przepisów
 
 **Typy:**
+
 - `RecipeListItemDto[]`
 
 **Propsy:**
+
 ```typescript
 interface RecentRecipesSectionProps {
   recipes: RecipeListItemDto[];
@@ -325,6 +334,7 @@ interface RecentRecipesSectionProps {
 Karta przepisu wyświetlająca nazwę (skrócona do 50 znaków), liczbę składników (badge) oraz datę dodania (relative time np. "2 dni temu"). Karta jest kliklalna i prowadzi do szczegółów przepisu.
 
 **Główne elementy:**
+
 ```tsx
 <Link href={`/recipes/${recipe.id}`} className="recipe-card">
   <article>
@@ -332,9 +342,7 @@ Karta przepisu wyświetlająca nazwę (skrócona do 50 znaków), liczbę składn
       {truncate(recipe.name, 50)}
     </h3>
     <div className="recipe-card-meta">
-      <Badge variant="secondary">
-        {recipe.ingredients_count} składników
-      </Badge>
+      <Badge variant="secondary">{recipe.ingredients_count} składników</Badge>
       <time dateTime={recipe.created_at} className="recipe-card-date">
         {formatRelativeTime(recipe.created_at)}
       </time>
@@ -344,18 +352,22 @@ Karta przepisu wyświetlająca nazwę (skrócona do 50 znaków), liczbę składn
 ```
 
 **Obsługiwane interakcje:**
+
 - Click → nawigacja do `/recipes/:id`
 - Hover → prefetch recipe details (TanStack Query)
 - Focus → keyboard navigation
 
 **Obsługiwana walidacja:**
+
 - Truncate name do 50 znaków
 - Formatowanie daty do relative time
 
 **Typy:**
+
 - `RecipeListItemDto`
 
 **Propsy:**
+
 ```typescript
 interface RecipeCardProps {
   recipe: RecipeListItemDto;
@@ -368,6 +380,7 @@ interface RecipeCardProps {
 Sekcja wyświetlająca nadchodzące posiłki zaplanowane na dziś i jutro w formie timeline. Każdy posiłek pokazuje dzień, typ posiłku (śniadanie/obiad/etc.) oraz nazwę przepisu.
 
 **Główne elementy:**
+
 ```tsx
 <section className="upcoming-meals-section">
   <div className="section-header">
@@ -378,32 +391,31 @@ Sekcja wyświetlająca nadchodzące posiłki zaplanowane na dziś i jutro w form
   </div>
   <div className="meals-timeline">
     {meals.length === 0 ? (
-      <EmptyMessage
-        message="Brak zaplanowanych posiłków"
-        cta={{ label: "Zaplanuj tydzień", href: "/calendar" }}
-      />
+      <EmptyMessage message="Brak zaplanowanych posiłków" cta={{ label: "Zaplanuj tydzień", href: "/calendar" }} />
     ) : (
-      meals.map((meal, index) => (
-        <MealItem key={index} meal={meal} />
-      ))
+      meals.map((meal, index) => <MealItem key={index} meal={meal} />)
     )}
   </div>
 </section>
 ```
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie "Zobacz kalendarz" → nawigacja do `/calendar`
 - Kliknięcie posiłku → nawigacja do `/recipes/:id` lub `/calendar?week={date}`
 
 **Obsługiwana walidacja:**
+
 - Filtrowanie posiłków tylko na dziś i jutro
 - Sortowanie chronologiczne (dziś przed jutro, śniadanie przed obiadem)
 - Empty state gdy brak posiłków
 
 **Typy:**
+
 - `UpcomingMealViewModel[]`
 
 **Propsy:**
+
 ```typescript
 interface UpcomingMealsSectionProps {
   meals: UpcomingMealViewModel[];
@@ -417,6 +429,7 @@ interface UpcomingMealsSectionProps {
 Pojedynczy element timeline'u reprezentujący posiłek. Wyświetla dzień ("Dzisiaj"/"Jutro"), typ posiłku oraz nazwę przepisu.
 
 **Główne elementy:**
+
 ```tsx
 <div className="meal-item">
   <div className="meal-item-indicator" />
@@ -436,6 +449,7 @@ Pojedynczy element timeline'u reprezentujący posiłek. Wyświetla dzień ("Dzis
 ```
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie nazwy przepisu → nawigacja do `/recipes/:id`
 - Hover na nazwie przepisu
 
@@ -443,9 +457,11 @@ Pojedynczy element timeline'u reprezentujący posiłek. Wyświetla dzień ("Dzis
 Brak
 
 **Typy:**
+
 - `UpcomingMealViewModel`
 
 **Propsy:**
+
 ```typescript
 interface MealItemProps {
   meal: UpcomingMealViewModel;
@@ -458,20 +474,15 @@ interface MealItemProps {
 Komponent wyświetlany dla nowych użytkowników (0 przepisów). Zawiera ilustrację, komunikat powitalny oraz duży przycisk CTA do dodania pierwszego przepisu z tooltipem onboardingowym.
 
 **Główne elementy:**
+
 ```tsx
 <div className="empty-state">
-  <div className="empty-state-illustration">
-    {/* SVG illustration lub image */}
-  </div>
+  <div className="empty-state-illustration">{/* SVG illustration lub image */}</div>
   <div className="empty-state-content">
     <h2>Witaj w ShopMate!</h2>
     <p>Zacznij od dodania pierwszego przepisu</p>
     <Tooltip content="Będziesz mógł przypisać go do kalendarza">
-      <Button
-        size="lg"
-        href="/recipes/new"
-        className="empty-state-cta"
-      >
+      <Button size="lg" href="/recipes/new" className="empty-state-cta">
         Dodaj pierwszy przepis
       </Button>
     </Tooltip>
@@ -485,10 +496,12 @@ Komponent wyświetlany dla nowych użytkowników (0 przepisów). Zawiera ilustra
 ```
 
 **Obsługiwane interakcje:**
+
 - Kliknięcie CTA → nawigacja do `/recipes/new`
 - Tooltip z onboarding hint
 
 **Obsługiwana walidacja:**
+
 - Wyświetlanie tylko gdy `recipesCount === 0`
 
 **Typy:**
@@ -503,6 +516,7 @@ Brak
 Komponent loading state wyświetlający szkielety (skeletons) wszystkich sekcji dashboardu podczas ładowania danych.
 
 **Główne elementy:**
+
 ```tsx
 <div className="dashboard-skeleton">
   <div className="stats-skeleton">
@@ -675,45 +689,53 @@ export const MEAL_TYPE_ORDER: Record<MealType, number> = {
 Dashboard używa dedykowanego custom hooka `useDashboard` zarządzającego całym stanem widoku. Hook agreguje dane z wielu źródeł (przepisy, kalendarz, listy zakupów) i transformuje je do postaci odpowiedniej dla UI.
 
 ```typescript
-import { useQuery } from '@tanstack/react-query';
-import { getCurrentWeekStart, isToday, isTomorrow } from '@/lib/utils/date';
-import type {
-  DashboardData,
-  DashboardStats,
-  UpcomingMealViewModel
-} from '@/types';
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentWeekStart, isToday, isTomorrow } from "@/lib/utils/date";
+import type { DashboardData, DashboardStats, UpcomingMealViewModel } from "@/types";
 
 export function useDashboard(): DashboardData {
   const currentWeekStart = getCurrentWeekStart();
 
   // Fetch 1: Statystyki przepisów (używamy pagination.total)
-  const { data: recipesData, isLoading: recipesLoading, error: recipesError } = useQuery({
-    queryKey: ['recipes', 'stats'],
+  const {
+    data: recipesData,
+    isLoading: recipesLoading,
+    error: recipesError,
+  } = useQuery({
+    queryKey: ["recipes", "stats"],
     queryFn: async () => {
-      const response = await fetch('/api/recipes?page=1&limit=1');
-      if (!response.ok) throw new Error('Failed to fetch recipes stats');
+      const response = await fetch("/api/recipes?page=1&limit=1");
+      if (!response.ok) throw new Error("Failed to fetch recipes stats");
       return response.json() as Promise<PaginatedResponse<RecipeListItemDto>>;
     },
     staleTime: 5 * 60 * 1000, // 5 minut
   });
 
   // Fetch 2: Statystyki list zakupów
-  const { data: shoppingListsData, isLoading: shoppingListsLoading, error: shoppingListsError } = useQuery({
-    queryKey: ['shopping-lists', 'stats'],
+  const {
+    data: shoppingListsData,
+    isLoading: shoppingListsLoading,
+    error: shoppingListsError,
+  } = useQuery({
+    queryKey: ["shopping-lists", "stats"],
     queryFn: async () => {
-      const response = await fetch('/api/shopping-lists?page=1&limit=1');
-      if (!response.ok) throw new Error('Failed to fetch shopping lists stats');
+      const response = await fetch("/api/shopping-lists?page=1&limit=1");
+      if (!response.ok) throw new Error("Failed to fetch shopping lists stats");
       return response.json() as Promise<PaginatedResponse<ShoppingListListItemDto>>;
     },
     staleTime: 5 * 60 * 1000,
   });
 
   // Fetch 3: Kalendarz bieżącego tygodnia (dla statystyk i upcoming meals)
-  const { data: mealPlanData, isLoading: mealPlanLoading, error: mealPlanError } = useQuery({
-    queryKey: ['meal-plan', currentWeekStart],
+  const {
+    data: mealPlanData,
+    isLoading: mealPlanLoading,
+    error: mealPlanError,
+  } = useQuery({
+    queryKey: ["meal-plan", currentWeekStart],
     queryFn: async () => {
       const response = await fetch(`/api/meal-plan?week_start_date=${currentWeekStart}`);
-      if (!response.ok) throw new Error('Failed to fetch meal plan');
+      if (!response.ok) throw new Error("Failed to fetch meal plan");
       return response.json() as Promise<WeekCalendarResponseDto>;
     },
     staleTime: 0, // Zawsze fresh
@@ -721,11 +743,15 @@ export function useDashboard(): DashboardData {
   });
 
   // Fetch 4: Ostatnie 3 przepisy
-  const { data: recentRecipesData, isLoading: recentRecipesLoading, error: recentRecipesError } = useQuery({
-    queryKey: ['recipes', 'recent'],
+  const {
+    data: recentRecipesData,
+    isLoading: recentRecipesLoading,
+    error: recentRecipesError,
+  } = useQuery({
+    queryKey: ["recipes", "recent"],
     queryFn: async () => {
-      const response = await fetch('/api/recipes?page=1&limit=3&sort=created_desc');
-      if (!response.ok) throw new Error('Failed to fetch recent recipes');
+      const response = await fetch("/api/recipes?page=1&limit=3&sort=created_desc");
+      if (!response.ok) throw new Error("Failed to fetch recent recipes");
       return response.json() as Promise<PaginatedResponse<RecipeListItemDto>>;
     },
     staleTime: 2 * 60 * 1000, // 2 minuty
@@ -750,18 +776,15 @@ export function useDashboard(): DashboardData {
     const tomorrowDayOfWeek = tomorrow.getDay() === 0 ? 7 : tomorrow.getDay();
 
     return mealPlanData.assignments
-      .filter(assignment =>
-        assignment.day_of_week === todayDayOfWeek ||
-        assignment.day_of_week === tomorrowDayOfWeek
-      )
-      .map(assignment => {
+      .filter((assignment) => assignment.day_of_week === todayDayOfWeek || assignment.day_of_week === tomorrowDayOfWeek)
+      .map((assignment) => {
         const isToday = assignment.day_of_week === todayDayOfWeek;
         const date = isToday ? today : tomorrow;
 
         return {
-          day: isToday ? 'Dzisiaj' : 'Jutro',
-          date: format(date, 'd MMMM', { locale: pl }),
-          isoDate: format(date, 'yyyy-MM-dd'),
+          day: isToday ? "Dzisiaj" : "Jutro",
+          date: format(date, "d MMMM", { locale: pl }),
+          isoDate: format(date, "yyyy-MM-dd"),
           dayOfWeek: assignment.day_of_week,
           mealType: assignment.meal_type,
           mealTypeLabel: MEAL_TYPE_LABELS[assignment.meal_type],
@@ -793,6 +816,7 @@ export function useDashboard(): DashboardData {
 ### 6.2. Konfiguracja TanStack Query
 
 Wszystkie zapytania używają TanStack Query dla:
+
 - Automatycznego cachowania
 - Revalidation przy window focus
 - Równoległego fetchowania (parallel queries)
@@ -800,6 +824,7 @@ Wszystkie zapytania używają TanStack Query dla:
 - Optimistic updates (w przyszłości)
 
 **Konfiguracja globalna w `src/lib/query-client.ts`:**
+
 ```typescript
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -818,6 +843,7 @@ export const queryClient = new QueryClient({
 Komponenty indywidualne (np. `StatCard`, `RecipeCard`) nie mają własnego stanu - są pure components przyjmujące dane przez props.
 
 Jedyny stan lokalny może wystąpić w:
+
 - `EmptyState` - stan tooltipa (hover)
 - Animacje hover/focus (CSS, nie React state)
 
@@ -826,11 +852,13 @@ Jedyny stan lokalny może wystąpić w:
 ### 7.1. Endpoint: GET /api/recipes (statystyki)
 
 **Request:**
+
 ```
 GET /api/recipes?page=1&limit=1
 ```
 
 **Response:**
+
 ```typescript
 PaginatedResponse<RecipeListItemDto>
 {
@@ -845,17 +873,20 @@ PaginatedResponse<RecipeListItemDto>
 ```
 
 **Użycie:**
+
 - Pobieranie `pagination.total` dla statystyki liczby przepisów
 - `limit=1` minimalizuje payload (potrzebujemy tylko metadanych)
 
 ### 7.2. Endpoint: GET /api/shopping-lists (statystyki)
 
 **Request:**
+
 ```
 GET /api/shopping-lists?page=1&limit=1
 ```
 
 **Response:**
+
 ```typescript
 PaginatedResponse<ShoppingListListItemDto>
 {
@@ -870,16 +901,19 @@ PaginatedResponse<ShoppingListListItemDto>
 ```
 
 **Użycie:**
+
 - Pobieranie `pagination.total` dla statystyki liczby list zakupów
 
 ### 7.3. Endpoint: GET /api/meal-plan (kalendarz)
 
 **Request:**
+
 ```
 GET /api/meal-plan?week_start_date=2025-01-20
 ```
 
 **Response:**
+
 ```typescript
 WeekCalendarResponseDto
 {
@@ -890,6 +924,7 @@ WeekCalendarResponseDto
 ```
 
 **Użycie:**
+
 - Liczba `assignments` → `stats.mealPlansCount`
 - Filtrowanie `assignments` dla dzisiejszego i jutrzejszego `day_of_week` → `upcomingMeals`
 - `week_start_date` obliczany dynamicznie funkcją `getCurrentWeekStart()`
@@ -897,11 +932,13 @@ WeekCalendarResponseDto
 ### 7.4. Endpoint: GET /api/recipes (ostatnie przepisy)
 
 **Request:**
+
 ```
 GET /api/recipes?page=1&limit=3&sort=created_desc
 ```
 
 **Response:**
+
 ```typescript
 PaginatedResponse<RecipeListItemDto>
 {
@@ -920,6 +957,7 @@ PaginatedResponse<RecipeListItemDto>
 ```
 
 **Użycie:**
+
 - `data` array → `recentRecipes` w `DashboardData`
 - Wyświetlanie w `RecentRecipesSection`
 
@@ -928,21 +966,25 @@ PaginatedResponse<RecipeListItemDto>
 Wszystkie endpointy mogą zwrócić błędy:
 
 **401 Unauthorized:**
+
 ```json
 {
   "error": "Unauthorized",
   "message": "You must be logged in"
 }
 ```
+
 → Redirect do `/login`
 
 **500 Internal Server Error:**
+
 ```json
 {
   "error": "Internal server error",
   "message": "Failed to fetch data"
 }
 ```
+
 → Wyświetlenie error state z retry button
 
 ## 8. Interakcje użytkownika
@@ -950,10 +992,12 @@ Wszystkie endpointy mogą zwrócić błędy:
 ### 8.1. Przeglądanie statystyk
 
 **Akcja użytkownika:**
+
 - Użytkownik wchodzi na `/dashboard`
 - Automatyczne ładowanie danych
 
 **Przepływ:**
+
 1. Montowanie `DashboardView`
 2. `useDashboard` hook wywołuje 4 zapytania równolegle
 3. Wyświetlanie `DashboardSkeleton` podczas ładowania
@@ -961,41 +1005,50 @@ Wszystkie endpointy mogą zwrócić błędy:
 5. Wyświetlanie liczb: przepisy, posiłki, listy
 
 **Warunki:**
+
 - Jeśli `recipesCount === 0` → pokaż `EmptyState` zamiast normalnego dashboardu
 - Jeśli error → wyświetl error message z retry button
 
 ### 8.2. Kliknięcie karty statystyki
 
 **Akcja użytkownika:**
+
 - Kliknięcie karty "Przepisy"
 
 **Przepływ:**
+
 1. Nawigacja do `/recipes`
 2. Prefetch danych przepisów (TanStack Query)
 
 **Podobnie dla:**
+
 - Karta "Zaplanowane posiłki" → `/calendar`
 - Karta "Listy zakupów" → `/shopping-lists`
 
 ### 8.3. Kliknięcie przycisku Quick Action
 
 **Akcja użytkownika:**
+
 - Kliknięcie "Dodaj przepis"
 
 **Przepływ:**
+
 1. Nawigacja do `/recipes/new`
 2. Formularz dodawania przepisu
 
 **Podobnie dla:**
+
 - "Zaplanuj tydzień" → `/calendar`
 - "Generuj listę" → `/shopping-lists/generate`
 
 ### 8.4. Kliknięcie karty przepisu w Recent Recipes
 
 **Akcja użytkownika:**
+
 - Kliknięcie karty przepisu "Spaghetti Carbonara"
 
 **Przepływ:**
+
 1. Hover → prefetch szczegółów przepisu (TanStack Query)
 2. Click → nawigacja do `/recipes/{id}`
 3. Wyświetlenie szczegółów przepisu
@@ -1003,39 +1056,48 @@ Wszystkie endpointy mogą zwrócić błędy:
 ### 8.5. Kliknięcie "Zobacz wszystkie" w Recent Recipes
 
 **Akcja użytkownika:**
+
 - Kliknięcie linku "Zobacz wszystkie →"
 
 **Przepływ:**
+
 1. Nawigacja do `/recipes`
 2. Lista wszystkich przepisów użytkownika
 
 ### 8.6. Kliknięcie posiłku w Upcoming Meals
 
 **Akcja użytkownika:**
+
 - Kliknięcie nazwy przepisu w timeline posiłków
 
 **Przepływ:**
+
 1. Nawigacja do `/recipes/{recipeId}`
 2. Wyświetlenie szczegółów przepisu
 
 **Alternatywnie (do rozważenia):**
+
 - Nawigacja do `/calendar?week={date}` z highlightem danego posiłku
 
 ### 8.7. Kliknięcie "Zobacz kalendarz" w Upcoming Meals
 
 **Akcja użytkownika:**
+
 - Kliknięcie linku "Zobacz kalendarz →"
 
 **Przepływ:**
+
 1. Nawigacja do `/calendar`
 2. Domyślnie bieżący tydzień
 
 ### 8.8. Użytkownik nowy (Empty State)
 
 **Akcja użytkownika:**
+
 - Nowy użytkownik (0 przepisów) wchodzi na dashboard
 
 **Przepływ:**
+
 1. `useDashboard` wykrywa `recipesCount === 0`
 2. Ustawienie `isNewUser = true`
 3. Renderowanie `EmptyState` zamiast normalnych sekcji
@@ -1043,6 +1105,7 @@ Wszystkie endpointy mogą zwrócić błędy:
 5. Tooltip z hintem: "Będziesz mógł przypisać go do kalendarza"
 
 **Akcja:**
+
 - Kliknięcie CTA → nawigacja do `/recipes/new`
 
 ## 9. Warunki i walidacja
@@ -1052,6 +1115,7 @@ Wszystkie endpointy mogą zwrócić błędy:
 **Komponent:** `DashboardView`
 
 **Warunek:**
+
 ```typescript
 if (dashboardData.isNewUser) {
   return <EmptyState />;
@@ -1061,6 +1125,7 @@ if (dashboardData.isNewUser) {
 ```
 
 **Wpływ na UI:**
+
 - `isNewUser === true` (recipesCount === 0) → pokazanie `EmptyState` z onboardingiem
 - `isNewUser === false` → pokazanie normalnego dashboardu ze statystykami i sekcjami
 
@@ -1069,6 +1134,7 @@ if (dashboardData.isNewUser) {
 **Komponent:** `RecentRecipesSection`
 
 **Warunek:**
+
 ```typescript
 if (recipes.length === 0) {
   return <EmptyMessage message="Nie masz jeszcze przepisów" />;
@@ -1076,6 +1142,7 @@ if (recipes.length === 0) {
 ```
 
 **Wpływ na UI:**
+
 - Brak przepisów → komunikat "Nie masz jeszcze przepisów" + CTA
 - Są przepisy (1-3) → wyświetlenie kart
 
@@ -1087,6 +1154,7 @@ Ten warunek teoretycznie nie powinien się wykonać jeśli `isNewUser === true`,
 **Komponent:** `UpcomingMealsSection`
 
 **Warunek:**
+
 ```typescript
 if (meals.length === 0) {
   return <EmptyMessage message="Brak zaplanowanych posiłków" cta={{ label: "Zaplanuj tydzień", href: "/calendar" }} />;
@@ -1094,6 +1162,7 @@ if (meals.length === 0) {
 ```
 
 **Wpływ na UI:**
+
 - Brak posiłków na dziś/jutro → komunikat + CTA "Zaplanuj tydzień"
 - Są posiłki → wyświetlenie timeline
 
@@ -1102,6 +1171,7 @@ if (meals.length === 0) {
 **Komponent:** `useDashboard` hook
 
 **Warunek:**
+
 ```typescript
 const upcomingMeals = mealPlanData.assignments
   .filter(assignment =>
@@ -1113,6 +1183,7 @@ const upcomingMeals = mealPlanData.assignments
 ```
 
 **Wpływ na UI:**
+
 - Pokazanie tylko posiłków z `day_of_week` równym dzisiejszemu lub jutrzejszemu
 - Sortowanie chronologiczne (dziś przed jutro, śniadanie przed obiadem)
 
@@ -1121,6 +1192,7 @@ const upcomingMeals = mealPlanData.assignments
 **Komponent:** `DashboardView`
 
 **Warunek:**
+
 ```typescript
 if (isLoading) {
   return <DashboardSkeleton />;
@@ -1128,6 +1200,7 @@ if (isLoading) {
 ```
 
 **Wpływ na UI:**
+
 - Podczas ładowania danych (którekolwiek z 4 zapytań) → `DashboardSkeleton`
 - Po załadowaniu → normalna zawartość
 
@@ -1136,6 +1209,7 @@ if (isLoading) {
 **Komponent:** `DashboardView`
 
 **Warunek:**
+
 ```typescript
 if (error) {
   return <ErrorMessage error={error} onRetry={refetch} />;
@@ -1143,6 +1217,7 @@ if (error) {
 ```
 
 **Wpływ na UI:**
+
 - Jeśli którykolwiek z endpointów zwrócił błąd → `ErrorMessage` z opisem i przyciskiem "Spróbuj ponownie"
 - Kliknięcie "Spróbuj ponownie" → `refetch()` wszystkich zapytań
 
@@ -1151,14 +1226,18 @@ if (error) {
 **Poziom:** Middleware Astro (`src/middleware/index.ts`)
 
 **Warunek:**
+
 ```typescript
-const { data: { user } } = await supabase.auth.getUser();
-if (!user && pathname === '/dashboard') {
-  return Response.redirect('/login');
+const {
+  data: { user },
+} = await supabase.auth.getUser();
+if (!user && pathname === "/dashboard") {
+  return Response.redirect("/login");
 }
 ```
 
 **Wpływ na UI:**
+
 - Niezalogowany użytkownik próbuje wejść na `/dashboard` → redirect do `/login`
 
 ### 9.8. Walidacja: Liczby statystyk
@@ -1166,11 +1245,13 @@ if (!user && pathname === '/dashboard') {
 **Komponent:** `StatCard`
 
 **Walidacja:**
+
 ```typescript
-const displayValue = typeof value === 'number' && value >= 0 ? value : 0;
+const displayValue = typeof value === "number" && value >= 0 ? value : 0;
 ```
 
 **Wpływ na UI:**
+
 - Zawsze wyświetlamy liczbę nieujemną
 - Jeśli `value` undefined/null → pokazujemy `0`
 
@@ -1179,13 +1260,13 @@ const displayValue = typeof value === 'number' && value >= 0 ? value : 0;
 **Komponent:** `RecipeCard`
 
 **Walidacja:**
+
 ```typescript
-const truncatedName = recipe.name.length > 50
-  ? recipe.name.substring(0, 50) + '...'
-  : recipe.name;
+const truncatedName = recipe.name.length > 50 ? recipe.name.substring(0, 50) + "..." : recipe.name;
 ```
 
 **Wpływ na UI:**
+
 - Nazwa przepisu ≤ 50 znaków → pełna nazwa
 - Nazwa > 50 znaków → obcięcie do 50 + "..."
 - Tooltip z pełną nazwą na hover
@@ -1195,9 +1276,10 @@ const truncatedName = recipe.name.length > 50
 **Komponent:** `RecipeCard`
 
 **Walidacja:**
+
 ```typescript
-import { formatDistanceToNow } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { formatDistanceToNow } from "date-fns";
+import { pl } from "date-fns/locale";
 
 const relativeTime = formatDistanceToNow(new Date(recipe.created_at), {
   addSuffix: true,
@@ -1206,11 +1288,13 @@ const relativeTime = formatDistanceToNow(new Date(recipe.created_at), {
 ```
 
 **Przykłady:**
+
 - "2 dni temu"
 - "godzinę temu"
 - "miesiąc temu"
 
 **Wpływ na UI:**
+
 - Przyjazna forma wyświetlania daty dodania przepisu
 
 ## 10. Obsługa błędów
@@ -1221,6 +1305,7 @@ const relativeTime = formatDistanceToNow(new Date(recipe.created_at), {
 Użytkownik nie ma połączenia z internetem lub API jest niedostępne.
 
 **Handling:**
+
 ```typescript
 // W useDashboard hook
 const { data, error } = useQuery({
@@ -1241,6 +1326,7 @@ if (error) {
 ```
 
 **UI:**
+
 - Error message z ikoną
 - Komunikat błędu
 - Przycisk "Spróbuj ponownie"
@@ -1252,19 +1338,20 @@ if (error) {
 Token użytkownika wygasł lub sesja jest nieprawidłowa.
 
 **Handling:**
+
 ```typescript
 // W query function
 const fetchRecipesStats = async () => {
-  const response = await fetch('/api/recipes?page=1&limit=1');
+  const response = await fetch("/api/recipes?page=1&limit=1");
 
   if (response.status === 401) {
     // Redirect do login
-    window.location.href = '/login?redirect=/dashboard';
-    throw new Error('Unauthorized');
+    window.location.href = "/login?redirect=/dashboard";
+    throw new Error("Unauthorized");
   }
 
   if (!response.ok) {
-    throw new Error('Failed to fetch recipes');
+    throw new Error("Failed to fetch recipes");
   }
 
   return response.json();
@@ -1272,6 +1359,7 @@ const fetchRecipesStats = async () => {
 ```
 
 **UI:**
+
 - Automatyczne przekierowanie do `/login` z parametrem `redirect=/dashboard`
 - Po zalogowaniu → powrót na dashboard
 
@@ -1281,6 +1369,7 @@ const fetchRecipesStats = async () => {
 Błąd po stronie serwera (np. błąd bazy danych).
 
 **Handling:**
+
 ```typescript
 // Podobnie jak Network Error
 if (error && error.message.includes('500')) {
@@ -1293,6 +1382,7 @@ if (error && error.message.includes('500')) {
 ```
 
 **UI:**
+
 - Error message z opisem
 - Opcja retry
 - Informacja o zgłoszeniu błędu (opcjonalnie integracja z Sentry)
@@ -1303,6 +1393,7 @@ if (error && error.message.includes('500')) {
 Np. statystyki przepisów załadowały się, ale meal plan nie.
 
 **Handling:**
+
 ```typescript
 // W DashboardView
 if (recipesError) {
@@ -1316,6 +1407,7 @@ if (mealPlanError) {
 ```
 
 **UI:**
+
 - Częściowo załadowany dashboard
 - Warning icon przy kartach z błędami
 - Możliwość retry tylko dla failed queries
@@ -1327,6 +1419,7 @@ if (mealPlanError) {
 Użytkownik ma 0 przepisów, 0 list zakupów, brak posiłków na dziś/jutro.
 
 **Handling:**
+
 ```typescript
 // Nowy użytkownik (0 przepisów)
 if (stats.recipesCount === 0) {
@@ -1345,6 +1438,7 @@ if (upcomingMeals.length === 0) {
 ```
 
 **UI:**
+
 - Przyjazne komunikaty
 - Jasne CTA prowadzące do rozwiązania (np. "Dodaj przepis", "Zaplanuj tydzień")
 - Ilustracje (opcjonalnie)
@@ -1355,10 +1449,11 @@ if (upcomingMeals.length === 0) {
 API odpowiada bardzo wolno (>5s).
 
 **Handling:**
+
 ```typescript
 // W query config
 const { data, isLoading, isFetching } = useQuery({
-  queryKey: ['recipes', 'stats'],
+  queryKey: ["recipes", "stats"],
   queryFn: fetchRecipesStats,
   timeout: 10000, // 10s timeout
 });
@@ -1367,7 +1462,7 @@ const { data, isLoading, isFetching } = useQuery({
 React.useEffect(() => {
   if (isLoading || isFetching) {
     const timer = setTimeout(() => {
-      toast.info('Ładowanie trwa dłużej niż zwykle...');
+      toast.info("Ładowanie trwa dłużej niż zwykle...");
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -1376,6 +1471,7 @@ React.useEffect(() => {
 ```
 
 **UI:**
+
 - Skeleton screen podczas ładowania
 - Po 3s: toast notification "Ładowanie trwa dłużej niż zwykle..."
 - Po 10s: timeout error + retry button
@@ -1386,6 +1482,7 @@ React.useEffect(() => {
 Użytkownik szybko przełącza się między stronami, zapytania się nakładają.
 
 **Handling:**
+
 ```typescript
 // TanStack Query automatycznie handluje:
 // - Cancel poprzednich zapytań gdy zmienia się queryKey
@@ -1396,6 +1493,7 @@ Użytkownik szybko przełącza się między stronami, zapytania się nakładają
 ```
 
 **UI:**
+
 - Brak problemów dzięki TanStack Query
 
 ### 10.8. Stale data handling
@@ -1404,10 +1502,11 @@ Użytkownik szybko przełącza się między stronami, zapytania się nakładają
 Użytkownik dodał przepis w innej zakładce, ale dashboard pokazuje stare dane.
 
 **Handling:**
+
 ```typescript
 // Konfiguracja refetch on window focus
 const { data } = useQuery({
-  queryKey: ['recipes', 'stats'],
+  queryKey: ["recipes", "stats"],
   queryFn: fetchRecipesStats,
   staleTime: 5 * 60 * 1000, // 5 minut
   refetchOnWindowFocus: true, // Refetch gdy wraca do zakładki
@@ -1415,6 +1514,7 @@ const { data } = useQuery({
 ```
 
 **UI:**
+
 - Dane automatycznie odświeżają się gdy użytkownik wraca do zakładki dashboardu
 - Smooth transition (nie ma flickera dzięki cache)
 
@@ -1423,6 +1523,7 @@ const { data } = useQuery({
 ### Krok 1: Utworzenie struktury plików
 
 Utworzyć następujące pliki:
+
 ```
 src/
 ├── pages/
@@ -1452,6 +1553,7 @@ src/
 ### Krok 2: Dodanie nowych typów do src/types.ts
 
 Dodać następujące typy:
+
 ```typescript
 export interface DashboardStats {
   recipesCount: number;
@@ -1498,14 +1600,15 @@ export const MEAL_TYPE_ORDER: Record<MealType, number> = {
 ### Krok 3: Implementacja utility functions
 
 **src/lib/utils/date.ts:**
+
 ```typescript
-import { format, startOfWeek, getDay } from 'date-fns';
-import { pl } from 'date-fns/locale';
+import { format, startOfWeek, getDay } from "date-fns";
+import { pl } from "date-fns/locale";
 
 export function getCurrentWeekStart(): string {
   const today = new Date();
   const monday = startOfWeek(today, { weekStartsOn: 1 });
-  return format(monday, 'yyyy-MM-dd');
+  return format(monday, "yyyy-MM-dd");
 }
 
 export function formatRelativeTime(date: string): string {
@@ -1528,10 +1631,11 @@ export function isTomorrow(date: Date): boolean {
 ```
 
 **src/lib/utils/text.ts:**
+
 ```typescript
 export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 }
 ```
 
@@ -1541,6 +1645,7 @@ export function truncate(text: string, maxLength: number): string {
 Zgodnie z opisem w sekcji "6. Zarządzanie stanem".
 
 Implementować:
+
 - 4 równoległe zapytania (recipes stats, shopping lists stats, meal plan, recent recipes)
 - Obliczanie `DashboardStats`
 - Transformacja meal plan assignments → `UpcomingMealViewModel[]`
@@ -1551,24 +1656,28 @@ Implementować:
 ### Krok 5: Implementacja komponentów atomowych
 
 **src/components/dashboard/StatCard.tsx:**
+
 - Przyjmuje props: `icon`, `label`, `value`, `href`
 - Renderuje Link z ikoną, etykietą i wartością
 - Dodaje aria-label dla accessibility
 - Stylowanie: card z hover effect, shadow
 
 **src/components/dashboard/RecipeCard.tsx:**
+
 - Przyjmuje props: `recipe: RecipeListItemDto`
 - Renderuje Link z nazwą (truncate do 50), badge z liczbą składników, relative time
 - Prefetch on hover (TanStack Query)
 - Stylowanie: card z hover effect
 
 **src/components/dashboard/MealItem.tsx:**
+
 - Przyjmuje props: `meal: UpcomingMealViewModel`
 - Renderuje timeline item z dniem, typem posiłku, nazwą przepisu
 - Link do przepisu
 - Stylowanie: timeline vertical layout z kropką/linią
 
 **src/components/dashboard/ActionButton.tsx:**
+
 - Przyjmuje props: `icon`, `label`, `description`, `href`, `variant`
 - Renderuje Link z ikoną, etykietą główną i opisem
 - Stylowanie: button-like card z variant (primary/secondary)
@@ -1576,23 +1685,27 @@ Implementować:
 ### Krok 6: Implementacja sekcji
 
 **src/components/dashboard/StatsSection.tsx:**
+
 - Przyjmuje props: `stats: DashboardStats`, `isLoading?: boolean`
 - Renderuje grid 3 kart StatCard
 - Conditional: jeśli `isLoading` → skeleton cards
 - Responsive: 3 kolumny desktop, 2 tablet, 1 mobile
 
 **src/components/dashboard/QuickActionsSection.tsx:**
+
 - Renderuje 3 przyciski ActionButton
 - Sticky na mobile (position: sticky, bottom: 0)
 - Grid layout
 
 **src/components/dashboard/RecentRecipesSection.tsx:**
+
 - Przyjmuje props: `recipes: RecipeListItemDto[]`, `isLoading?: boolean`
 - Header z tytułem "Ostatnie przepisy" + link "Zobacz wszystkie"
 - Conditional: jeśli `recipes.length === 0` → EmptyMessage
 - Grid 3 kart RecipeCard
 
 **src/components/dashboard/UpcomingMealsSection.tsx:**
+
 - Przyjmuje props: `meals: UpcomingMealViewModel[]`, `isLoading?: boolean`
 - Header z tytułem "Nadchodzące posiłki" + link "Zobacz kalendarz"
 - Conditional: jeśli `meals.length === 0` → EmptyMessage
@@ -1601,6 +1714,7 @@ Implementować:
 ### Krok 7: Implementacja EmptyState
 
 **src/components/dashboard/EmptyState.tsx:**
+
 - Ilustracja (SVG lub image)
 - Heading "Witaj w ShopMate!"
 - Komunikat "Zacznij od dodania pierwszego przepisu"
@@ -1611,6 +1725,7 @@ Implementować:
 ### Krok 8: Implementacja DashboardSkeleton
 
 **src/components/dashboard/DashboardSkeleton.tsx:**
+
 - Szkielety dla wszystkich sekcji
 - Używać komponentu Skeleton z Shadcn/ui
 - Matching layout z normalnym dashboardem
@@ -1618,6 +1733,7 @@ Implementować:
 ### Krok 9: Implementacja głównego kontenera DashboardView
 
 **src/components/dashboard/DashboardView.tsx:**
+
 ```typescript
 export function DashboardView() {
   const dashboardData = useDashboard();
@@ -1652,10 +1768,11 @@ export function DashboardView() {
 ### Krok 10: Implementacja strony Astro
 
 **src/pages/dashboard.astro:**
+
 ```astro
 ---
-import Layout from '@/layouts/Layout.astro';
-import { DashboardView } from '@/components/dashboard/DashboardView';
+import Layout from "@/layouts/Layout.astro";
+import { DashboardView } from "@/components/dashboard/DashboardView";
 
 // Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
 ---
@@ -1668,6 +1785,7 @@ import { DashboardView } from '@/components/dashboard/DashboardView';
 ### Krok 11: Dodanie stylów Tailwind
 
 Dla każdego komponentu dodać odpowiednie klasy Tailwind:
+
 - Responsywne layout (grid, flex)
 - Spacing (padding, margin)
 - Colors (bg, text, border)
@@ -1676,6 +1794,7 @@ Dla każdego komponentu dodać odpowiednie klasy Tailwind:
 - Mobile-first approach
 
 Przykład dla StatCard:
+
 ```typescript
 <Link
   href={href}
@@ -1688,20 +1807,23 @@ Przykład dla StatCard:
 ### Krok 12: Konfiguracja middleware dla auth check
 
 **src/middleware/index.ts:**
+
 ```typescript
 export async function onRequest(context, next) {
   const { pathname } = new URL(context.request.url);
 
   // Protected routes
-  const protectedRoutes = ['/dashboard', '/recipes', '/calendar', '/shopping-lists'];
-  const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+  const protectedRoutes = ["/dashboard", "/recipes", "/calendar", "/shopping-lists"];
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
 
   if (isProtected) {
     const supabase = context.locals.supabase;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-      return Response.redirect(new URL('/login?redirect=' + pathname, context.url));
+      return Response.redirect(new URL("/login?redirect=" + pathname, context.url));
     }
   }
 
@@ -1712,6 +1834,7 @@ export async function onRequest(context, next) {
 ### Krok 13: Testy jednostkowe dla utility functions
 
 Utworzyć testy dla:
+
 - `getCurrentWeekStart()` - sprawdzenie czy zwraca poniedziałek
 - `formatRelativeTime()` - sprawdzenie formatowania
 - `truncate()` - sprawdzenie obcinania tekstu
@@ -1720,6 +1843,7 @@ Utworzyć testy dla:
 ### Krok 14: Testy integracyjne dla useDashboard
 
 Utworzyć testy dla:
+
 - Fetchowanie 4 zapytań równolegle
 - Handling loading state
 - Handling error state
@@ -1730,6 +1854,7 @@ Utworzyć testy dla:
 ### Krok 15: Testy komponentów
 
 Utworzyć testy dla:
+
 - `StatCard` - renderowanie z różnymi props
 - `RecipeCard` - truncate, relative time, link
 - `MealItem` - formatowanie dnia, meal type label
@@ -1739,6 +1864,7 @@ Utworzyć testy dla:
 ### Krok 16: Accessibility audit
 
 Sprawdzić:
+
 - Wszystkie interaktywne elementy dostępne z klawiatury
 - Odpowiednie aria-labels
 - Semantic HTML (article, section, nav)
@@ -1747,6 +1873,7 @@ Sprawdzić:
 - Screen reader support
 
 Narzędzia:
+
 - axe DevTools
 - Lighthouse Accessibility audit
 - Keyboard navigation manual test
@@ -1754,6 +1881,7 @@ Narzędzia:
 ### Krok 17: Performance optimization
 
 Zoptymalizować:
+
 - Lazy loading dla ilustracji w EmptyState
 - Prefetching dla linków (Astro View Transitions)
 - Image optimization dla ikon/ilustracji
@@ -1761,6 +1889,7 @@ Zoptymalizować:
 - TanStack Query cache configuration (staleTime, cacheTime)
 
 Narzędzia:
+
 - Lighthouse Performance audit
 - Bundle analyzer
 - Network tab monitoring
@@ -1768,11 +1897,13 @@ Narzędzia:
 ### Krok 18: Responsive testing
 
 Przetestować na:
+
 - Desktop (≥1024px)
 - Tablet (768-1023px)
 - Mobile (320-767px)
 
 Sprawdzić:
+
 - Grid layouts responsywne
 - Quick actions sticky na mobile
 - Touch targets ≥44px
@@ -1782,6 +1913,7 @@ Sprawdzić:
 ### Krok 19: Error handling testing
 
 Symulować błędy:
+
 - Network offline → Network Error handling
 - 401 → redirect do login
 - 500 → Server Error handling
@@ -1789,6 +1921,7 @@ Symulować błędy:
 - Partial failures → częściowy dashboard
 
 Sprawdzić:
+
 - Error messages czytelne
 - Retry buttons działają
 - Redirecty poprawne
@@ -1797,12 +1930,14 @@ Sprawdzić:
 ### Krok 20: Deploy do Vercel i smoke test
 
 Deploy na Vercel:
+
 ```bash
 npm run build
 vercel --prod
 ```
 
 Smoke test na produkcji:
+
 - Login flow
 - Dashboard loading
 - Kliknięcie każdego linku/przycisku

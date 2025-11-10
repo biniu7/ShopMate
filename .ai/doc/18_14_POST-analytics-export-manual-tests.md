@@ -10,6 +10,7 @@
 
 **Server:** http://localhost:3001
 **Prerequisites:**
+
 - ✅ User must be authenticated (Supabase session)
 - ✅ Shopping list must exist and belong to user
 - ✅ Dev server running
@@ -21,7 +22,9 @@
 ### 1️⃣ Authentication Tests
 
 #### Test 1.1: No Authentication (401 Unauthorized)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -32,12 +35,14 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Unauthorized",
   "message": "Authentication required"
 }
 ```
+
 **Expected Status:** `401`
 
 **Result:** ⏳ Pending
@@ -47,7 +52,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ### 2️⃣ Validation Tests
 
 #### Test 2.1: Invalid UUID Format (400 Bad Request)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -59,6 +66,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -67,6 +75,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
   }
 }
 ```
+
 **Expected Status:** `400`
 
 **Result:** ⏳ Pending
@@ -74,7 +83,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ---
 
 #### Test 2.2: Invalid Format Enum (400 Bad Request)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -86,6 +97,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -94,6 +106,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
   }
 }
 ```
+
 **Expected Status:** `400`
 
 **Result:** ⏳ Pending
@@ -101,7 +114,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ---
 
 #### Test 2.3: Missing Required Fields (400 Bad Request)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -112,6 +127,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -120,6 +136,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
   }
 }
 ```
+
 **Expected Status:** `400`
 
 **Result:** ⏳ Pending
@@ -127,7 +144,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ---
 
 #### Test 2.4: Extra Fields (400 Bad Request - Strict Mode)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -140,6 +159,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Validation failed",
@@ -148,6 +168,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
   }
 }
 ```
+
 **Expected Status:** `400`
 
 **Result:** ⏳ Pending
@@ -157,7 +178,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ### 3️⃣ Authorization Tests
 
 #### Test 3.1: Shopping List Doesn't Exist (404 Not Found)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -169,12 +192,14 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Not found",
   "message": "Shopping list not found or access denied"
 }
 ```
+
 **Expected Status:** `404`
 
 **Result:** ⏳ Pending
@@ -184,15 +209,18 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ---
 
 #### Test 3.2: Shopping List Belongs to Another User (404 Not Found)
+
 **Scenario:** List exists in DB but belongs to different user
 
 **Expected Response:**
+
 ```json
 {
   "error": "Not found",
   "message": "Shopping list not found or access denied"
 }
 ```
+
 **Expected Status:** `404`
 
 **Result:** ⏳ Pending
@@ -204,7 +232,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ### 4️⃣ Success Tests
 
 #### Test 4.1: Valid Request - PDF Format (204 No Content)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -217,6 +247,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 - **Status:** `204 No Content`
 - **Body:** Empty (no response body)
 - **Console Log:** `[Analytics] Export event:` with event details
@@ -226,7 +257,9 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ---
 
 #### Test 4.2: Valid Request - TXT Format (204 No Content)
+
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/analytics/export \
   -H "Content-Type: application/json" \
@@ -239,6 +272,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ```
 
 **Expected Response:**
+
 - **Status:** `204 No Content`
 - **Body:** Empty
 - **Console Log:** `[Analytics] Export event:` with format="txt"
@@ -250,12 +284,14 @@ curl -X POST http://localhost:3001/api/analytics/export \
 ## Test Execution Notes
 
 ### Prerequisites Checklist:
+
 - [ ] Dev server running (`npm run dev`)
 - [ ] User authenticated in Supabase
 - [ ] Valid shopping list created for test user
 - [ ] Access token extracted from browser cookies
 
 ### How to Get Access Token:
+
 1. Open application in browser: http://localhost:3001
 2. Login with test user
 3. Open DevTools → Application → Cookies
@@ -263,6 +299,7 @@ curl -X POST http://localhost:3001/api/analytics/export \
 5. Use in curl `-H "Cookie: sb-access-token=VALUE"`
 
 ### Expected Console Output (Success Case):
+
 ```
 [Analytics] Export event: {
   user: 'user-uuid-here',
@@ -276,17 +313,17 @@ curl -X POST http://localhost:3001/api/analytics/export \
 
 ## Test Results Summary
 
-| Test Case | Status | Notes |
-|-----------|--------|-------|
-| 1.1 - No Auth | ⏳ | - |
-| 2.1 - Invalid UUID | ⏳ | - |
-| 2.2 - Invalid Format | ⏳ | - |
-| 2.3 - Missing Fields | ⏳ | - |
-| 2.4 - Extra Fields | ⏳ | - |
-| 3.1 - List Not Found | ⏳ | - |
-| 3.2 - Wrong Owner | ⏳ | - |
-| 4.1 - Success PDF | ⏳ | - |
-| 4.2 - Success TXT | ⏳ | - |
+| Test Case            | Status | Notes |
+| -------------------- | ------ | ----- |
+| 1.1 - No Auth        | ⏳     | -     |
+| 2.1 - Invalid UUID   | ⏳     | -     |
+| 2.2 - Invalid Format | ⏳     | -     |
+| 2.3 - Missing Fields | ⏳     | -     |
+| 2.4 - Extra Fields   | ⏳     | -     |
+| 3.1 - List Not Found | ⏳     | -     |
+| 3.2 - Wrong Owner    | ⏳     | -     |
+| 4.1 - Success PDF    | ⏳     | -     |
+| 4.2 - Success TXT    | ⏳     | -     |
 
 **Overall Status:** ⏳ Testing in progress
 

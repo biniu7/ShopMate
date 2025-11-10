@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `POST`
    **Path:** `/api/shopping-lists`
    **Description:** Save shopping list as immutable snapshot (after user edits preview)
@@ -124,6 +124,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 2. Related database resources:
    <related_db_resources>
+
 ### Tabela: `shopping_lists`
 
 **Opis:** Zapisane listy zakupów (snapshot pattern)
@@ -169,6 +170,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - Maksimum 100 pozycji na listę (walidacja w aplikacji - Zod)
 
 ---
+
 </related_db_resources>
 
 3. Definicje typów:

@@ -3,6 +3,7 @@
 ## Test Environment Setup
 
 **Prerequisites:**
+
 - Server running: `npm run dev` on `http://localhost:3000`
 - Valid Supabase authentication token
 - Test user logged in
@@ -13,11 +14,13 @@
 ### ✅ Test 1: Successful Deletion (200 OK)
 
 **Setup:**
+
 1. Create a test recipe with ingredients
 2. Optionally assign it to meal plan
 3. Note the recipe UUID
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/recipes/{recipe_id} \
   -H "Cookie: sb-access-token=YOUR_TOKEN_HERE" \
@@ -25,6 +28,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{recipe_id} \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "message": "Recipe deleted successfully",
@@ -33,6 +37,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{recipe_id} \
 ```
 
 **Verification:**
+
 - Status code: `200`
 - Response contains correct message
 - `deleted_meal_plan_assignments` matches the actual count
@@ -45,6 +50,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{recipe_id} \
 ### ❌ Test 2: Invalid UUID Format (400 Bad Request)
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/recipes/abc123 \
   -H "Cookie: sb-access-token=YOUR_TOKEN_HERE" \
@@ -52,6 +58,7 @@ curl -X DELETE http://localhost:3000/api/recipes/abc123 \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Validation error",
@@ -60,6 +67,7 @@ curl -X DELETE http://localhost:3000/api/recipes/abc123 \
 ```
 
 **Verification:**
+
 - Status code: `400`
 - Error message indicates validation failure
 - UUID validation is working
@@ -69,6 +77,7 @@ curl -X DELETE http://localhost:3000/api/recipes/abc123 \
 ### ❌ Test 3: Missing Authentication (401 Unauthorized)
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/recipes/{valid_recipe_id} \
   -H "Content-Type: application/json"
@@ -76,6 +85,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{valid_recipe_id} \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Unauthorized",
@@ -84,6 +94,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{valid_recipe_id} \
 ```
 
 **Verification:**
+
 - Status code: `401`
 - Authentication check is enforced
 - Request is rejected before database query
@@ -93,9 +104,11 @@ curl -X DELETE http://localhost:3000/api/recipes/{valid_recipe_id} \
 ### ❌ Test 4: Recipe Not Found (404 Not Found)
 
 **Setup:**
+
 - Use a valid UUID that doesn't exist in database
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/recipes/550e8400-e29b-41d4-a716-446655440000 \
   -H "Cookie: sb-access-token=YOUR_TOKEN_HERE" \
@@ -103,6 +116,7 @@ curl -X DELETE http://localhost:3000/api/recipes/550e8400-e29b-41d4-a716-4466554
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Not found",
@@ -111,6 +125,7 @@ curl -X DELETE http://localhost:3000/api/recipes/550e8400-e29b-41d4-a716-4466554
 ```
 
 **Verification:**
+
 - Status code: `404`
 - Generic error message (doesn't reveal if recipe exists)
 
@@ -119,12 +134,14 @@ curl -X DELETE http://localhost:3000/api/recipes/550e8400-e29b-41d4-a716-4466554
 ### ❌ Test 5: Recipe Belongs to Another User (404 Not Found)
 
 **Setup:**
+
 1. Login as User A
 2. Create a recipe (note the ID)
 3. Logout and login as User B
 4. Try to delete User A's recipe
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/recipes/{user_a_recipe_id} \
   -H "Cookie: sb-access-token=USER_B_TOKEN" \
@@ -132,6 +149,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{user_a_recipe_id} \
 ```
 
 **Expected Response:**
+
 ```json
 {
   "error": "Not found",
@@ -140,6 +158,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{user_a_recipe_id} \
 ```
 
 **Verification:**
+
 - Status code: `404`
 - Authorization is enforced via RLS and service logic
 - No information leak about recipe existence
@@ -150,11 +169,13 @@ curl -X DELETE http://localhost:3000/api/recipes/{user_a_recipe_id} \
 ### ✅ Test 6: CASCADE Deletion Verification
 
 **Setup:**
+
 1. Create a recipe with 5 ingredients
 2. Assign it to 3 meal plan slots
 3. Note all IDs
 
 **Request:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/recipes/{recipe_id} \
   -H "Cookie: sb-access-token=YOUR_TOKEN_HERE" \
@@ -162,6 +183,7 @@ curl -X DELETE http://localhost:3000/api/recipes/{recipe_id} \
 ```
 
 **Database Verification:**
+
 ```sql
 -- Check recipe is deleted
 SELECT * FROM recipes WHERE id = '{recipe_id}';
@@ -177,6 +199,7 @@ SELECT * FROM meal_plan WHERE recipe_id = '{recipe_id}';
 ```
 
 **Expected:**
+
 - All related records deleted atomically
 - No orphaned ingredients
 - No orphaned meal_plan assignments
@@ -189,9 +212,11 @@ SELECT * FROM meal_plan WHERE recipe_id = '{recipe_id}';
 ### Test 7: Recipe with Zero Meal Plan Assignments
 
 **Setup:**
+
 - Create recipe without any meal plan assignments
 
 **Expected Response:**
+
 ```json
 {
   "message": "Recipe deleted successfully",
@@ -202,9 +227,11 @@ SELECT * FROM meal_plan WHERE recipe_id = '{recipe_id}';
 ### Test 8: Recipe with Many Ingredients (50)
 
 **Setup:**
+
 - Create recipe with maximum allowed ingredients (50)
 
 **Expected:**
+
 - All 50 ingredients deleted via CASCADE
 - Performance acceptable (<2 seconds)
 
@@ -220,13 +247,13 @@ SELECT * FROM meal_plan WHERE recipe_id = '{recipe_id}';
 4. Run:
 
 ```javascript
-fetch('/api/recipes/{recipe_id}', {
-  method: 'DELETE',
-  credentials: 'include'
+fetch("/api/recipes/{recipe_id}", {
+  method: "DELETE",
+  credentials: "include",
 })
-  .then(res => res.json())
-  .then(data => console.log(data))
-  .catch(err => console.error(err));
+  .then((res) => res.json())
+  .then((data) => console.log(data))
+  .catch((err) => console.error(err));
 ```
 
 ### Using Postman/Insomnia

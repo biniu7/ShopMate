@@ -42,6 +42,7 @@ Dane wyjściowe powinny mieć następującą strukturę:
 W tym miejscu proszę wymienić pytania i zalecenia, dla przejrzystości opatrzone numerami:
 
 Na przykład:
+
 1. Czy na pocztówce powinno znajdować się nazwisko autora?
 
 Rekomendacja: Tak, na pocztówce powinno znajdować się nazwisko autora.
@@ -52,4 +53,4 @@ Pamiętaj, że Twoim celem jest dostarczenie kompleksowej listy pytań i zalece�
 Kontynuuj ten proces, generując nowe pytania i rekomendacje w oparciu o przekazany kontekst i odpowiedzi użytkownika, dopóki użytkownik wyraźnie nie poprosi o podsumowanie.
 
 Pamiętaj, aby skupić się na jasności, trafności i dokładności wyników. Nie dołączaj żadnych dodatkowych komentarzy ani wyjaśnień poza określonym formatem wyjściowym.
-Posdumowanie zapisz do pliku 
+Posdumowanie zapisz do pliku

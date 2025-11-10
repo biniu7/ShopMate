@@ -16,29 +16,32 @@ Otwórz aplikację w przeglądarce i zaloguj się. Następnie otwórz DevTools C
 // Pobierz access token z Supabase
 const { data } = await window.supabase.auth.getSession();
 const accessToken = data.session?.access_token;
-console.log('Access Token:', accessToken);
+console.log("Access Token:", accessToken);
 ```
 
 Lub jeśli to nie działa, możesz użyć tego kodu:
 
 ```javascript
 // Alternatywny sposób
-localStorage.getItem('sb-' + 'YOUR_PROJECT_REF' + '-auth-token');
+localStorage.getItem("sb-" + "YOUR_PROJECT_REF" + "-auth-token");
 ```
 
 ### Krok 2: Zapisz token do zmiennej środowiskowej
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:ACCESS_TOKEN = "YOUR_ACCESS_TOKEN_HERE"
 ```
 
 **Linux/Mac:**
+
 ```bash
 export ACCESS_TOKEN="YOUR_ACCESS_TOKEN_HERE"
 ```
 
 **Sprawdź czy token działa:**
+
 ```bash
 # Windows PowerShell
 curl -X GET http://localhost:3001/api/shopping-lists `
@@ -58,6 +61,7 @@ curl -X GET http://localhost:3001/api/shopping-lists \
 **Description:** Utworzenie listy zakupów ze wszystkimi polami
 
 **Request:**
+
 ```bash
 # Windows PowerShell
 curl -X POST http://localhost:3001/api/shopping-lists `
@@ -125,6 +129,7 @@ curl -X POST http://localhost:3001/api/shopping-lists \
 ```
 
 **Expected Response:** `201 Created`
+
 ```json
 {
   "id": "uuid-here",
@@ -143,7 +148,7 @@ curl -X POST http://localhost:3001/api/shopping-lists \
       "category": "Nabiał",
       "is_checked": false,
       "sort_order": 0
-    },
+    }
     // ... other items
   ]
 }
@@ -156,6 +161,7 @@ curl -X POST http://localhost:3001/api/shopping-lists \
 **Description:** Lista z minimalnymi danymi (bez name i week_start_date)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -172,6 +178,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `201 Created`
+
 - `name` powinno być "Lista zakupów" (default)
 - `week_start_date` powinno być `null`
 - `quantity` i `unit` powinny być `null`
@@ -183,6 +190,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Lista wygenerowana z przepisów (week_start_date = null)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -218,6 +226,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Lista bez itemów (minimum 1 required)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -229,6 +238,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -245,6 +255,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Item z nieprawidłową kategorią
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -261,6 +272,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -279,6 +291,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Nazwa przekracza 200 znaków
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -296,6 +309,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -312,6 +326,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Nieprawidłowy format daty
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -329,6 +344,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -345,6 +361,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Więcej niż 100 itemów (maximum limit)
 
 **Request:**
+
 ```bash
 # Wygeneruj payload z 101 itemami
 # Przykład w PowerShell:
@@ -367,6 +384,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -383,6 +401,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Quantity <= 0 (must be positive or null)
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -401,6 +420,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -417,6 +437,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Request bez Authorization header
 
 **Request:**
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists `
   -H "Content-Type: application/json" `
@@ -432,6 +453,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `401 Unauthorized`
+
 ```json
 {
   "error": "Unauthorized",
@@ -446,6 +468,7 @@ curl -X POST http://localhost:3001/api/shopping-lists `
 **Description:** Test z maksymalną liczbą itemów (100)
 
 **PowerShell script do generowania:**
+
 ```powershell
 $items = @()
 for ($i = 0; $i -lt 100; $i++) {
@@ -476,6 +499,7 @@ Measure-Command {
 **Performance Target:** < 500ms
 
 **Verification:**
+
 - Check response time
 - Verify all 100 items are returned
 - Check payload size < 50KB
@@ -489,12 +513,14 @@ Measure-Command {
 **Description:** Pobierz listy z domyślną paginacją (page=1, limit=20)
 
 **Request:**
+
 ```bash
 curl -X GET http://localhost:3001/api/shopping-lists `
   -H "Authorization: Bearer $env:ACCESS_TOKEN"
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -517,6 +543,7 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 ```
 
 **Verification:**
+
 - Lists are sorted by created_at DESC (newest first)
 - Max 20 items returned
 - items_count is correct (count manually from TC1 if possible)
@@ -528,12 +555,14 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 **Description:** Pobierz listy z custom pagination (page=1, limit=5)
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3001/api/shopping-lists?page=1&limit=5" `
   -H "Authorization: Bearer $env:ACCESS_TOKEN"
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -549,6 +578,7 @@ curl -X GET "http://localhost:3001/api/shopping-lists?page=1&limit=5" `
 ```
 
 **Verification:**
+
 - Only 5 lists returned
 - total_pages = ceil(total / limit) = ceil(12 / 5) = 3
 
@@ -559,12 +589,14 @@ curl -X GET "http://localhost:3001/api/shopping-lists?page=1&limit=5" `
 **Description:** Pobierz drugą stronę (page=2, limit=5)
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3001/api/shopping-lists?page=2&limit=5" `
   -H "Authorization: Bearer $env:ACCESS_TOKEN"
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -580,6 +612,7 @@ curl -X GET "http://localhost:3001/api/shopping-lists?page=2&limit=5" `
 ```
 
 **Verification:**
+
 - Different lists than page 1
 - Sorted by created_at DESC (continuation)
 
@@ -590,6 +623,7 @@ curl -X GET "http://localhost:3001/api/shopping-lists?page=2&limit=5" `
 **Description:** Nowy użytkownik bez list
 
 **Request:**
+
 ```bash
 # Use token from different user (or create new user first)
 curl -X GET http://localhost:3001/api/shopping-lists `
@@ -597,6 +631,7 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response:** `200 OK`
+
 ```json
 {
   "data": [],
@@ -616,12 +651,14 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 **Description:** Page number < 1
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3001/api/shopping-lists?page=0" `
   -H "Authorization: Bearer $env:ACCESS_TOKEN"
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -638,12 +675,14 @@ curl -X GET "http://localhost:3001/api/shopping-lists?page=0" `
 **Description:** Limit > 100 (maximum)
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3001/api/shopping-lists?limit=200" `
   -H "Authorization: Bearer $env:ACCESS_TOKEN"
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -660,12 +699,14 @@ curl -X GET "http://localhost:3001/api/shopping-lists?limit=200" `
 **Description:** Limit < 1
 
 **Request:**
+
 ```bash
 curl -X GET "http://localhost:3001/api/shopping-lists?limit=0" `
   -H "Authorization: Bearer $env:ACCESS_TOKEN"
 ```
 
 **Expected Response:** `400 Bad Request`
+
 ```json
 {
   "error": "Validation failed",
@@ -682,11 +723,13 @@ curl -X GET "http://localhost:3001/api/shopping-lists?limit=0" `
 **Description:** Request bez Authorization header
 
 **Request:**
+
 ```bash
 curl -X GET http://localhost:3001/api/shopping-lists
 ```
 
 **Expected Response:** `401 Unauthorized`
+
 ```json
 {
   "error": "Unauthorized",
@@ -701,6 +744,7 @@ curl -X GET http://localhost:3001/api/shopping-lists
 **Description:** Sprawdź czy Cache-Control header jest ustawiony
 
 **Request:**
+
 ```bash
 curl -X GET http://localhost:3001/api/shopping-lists `
   -H "Authorization: Bearer $env:ACCESS_TOKEN" `
@@ -708,6 +752,7 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Response Headers:**
+
 ```
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -715,6 +760,7 @@ Cache-Control: private, max-age=300
 ```
 
 **Verification:**
+
 - Cache-Control header is present
 - max-age=300 (5 minutes)
 - private (not cacheable by public caches)
@@ -728,11 +774,13 @@ Cache-Control: private, max-age=300
 **Description:** Verify users can't see each other's lists
 
 **Steps:**
+
 1. Create list as User A
 2. Try to fetch lists as User B
 3. Verify User B doesn't see User A's list
 
 **Request (User A):**
+
 ```bash
 $env:ACCESS_TOKEN_A = "USER_A_TOKEN"
 
@@ -751,6 +799,7 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 ```
 
 **Request (User B):**
+
 ```bash
 $env:ACCESS_TOKEN_B = "USER_B_TOKEN"
 
@@ -760,6 +809,7 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 ```
 
 **Expected Result:**
+
 - User A sees "User A List"
 - User B does NOT see "User A List"
 - Each user sees only their own lists
@@ -768,33 +818,33 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 
 ## 📊 Test Results Template
 
-**Date:** _______________
-**Tester:** _______________
+**Date:** ******\_\_\_******
+**Tester:** ******\_\_\_******
 **Environment:** Local / Staging / Production
 
-| Test Case | Status | Response Time | Notes |
-|-----------|--------|---------------|-------|
-| TC1: POST - Full Data | ⏳ | | |
-| TC2: POST - Minimal Data | ⏳ | | |
-| TC3: POST - From Recipes | ⏳ | | |
-| TC4: POST - Empty Items | ⏳ | | |
-| TC5: POST - Invalid Category | ⏳ | | |
-| TC6: POST - Name Too Long | ⏳ | | |
-| TC7: POST - Invalid Date | ⏳ | | |
-| TC8: POST - Too Many Items | ⏳ | | |
-| TC9: POST - Negative Quantity | ⏳ | | |
-| TC10: POST - No Token | ⏳ | | |
-| TC11: POST - 100 Items | ⏳ | | |
-| TC12: GET - Default Pagination | ⏳ | | |
-| TC13: GET - Custom Pagination | ⏳ | | |
-| TC14: GET - Page 2 | ⏳ | | |
-| TC15: GET - Empty Result | ⏳ | | |
-| TC16: GET - Invalid Page | ⏳ | | |
-| TC17: GET - Limit Too High | ⏳ | | |
-| TC18: GET - Invalid Limit | ⏳ | | |
-| TC19: GET - No Token | ⏳ | | |
-| TC20: GET - Cache Headers | ⏳ | | |
-| TC21: Security - User Isolation | ⏳ | | |
+| Test Case                       | Status | Response Time | Notes |
+| ------------------------------- | ------ | ------------- | ----- |
+| TC1: POST - Full Data           | ⏳     |               |       |
+| TC2: POST - Minimal Data        | ⏳     |               |       |
+| TC3: POST - From Recipes        | ⏳     |               |       |
+| TC4: POST - Empty Items         | ⏳     |               |       |
+| TC5: POST - Invalid Category    | ⏳     |               |       |
+| TC6: POST - Name Too Long       | ⏳     |               |       |
+| TC7: POST - Invalid Date        | ⏳     |               |       |
+| TC8: POST - Too Many Items      | ⏳     |               |       |
+| TC9: POST - Negative Quantity   | ⏳     |               |       |
+| TC10: POST - No Token           | ⏳     |               |       |
+| TC11: POST - 100 Items          | ⏳     |               |       |
+| TC12: GET - Default Pagination  | ⏳     |               |       |
+| TC13: GET - Custom Pagination   | ⏳     |               |       |
+| TC14: GET - Page 2              | ⏳     |               |       |
+| TC15: GET - Empty Result        | ⏳     |               |       |
+| TC16: GET - Invalid Page        | ⏳     |               |       |
+| TC17: GET - Limit Too High      | ⏳     |               |       |
+| TC18: GET - Invalid Limit       | ⏳     |               |       |
+| TC19: GET - No Token            | ⏳     |               |       |
+| TC20: GET - Cache Headers       | ⏳     |               |       |
+| TC21: Security - User Isolation | ⏳     |               |       |
 
 **Legend:** ✅ Pass | ❌ Fail | ⏳ Not Tested | ⚠️ Warning
 
@@ -803,6 +853,7 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 ## 🎯 Quick Test Script (All Success Cases)
 
 **PowerShell:**
+
 ```powershell
 # Set your access token
 $env:ACCESS_TOKEN = "YOUR_TOKEN_HERE"
@@ -836,6 +887,7 @@ Write-Host "`n=== Tests completed ===" -ForegroundColor Cyan
 ### Problem: "401 Unauthorized" nawet z tokenem
 
 **Solution:**
+
 1. Check if token is expired (tokens expire after some time)
 2. Get fresh token from browser console
 3. Verify token format: `Bearer <token>` (nie `<token>`)
@@ -843,12 +895,14 @@ Write-Host "`n=== Tests completed ===" -ForegroundColor Cyan
 ### Problem: "CORS error" w przeglądarce
 
 **Solution:**
+
 - Use curl/Postman instead of browser fetch
 - Or add CORS headers in middleware (not recommended for production)
 
 ### Problem: "Connection refused"
 
 **Solution:**
+
 1. Check if dev server is running: `npm run dev`
 2. Verify correct port (3000 or 3001)
 3. Check firewall settings
@@ -856,6 +910,7 @@ Write-Host "`n=== Tests completed ===" -ForegroundColor Cyan
 ### Problem: Response is empty or malformed
 
 **Solution:**
+
 1. Check Content-Type header is set to `application/json`
 2. Verify JSON syntax (use JSON validator)
 3. Check server logs for errors

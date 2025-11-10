@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `DELETE`
    **Path:** `/api/recipes/:id`
    **Description:** Delete recipe, ingredients, and meal plan assignments (CASCADE)

@@ -5,12 +5,14 @@
 Ten endpoint umożliwia użytkownikowi usunięcie zapisanej listy zakupów wraz z wszystkimi powiązanymi pozycjami. Jest to operacja destrukcyjna i nieodwracalna.
 
 **Kluczowe funkcjonalności:**
+
 - Usunięcie listy zakupów należącej do zalogowanego użytkownika
 - Automatyczne usunięcie wszystkich powiązanych pozycji (CASCADE)
 - Walidacja własności listy przed usunięciem
 - Zabezpieczenie przed nieautoryzowanym dostępem
 
 **Użycie:**
+
 - Usuwanie niepotrzebnych list zakupów
 - Czyszczenie historycznych list
 - Zarządzanie przestrzenią użytkownika
@@ -18,9 +20,11 @@ Ten endpoint umożliwia użytkownikowi usunięcie zapisanej listy zakupów wraz 
 ## 2. Szczegóły żądania
 
 ### Metoda HTTP
+
 `DELETE`
 
 ### Struktura URL
+
 ```
 /api/shopping-lists/:id
 ```
@@ -28,25 +32,30 @@ Ten endpoint umożliwia użytkownikowi usunięcie zapisanej listy zakupów wraz 
 ### Parametry
 
 #### Wymagane (Path Parameters)
+
 - **`id`** (string, UUID)
   - Identyfikator listy zakupów do usunięcia
   - Format: UUID v4 (np. `550e8400-e29b-41d4-a716-446655440000`)
   - Walidacja: Zod UUID schema
 
 #### Wymagane (Authentication)
+
 - **Supabase Session Cookie**
   - Automatycznie przekazywane przez middleware
   - Dostępne przez `context.locals.supabase`
 
 ### Request Body
+
 Brak (DELETE nie wymaga body)
 
 ### Request Headers
+
 ```
 Cookie: sb-access-token=...; sb-refresh-token=...
 ```
 
 ### Przykładowe żądanie
+
 ```http
 DELETE /api/shopping-lists/550e8400-e29b-41d4-a716-446655440000 HTTP/1.1
 Host: shopmate.app
@@ -80,7 +89,7 @@ import { z } from "zod";
 
 // Path parameter validation
 const deleteShoppingListParamsSchema = z.object({
-  id: z.string().uuid({ message: "Invalid shopping list ID format" })
+  id: z.string().uuid({ message: "Invalid shopping list ID format" }),
 });
 ```
 
@@ -99,7 +108,9 @@ const deleteShoppingListParamsSchema = z.object({
 ### Błędy
 
 #### 400 Bad Request
+
 Nieprawidłowy format UUID
+
 ```json
 {
   "error": "Validation error",
@@ -108,7 +119,9 @@ Nieprawidłowy format UUID
 ```
 
 #### 401 Unauthorized
+
 Użytkownik nie jest zalogowany
+
 ```json
 {
   "error": "Unauthorized",
@@ -117,7 +130,9 @@ Użytkownik nie jest zalogowany
 ```
 
 #### 404 Not Found
+
 Lista nie istnieje lub nie należy do użytkownika
+
 ```json
 {
   "error": "Not found",
@@ -126,7 +141,9 @@ Lista nie istnieje lub nie należy do użytkownika
 ```
 
 #### 500 Internal Server Error
+
 Błąd serwera
+
 ```json
 {
   "error": "Internal server error",
@@ -198,6 +215,7 @@ Błąd serwera
 ### Interakcje z bazą danych
 
 **1. Weryfikacja własności (SELECT):**
+
 ```sql
 SELECT id, user_id
 FROM shopping_lists
@@ -206,6 +224,7 @@ LIMIT 1;
 ```
 
 **2. Usunięcie listy (DELETE):**
+
 ```sql
 DELETE FROM shopping_lists
 WHERE id = $1 AND user_id = $2
@@ -217,6 +236,7 @@ RETURNING id;
 ### RLS (Row Level Security)
 
 Supabase RLS policy powinna zezwalać na DELETE tylko dla `user_id = auth.uid()`:
+
 ```sql
 CREATE POLICY "Users can delete own shopping lists"
 ON shopping_lists FOR DELETE
@@ -226,29 +246,35 @@ USING (auth.uid() = user_id);
 ## 6. Względy bezpieczeństwa
 
 ### Uwierzytelnienie (Authentication)
+
 - **Sprawdzenie sesji:** Wywołanie `supabase.auth.getUser()` na początku endpointa
 - **Guard clause:** Early return z 401 jeśli użytkownik nie jest zalogowany
 - **Error message:** Generic message bez ujawniania szczegółów systemu
 
 ### Autoryzacja (Authorization)
+
 - **Ownership verification:** Sprawdzenie `shopping_lists.user_id === authenticated_user.id`
 - **IDOR prevention:** Użytkownik nie może usunąć list innych użytkowników
 - **Double check:** Zarówno w kodzie aplikacji jak i przez RLS w Supabase
 
 ### Walidacja danych wejściowych
+
 - **UUID validation:** Zod schema dla path parameter
 - **Type safety:** TypeScript zapewnia type checking
 - **SQL Injection protection:** Supabase ORM używa prepared statements
 
 ### Security obscurity
+
 - **404 dla unauthorized:** Nie ujawniać czy lista istnieje jeśli użytkownik nie jest właścicielem
 - **Generic error messages:** Unikać szczegółowych informacji w error responses dla użytkowników
 
 ### Rate Limiting
+
 - **Supabase default:** 100 requests/minute (konfigurowane w Supabase dashboard)
 - **Recommendation:** Rozważyć dodatkowy rate limiting dla DELETE operations w przyszłości
 
 ### Audit Trail (opcjonalnie - poza MVP)
+
 - Obecnie brak logowania usunięć do audit table
 - W przyszłości można dodać trigger do logowania DELETE operations
 
@@ -264,7 +290,7 @@ if (!validation.success) {
   return new Response(
     JSON.stringify({
       error: "Validation error",
-      message: "Invalid shopping list ID format"
+      message: "Invalid shopping list ID format",
     }),
     { status: 400, headers: { "Content-Type": "application/json" } }
   );
@@ -276,13 +302,16 @@ if (!validation.success) {
 **Scenariusz:** Użytkownik nie jest zalogowany
 
 ```typescript
-const { data: { user }, error: authError } = await supabase.auth.getUser();
+const {
+  data: { user },
+  error: authError,
+} = await supabase.auth.getUser();
 
 if (authError || !user) {
   return new Response(
     JSON.stringify({
       error: "Unauthorized",
-      message: "You must be logged in to delete shopping lists"
+      message: "You must be logged in to delete shopping lists",
     }),
     { status: 401, headers: { "Content-Type": "application/json" } }
   );
@@ -302,7 +331,7 @@ if (!deleted) {
   return new Response(
     JSON.stringify({
       error: "Not found",
-      message: "Shopping list not found"
+      message: "Shopping list not found",
     }),
     { status: 404, headers: { "Content-Type": "application/json" } }
   );
@@ -312,6 +341,7 @@ if (!deleted) {
 ### Błędy serwera (500 Internal Server Error)
 
 **Scenariusze:**
+
 - Błąd połączenia z bazą danych
 - Nieoczekiwany błąd w service layer
 - Błąd Supabase
@@ -325,7 +355,7 @@ try {
   return new Response(
     JSON.stringify({
       error: "Internal server error",
-      message: "An unexpected error occurred"
+      message: "An unexpected error occurred",
     }),
     { status: 500, headers: { "Content-Type": "application/json" } }
   );
@@ -335,22 +365,24 @@ try {
 ### Error Logging
 
 **Development:**
+
 ```typescript
 console.error("Error deleting shopping list:", {
   listId,
   userId: user.id,
   error: error.message,
-  stack: error.stack
+  stack: error.stack,
 });
 ```
 
 **Production (z Sentry):**
+
 ```typescript
 import * as Sentry from "@sentry/node";
 
 Sentry.captureException(error, {
   tags: { endpoint: "DELETE /api/shopping-lists/:id" },
-  extra: { listId, userId: user.id }
+  extra: { listId, userId: user.id },
 });
 ```
 
@@ -359,32 +391,38 @@ Sentry.captureException(error, {
 ### Optymalizacje bazy danych
 
 **Indeksy (już istniejące):**
+
 - Primary key na `shopping_lists.id` (automatyczny index)
 - Index na `shopping_lists.user_id` (dla filtrowania RLS)
 - Foreign key z CASCADE na `shopping_list_items.shopping_list_id`
 
 **Query performance:**
+
 - DELETE jest fast (single row operation)
 - CASCADE delete może być wolniejszy dla list z wieloma items (100+ items)
 - Dla MVP: akceptowalne (max 100 items per list)
 
 ### Connection pooling
+
 - Supabase używa PgBouncer (connection pooling) automatycznie
 - Brak konieczności konfiguracji dla MVP
 
 ### Potencjalne wąskie gardła
 
 **1. CASCADE delete dla dużych list:**
+
 - Problem: Lista z 100 items = 101 DELETE operations
 - Mitigation: PostgreSQL optymalizuje CASCADE delete
 - MVP: Akceptowalne (limit 100 items)
 
 **2. RLS policy evaluation:**
+
 - Problem: RLS dodaje overhead (~10-30ms per query)
 - Mitigation: Proper indexing na user_id
 - MVP: Akceptowalne
 
 **3. Supabase rate limits:**
+
 - Free tier: 50 requests/second
 - Pro tier: 200 requests/second
 - MVP: Sufficient (delete operations są rzadkie)
@@ -392,11 +430,13 @@ Sentry.captureException(error, {
 ### Monitoring
 
 **Metryki do monitorowania:**
+
 - Delete operation duration (target: <500ms)
 - Error rate (target: <1%)
 - 404 rate (może wskazywać na problemy z UI/routing)
 
 **Tools:**
+
 - Sentry dla error tracking
 - Supabase dashboard dla database metrics
 - Vercel Analytics dla endpoint performance
@@ -408,14 +448,11 @@ Sentry.captureException(error, {
 **Lokalizacja:** `src/lib/services/shopping-list.service.ts`
 
 **Zadania:**
+
 1. Sprawdzić czy plik istnieje, jeśli nie - utworzyć
 2. Dodać funkcję `deleteShoppingList()`:
    ```typescript
-   export async function deleteShoppingList(
-     supabase: SupabaseClient,
-     listId: string,
-     userId: string
-   ): Promise<boolean>
+   export async function deleteShoppingList(supabase: SupabaseClient, listId: string, userId: string): Promise<boolean>;
    ```
 3. Implementacja:
    - SELECT dla weryfikacji ownership
@@ -428,10 +465,11 @@ Sentry.captureException(error, {
 **Lokalizacja:** W pliku endpointa lub w `src/lib/validation/shopping-list.schema.ts`
 
 **Zadania:**
+
 1. Zdefiniować schema:
    ```typescript
    const deleteShoppingListParamsSchema = z.object({
-     id: z.string().uuid({ message: "Invalid shopping list ID format" })
+     id: z.string().uuid({ message: "Invalid shopping list ID format" }),
    });
    ```
 2. Export schema jeśli w osobnym pliku
@@ -441,6 +479,7 @@ Sentry.captureException(error, {
 **Lokalizacja:** `src/pages/api/shopping-lists/[id].ts`
 
 **Zadania:**
+
 1. Utworzyć plik z dynamic route `[id].ts`
 2. Dodać `export const prerender = false;`
 3. Zaimportować dependencies:
@@ -465,7 +504,10 @@ Sentry.captureException(error, {
    ```
 3. Autoryzacja:
    ```typescript
-   const { data: { user }, error } = await context.locals.supabase.auth.getUser();
+   const {
+     data: { user },
+     error,
+   } = await context.locals.supabase.auth.getUser();
    if (error || !user) {
      // Return 401
    }
@@ -477,11 +519,7 @@ Sentry.captureException(error, {
 
 1. Call service:
    ```typescript
-   const deleted = await deleteShoppingList(
-     context.locals.supabase,
-     validation.data.id,
-     user.id
-   );
+   const deleted = await deleteShoppingList(context.locals.supabase, validation.data.id, user.id);
    ```
 2. Handle result:
    - `deleted === true` → Return 200
@@ -491,14 +529,15 @@ Sentry.captureException(error, {
 ### Krok 6: Implementacja responses
 
 **Success response (200):**
+
 ```typescript
 const response: DeleteShoppingListResponseDto = {
-  message: "Shopping list deleted successfully"
+  message: "Shopping list deleted successfully",
 };
 
 return new Response(JSON.stringify(response), {
   status: 200,
-  headers: { "Content-Type": "application/json" }
+  headers: { "Content-Type": "application/json" },
 });
 ```
 
@@ -512,7 +551,7 @@ return new Response(JSON.stringify(response), {
    console.error("Error deleting shopping list:", {
      listId: validation.data.id,
      userId: user.id,
-     error
+     error,
    });
    ```
 3. Return generic 500 error
@@ -520,6 +559,7 @@ return new Response(JSON.stringify(response), {
 ### Krok 8: Testowanie
 
 **Manual testing:**
+
 1. Test sukcesu:
    - Zaloguj się jako user A
    - Utwórz listę zakupów
@@ -553,12 +593,14 @@ return new Response(JSON.stringify(response), {
    - Verify items również usunięte
 
 **Automated testing (opcjonalnie):**
+
 - Vitest lub Jest dla unit tests service layer
 - Playwright dla E2E tests
 
 ### Krok 9: Code review
 
 **Checklist:**
+
 - [ ] Walidacja UUID działa poprawnie
 - [ ] Authorization check na początku funkcji
 - [ ] Ownership verification w service
@@ -613,11 +655,7 @@ import type { SupabaseClient } from "@/db/supabase.client";
  * @returns true jeśli usunięto, false jeśli nie znaleziono
  * @throws Error jeśli błąd bazy danych
  */
-export async function deleteShoppingList(
-  supabase: SupabaseClient,
-  listId: string,
-  userId: string
-): Promise<boolean> {
+export async function deleteShoppingList(supabase: SupabaseClient, listId: string, userId: string): Promise<boolean> {
   // Weryfikacja własności i usunięcie w jednym zapytaniu
   const { data, error } = await supabase
     .from("shopping_lists")
@@ -654,86 +692,84 @@ import type { DeleteShoppingListResponseDto, ErrorResponseDto } from "@/types";
 export const prerender = false;
 
 const deleteShoppingListParamsSchema = z.object({
-  id: z.string().uuid({ message: "Invalid shopping list ID format" })
+  id: z.string().uuid({ message: "Invalid shopping list ID format" }),
 });
 
 export const DELETE: APIRoute = async (context) => {
   try {
     // 1. Walidacja path parameter
     const validation = deleteShoppingListParamsSchema.safeParse({
-      id: context.params.id
+      id: context.params.id,
     });
 
     if (!validation.success) {
       const errorResponse: ErrorResponseDto = {
         error: "Validation error",
-        message: "Invalid shopping list ID format"
+        message: "Invalid shopping list ID format",
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // 2. Autoryzacja
-    const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await context.locals.supabase.auth.getUser();
 
     if (authError || !user) {
       const errorResponse: ErrorResponseDto = {
         error: "Unauthorized",
-        message: "You must be logged in to delete shopping lists"
+        message: "You must be logged in to delete shopping lists",
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 401,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // 3. Usunięcie listy (service layer)
-    const deleted = await deleteShoppingList(
-      context.locals.supabase,
-      validation.data.id,
-      user.id
-    );
+    const deleted = await deleteShoppingList(context.locals.supabase, validation.data.id, user.id);
 
     // 4. Handle not found
     if (!deleted) {
       const errorResponse: ErrorResponseDto = {
         error: "Not found",
-        message: "Shopping list not found"
+        message: "Shopping list not found",
       };
       return new Response(JSON.stringify(errorResponse), {
         status: 404,
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
     // 5. Success response
     const successResponse: DeleteShoppingListResponseDto = {
-      message: "Shopping list deleted successfully"
+      message: "Shopping list deleted successfully",
     };
 
     return new Response(JSON.stringify(successResponse), {
       status: 200,
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
-
   } catch (error) {
     // Error logging
     console.error("Error deleting shopping list:", {
       listId: context.params.id,
-      error: error instanceof Error ? error.message : "Unknown error"
+      error: error instanceof Error ? error.message : "Unknown error",
     });
 
     // Generic error response
     const errorResponse: ErrorResponseDto = {
       error: "Internal server error",
-      message: "An unexpected error occurred"
+      message: "An unexpected error occurred",
     };
 
     return new Response(JSON.stringify(errorResponse), {
       status: 500,
-      headers: { "Content-Type": "application/json" }
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

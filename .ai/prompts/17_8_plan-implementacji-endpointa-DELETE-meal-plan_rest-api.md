@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `DELETE`
    **Path:** `/api/meal-plan/:id`
    **Description:** Remove recipe from calendar (does NOT delete recipe itself)
@@ -27,6 +27,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 2. Related database resources:
    <related_db_resources>
+
 ### Tabela: `meal_plan`
 
 **Opis:** Kalendarz tygodniowy - przypisania przepisów do dni i posiłków
@@ -47,7 +48,6 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - CASCADE DELETE przy usunięciu przepisu (FR-005)
 - Brak `updated_at` - przypisania są tylko dodawane/usuwane, nie edytowane
 - `week_start_date` przechowuje zawsze poniedziałek, `day_of_week` określa przesunięcie
-
 
 </related_db_resources>
 

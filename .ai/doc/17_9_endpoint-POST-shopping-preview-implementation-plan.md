@@ -8,6 +8,7 @@ Endpoint generuje podgląd listy zakupów z zagregowanymi składnikami i kategor
 - **Mode 2 (Recipes)**: Generuje listę na podstawie bezpośrednio wybranych przepisów
 
 **Główne funkcje:**
+
 - Pobieranie składników z przepisów (z kalendarza lub bezpośrednio)
 - Normalizacja nazw składników (trim, lowercase dla porównań)
 - Agregacja identycznych składników (grupowanie po nazwie + jednostce, sumowanie ilości)
@@ -17,6 +18,7 @@ Endpoint generuje podgląd listy zakupów z zagregowanymi składnikami i kategor
 - Zwrócenie podglądu z metadanymi (liczba przepisów, składników, status AI)
 
 **Business value:**
+
 - Użytkownik może zobaczyć podgląd przed zapisaniem
 - Pozwala na weryfikację i ewentualną korektę w UI przed utworzeniem listy
 - Optymalizacja kosztów AI - kategoryzacja tylko podczas podglądu, nie przy każdej edycji
@@ -26,11 +28,13 @@ Endpoint generuje podgląd listy zakupów z zagregowanymi składnikami i kategor
 ## 2. Szczegóły żądania
 
 ### HTTP Method & Path
+
 ```
 POST /api/shopping-lists/preview
 ```
 
 ### Headers
+
 ```
 Authorization: Bearer <supabase_jwt_token>
 Content-Type: application/json
@@ -39,6 +43,7 @@ Content-Type: application/json
 ### Request Body
 
 **Mode 1: From Calendar**
+
 ```typescript
 {
   source: "calendar",
@@ -53,6 +58,7 @@ Content-Type: application/json
 ```
 
 **Mode 2: From Recipes**
+
 ```typescript
 {
   source: "recipes",
@@ -63,18 +69,22 @@ Content-Type: application/json
 ### Parametry żądania
 
 **Wymagane (wspólne):**
+
 - `source`: String literal "calendar" lub "recipes"
 
 **Wymagane dla Mode 1 (Calendar):**
+
 - `week_start_date`: String w formacie YYYY-MM-DD, musi być poniedziałkiem
 - `selections`: Array obiektów CalendarSelectionDto (minimum 1 element)
   - `day_of_week`: Integer 1-7
   - `meal_types`: Array niepustych MealType (minimum 1 element)
 
 **Wymagane dla Mode 2 (Recipes):**
+
 - `recipe_ids`: Array UUID strings (minimum 1 element, maksimum 20)
 
 ### Przykład żądania (Calendar)
+
 ```json
 {
   "source": "calendar",
@@ -93,13 +103,11 @@ Content-Type: application/json
 ```
 
 ### Przykład żądania (Recipes)
+
 ```json
 {
   "source": "recipes",
-  "recipe_ids": [
-    "550e8400-e29b-41d4-a716-446655440000",
-    "550e8400-e29b-41d4-a716-446655440001"
-  ]
+  "recipe_ids": ["550e8400-e29b-41d4-a716-446655440000", "550e8400-e29b-41d4-a716-446655440001"]
 }
 ```
 
@@ -110,6 +118,7 @@ Content-Type: application/json
 ### DTOs (już zdefiniowane w src/types.ts)
 
 **Request DTOs:**
+
 ```typescript
 // Union type dla obu trybów
 export type ShoppingListPreviewRequestDto =
@@ -136,6 +145,7 @@ export interface ShoppingListPreviewRecipesRequestDto {
 ```
 
 **Response DTOs:**
+
 ```typescript
 export interface ShoppingListPreviewResponseDto {
   items: ShoppingListItemPreviewDto[];
@@ -162,22 +172,24 @@ export interface ShoppingListPreviewMetadataDto {
 ```
 
 **Helper Types:**
+
 ```typescript
 export type MealType = "breakfast" | "second_breakfast" | "lunch" | "dinner";
 
 export type IngredientCategory =
-  | "Nabiał"    // Dairy
-  | "Warzywa"   // Vegetables
-  | "Owoce"     // Fruits
-  | "Mięso"     // Meat/Fish
-  | "Pieczywo"  // Bread/Pasta
+  | "Nabiał" // Dairy
+  | "Warzywa" // Vegetables
+  | "Owoce" // Fruits
+  | "Mięso" // Meat/Fish
+  | "Pieczywo" // Bread/Pasta
   | "Przyprawy" // Spices
-  | "Inne";     // Other (fallback)
+  | "Inne"; // Other (fallback)
 ```
 
 ### Typy wewnętrzne (do utworzenia w serwisie)
 
 **Intermediate types (używane podczas przetwarzania):**
+
 ```typescript
 // Składnik przed agregacją
 interface RawIngredient {
@@ -190,12 +202,12 @@ interface RawIngredient {
 // Klucz agregacji
 interface AggregationKey {
   normalizedName: string; // lowercase, trimmed
-  unit: string | null;    // null traktowane jako osobna grupa
+  unit: string | null; // null traktowane jako osobna grupa
 }
 
 // Zagregowany składnik (przed kategoryzacją)
 interface AggregatedIngredient {
-  originalName: string;   // Oryginalna forma (case preserved)
+  originalName: string; // Oryginalna forma (case preserved)
   normalizedName: string; // Do porównań
   quantity: number | null;
   unit: string | null;
@@ -216,11 +228,13 @@ interface CategorizationResult {
 ### Success Response (200 OK)
 
 **Headers:**
+
 ```
 Content-Type: application/json
 ```
 
 **Body:**
+
 ```typescript
 {
   items: ShoppingListItemPreviewDto[],
@@ -229,6 +243,7 @@ Content-Type: application/json
 ```
 
 **Przykład odpowiedzi (sukces AI):**
+
 ```json
 {
   "items": [
@@ -296,6 +311,7 @@ Content-Type: application/json
 ### Partial Success Response (200 OK, AI failed)
 
 W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 200 OK z:
+
 - Wszystkimi składnikami w kategorii "Inne"
 - metadata.ai_categorization_status = "failed"
 - metadata.ai_error z opisem błędu
@@ -326,6 +342,7 @@ W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 
 ### Error Responses
 
 **400 Bad Request - Validation Error**
+
 ```json
 {
   "error": "Validation failed",
@@ -337,6 +354,7 @@ W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 
 ```
 
 **400 Bad Request - No Recipes Selected**
+
 ```json
 {
   "error": "No recipes selected or all selected meals are empty"
@@ -344,6 +362,7 @@ W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 
 ```
 
 **401 Unauthorized - Not Authenticated**
+
 ```json
 {
   "error": "Unauthorized"
@@ -351,6 +370,7 @@ W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 
 ```
 
 **500 Internal Server Error**
+
 ```json
 {
   "error": "Internal server error",
@@ -360,14 +380,14 @@ W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 
 
 ### Status Codes
 
-| Code | Scenario | Response Body |
-|------|----------|---------------|
-| 200 | Success (AI worked) | Full response z kategoriami |
-| 200 | Partial success (AI failed) | Response z category="Inne", metadata.ai_categorization_status="failed" |
-| 400 | Invalid input | Validation error details |
-| 400 | No recipes found | Error message |
-| 401 | Not authenticated | Error message |
-| 500 | Unexpected error | Generic error message |
+| Code | Scenario                    | Response Body                                                          |
+| ---- | --------------------------- | ---------------------------------------------------------------------- |
+| 200  | Success (AI worked)         | Full response z kategoriami                                            |
+| 200  | Partial success (AI failed) | Response z category="Inne", metadata.ai_categorization_status="failed" |
+| 400  | Invalid input               | Validation error details                                               |
+| 400  | No recipes found            | Error message                                                          |
+| 401  | Not authenticated           | Error message                                                          |
+| 500  | Unexpected error            | Generic error message                                                  |
 
 ---
 
@@ -462,17 +482,22 @@ W przypadku niepowodzenia AI, endpoint **nie zwraca błędu 422**, tylko zwraca 
 ### Detailed Steps
 
 #### Step 1: Authentication Check
+
 ```typescript
-const { data: { user }, error } = await supabase.auth.getUser();
+const {
+  data: { user },
+  error,
+} = await supabase.auth.getUser();
 if (error || !user) {
   return new Response(JSON.stringify({ error: "Unauthorized" }), {
     status: 401,
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
   });
 }
 ```
 
 #### Step 2: Input Validation
+
 ```typescript
 // Zod schema (utworzyć w src/lib/validation/shopping-list.schema.ts)
 const validation = shoppingListPreviewRequestSchema.safeParse(await request.json());
@@ -480,7 +505,7 @@ if (!validation.success) {
   return new Response(
     JSON.stringify({
       error: "Validation failed",
-      details: validation.error.flatten().fieldErrors
+      details: validation.error.flatten().fieldErrors,
     }),
     { status: 400, headers: { "Content-Type": "application/json" } }
   );
@@ -490,6 +515,7 @@ if (!validation.success) {
 #### Step 3: Fetch Ingredients (Mode-dependent)
 
 **Mode 1: Calendar**
+
 ```typescript
 // Pseudocode
 const recipeIds = await fetchRecipeIdsFromMealPlan(
@@ -506,6 +532,7 @@ const ingredients = await fetchIngredientsByRecipeIds(recipeIds);
 ```
 
 **Mode 2: Recipes**
+
 ```typescript
 // Weryfikacja że recipe_ids należą do użytkownika (RLS)
 const ingredients = await fetchIngredientsByRecipeIds(recipe_ids);
@@ -516,6 +543,7 @@ if (ingredients.length === 0) {
 ```
 
 #### Step 4-5: Normalization & Aggregation
+
 ```typescript
 // Service method: aggregateIngredients()
 const aggregated = aggregateIngredients(rawIngredients);
@@ -523,21 +551,19 @@ const aggregated = aggregateIngredients(rawIngredients);
 ```
 
 #### Step 6: AI Categorization
+
 ```typescript
 // Service method: categorizeIngredientsWithRetry()
-const categorizationResult = await categorizeIngredientsWithRetry(
-  aggregated.map(i => i.normalizedName)
-);
+const categorizationResult = await categorizeIngredientsWithRetry(aggregated.map((i) => i.normalizedName));
 
 // If failed: all items get category "Inne"
 // Metadata includes: ai_categorization_status, ai_error
 ```
 
 #### Step 7-8: Sort & Build Response
+
 ```typescript
-const sortedItems = sortIngredientsByCategory(
-  mergeCategories(aggregated, categorizationResult)
-);
+const sortedItems = sortIngredientsByCategory(mergeCategories(aggregated, categorizationResult));
 
 const metadata = buildMetadata(/* ... */);
 
@@ -547,6 +573,7 @@ return { items: sortedItems, metadata };
 ### Database Queries
 
 **Query 1: Fetch recipe IDs from meal plan (Calendar mode)**
+
 ```sql
 SELECT DISTINCT recipe_id
 FROM meal_plan
@@ -559,6 +586,7 @@ WHERE user_id = $1
 ```
 
 **Query 2: Fetch ingredients by recipe IDs**
+
 ```sql
 SELECT
   i.name,
@@ -573,6 +601,7 @@ ORDER BY i.recipe_id, i.sort_order;
 ```
 
 **Query 3: Count recipes (for metadata)**
+
 ```sql
 SELECT COUNT(DISTINCT recipe_id) FROM <subset>
 ```
@@ -580,6 +609,7 @@ SELECT COUNT(DISTINCT recipe_id) FROM <subset>
 ### External API Calls
 
 **OpenAI API (via categorizeIngredientsWithRetry)**
+
 ```typescript
 // Request
 POST https://api.openai.com/v1/chat/completions
@@ -622,13 +652,16 @@ POST https://api.openai.com/v1/chat/completions
 ## 6. Względy bezpieczeństwa
 
 ### Authentication
+
 - **Wymagane**: Użytkownik musi być zalogowany (JWT token w Authorization header)
 - **Implementacja**: Middleware Astro sprawdza `supabase.auth.getUser()`
 - **Failure**: 401 Unauthorized jeśli token nieważny lub wygasł
 
 ### Authorization (RLS)
+
 - **Row Level Security**: Zapewnia że użytkownik widzi tylko własne przepisy
 - **Implementacja**: RLS policies na tabelach `recipes`, `meal_plan`, `ingredients`
+
   ```sql
   -- Policy na recipes
   CREATE POLICY "Users can view own recipes"
@@ -646,37 +679,41 @@ POST https://api.openai.com/v1/chat/completions
     )
   );
   ```
+
 - **Defense**: Nawet jeśli użytkownik spróbuje wysłać cudzę recipe_ids, RLS zwróci 0 wyników
 
 ### Input Validation & Sanitization
 
 **Zod Schema (src/lib/validation/shopping-list.schema.ts)**
+
 ```typescript
 const calendarSelectionSchema = z.object({
   day_of_week: z.number().int().min(1).max(7),
-  meal_types: z.array(z.enum(["breakfast", "second_breakfast", "lunch", "dinner"]))
+  meal_types: z
+    .array(z.enum(["breakfast", "second_breakfast", "lunch", "dinner"]))
     .min(1)
-    .max(4)
+    .max(4),
 });
 
 const shoppingListPreviewCalendarRequestSchema = z.object({
   source: z.literal("calendar"),
   week_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format"),
-  selections: z.array(calendarSelectionSchema).min(1).max(28) // 7 days × 4 meals
+  selections: z.array(calendarSelectionSchema).min(1).max(28), // 7 days × 4 meals
 });
 
 const shoppingListPreviewRecipesRequestSchema = z.object({
   source: z.literal("recipes"),
-  recipe_ids: z.array(z.string().uuid()).min(1).max(20)
+  recipe_ids: z.array(z.string().uuid()).min(1).max(20),
 });
 
 export const shoppingListPreviewRequestSchema = z.discriminatedUnion("source", [
   shoppingListPreviewCalendarRequestSchema,
-  shoppingListPreviewRecipesRequestSchema
+  shoppingListPreviewRecipesRequestSchema,
 ]);
 ```
 
 **Sanitization:**
+
 - Trim whitespace z ingredient names
 - Lowercase dla normalizacji (tylko do agregacji, oryginał zachowany)
 - Prevent SQL injection: używamy parametryzowanych zapytań Supabase
@@ -685,6 +722,7 @@ export const shoppingListPreviewRequestSchema = z.discriminatedUnion("source", [
 ### Rate Limiting
 
 **OpenAI API:**
+
 - Implementacja w ai-categorization.service.ts
 - Max 100 składników per request (walidacja w serwisie)
 - Timeout 10s per attempt
@@ -692,12 +730,14 @@ export const shoppingListPreviewRequestSchema = z.discriminatedUnion("source", [
 - Fallback do "Inne" chroni przed total failure
 
 **Application-level (future):**
+
 - Rozważyć rate limiting na endpoint (np. 10 requests/min per user)
 - Implementacja przez Vercel Edge Middleware lub Supabase Functions
 
 ### Secrets Management
 
 **Environment Variables:**
+
 ```
 OPENAI_API_KEY=sk-... (NEVER exposed to client)
 SUPABASE_URL=https://...
@@ -706,6 +746,7 @@ SUPABASE_SERVICE_KEY=eyJ... (NEVER exposed to client)
 ```
 
 **Astro configuration:**
+
 - API calls do OpenAI wykonywane server-side (prerender=false)
 - `import.meta.env.OPENAI_API_KEY` dostępne tylko w server context
 - Vercel encrypts env variables
@@ -723,23 +764,24 @@ SUPABASE_SERVICE_KEY=eyJ... (NEVER exposed to client)
 
 ### Error Scenarios
 
-| Scenario | HTTP Status | Response | Handling |
-|----------|-------------|----------|----------|
-| User not authenticated | 401 | `{ error: "Unauthorized" }` | Redirect to login |
-| Invalid JSON body | 400 | `{ error: "Invalid JSON" }` | Return early with error |
-| Validation failure (Zod) | 400 | `{ error: "Validation failed", details: {...} }` | Return validation errors |
-| Invalid source field | 400 | `{ error: "Validation failed", details: { source: [...] } }` | Zod discriminated union |
-| Empty recipe_ids array | 400 | `{ error: "Validation failed", details: { recipe_ids: ["Array must contain at least 1 element"] } }` | Zod min(1) |
-| No recipes found (RLS) | 400 | `{ error: "No recipes selected or all selected meals are empty" }` | Check after DB query |
-| Invalid week_start_date (not Monday) | 400 | `{ error: "Validation failed", details: { week_start_date: ["Must be a Monday"] } }` | Zod custom validation |
-| AI timeout (all retries) | 200 | Response with category="Inne", metadata.ai_categorization_status="failed" | Fallback, log error to Sentry |
-| OpenAI API error (quota, 5xx) | 200 | Same as AI timeout | Fallback, log error |
-| Database connection error | 500 | `{ error: "Internal server error" }` | Log to Sentry, return generic error |
-| Unexpected error | 500 | `{ error: "Internal server error" }` | Catch-all try-catch, log to Sentry |
+| Scenario                             | HTTP Status | Response                                                                                             | Handling                            |
+| ------------------------------------ | ----------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| User not authenticated               | 401         | `{ error: "Unauthorized" }`                                                                          | Redirect to login                   |
+| Invalid JSON body                    | 400         | `{ error: "Invalid JSON" }`                                                                          | Return early with error             |
+| Validation failure (Zod)             | 400         | `{ error: "Validation failed", details: {...} }`                                                     | Return validation errors            |
+| Invalid source field                 | 400         | `{ error: "Validation failed", details: { source: [...] } }`                                         | Zod discriminated union             |
+| Empty recipe_ids array               | 400         | `{ error: "Validation failed", details: { recipe_ids: ["Array must contain at least 1 element"] } }` | Zod min(1)                          |
+| No recipes found (RLS)               | 400         | `{ error: "No recipes selected or all selected meals are empty" }`                                   | Check after DB query                |
+| Invalid week_start_date (not Monday) | 400         | `{ error: "Validation failed", details: { week_start_date: ["Must be a Monday"] } }`                 | Zod custom validation               |
+| AI timeout (all retries)             | 200         | Response with category="Inne", metadata.ai_categorization_status="failed"                            | Fallback, log error to Sentry       |
+| OpenAI API error (quota, 5xx)        | 200         | Same as AI timeout                                                                                   | Fallback, log error                 |
+| Database connection error            | 500         | `{ error: "Internal server error" }`                                                                 | Log to Sentry, return generic error |
+| Unexpected error                     | 500         | `{ error: "Internal server error" }`                                                                 | Catch-all try-catch, log to Sentry  |
 
 ### Error Handling Strategy
 
 **1. Early Returns (Guard Clauses)**
+
 ```typescript
 // Auth check
 if (error || !user) return 401;
@@ -752,6 +794,7 @@ if (recipeIds.length === 0) return 400;
 ```
 
 **2. Try-Catch Blocks**
+
 ```typescript
 export async function POST(context) {
   try {
@@ -764,20 +807,19 @@ export async function POST(context) {
       Sentry.captureException(error);
     }
 
-    return new Response(
-      JSON.stringify({ error: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
 ```
 
 **3. AI Fallback (Graceful Degradation)**
+
 ```typescript
 // w ai-categorization.service.ts
-async function categorizeIngredientsWithRetry(
-  ingredients: string[]
-): Promise<CategorizationResult> {
+async function categorizeIngredientsWithRetry(ingredients: string[]): Promise<CategorizationResult> {
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const result = await callOpenAI(ingredients, { timeout: 10000 });
@@ -791,8 +833,8 @@ async function categorizeIngredientsWithRetry(
       console.error("[AI Categorization] All retries failed:", error);
       return {
         success: false,
-        categories: new Map(ingredients.map(i => [i, "Inne"])),
-        error: error.message
+        categories: new Map(ingredients.map((i) => [i, "Inne"])),
+        error: error.message,
       };
     }
   }
@@ -800,6 +842,7 @@ async function categorizeIngredientsWithRetry(
 ```
 
 **4. User-Friendly Messages**
+
 ```typescript
 // NIE:
 { error: "ECONNREFUSED" }
@@ -812,23 +855,26 @@ async function categorizeIngredientsWithRetry(
 **5. Logging Strategy**
 
 **Console Logs (development):**
+
 ```typescript
 console.log("[Preview] Fetching ingredients for recipes:", recipeIds);
 console.log("[Preview] Aggregated", aggregated.length, "unique ingredients");
 ```
 
 **Sentry (production errors only):**
+
 ```typescript
 // Only log unexpected errors, NOT business logic errors
 if (unexpectedError) {
   Sentry.captureException(error, {
     tags: { endpoint: "POST /api/shopping-lists/preview" },
-    extra: { user_id: user.id, source: requestBody.source }
+    extra: { user_id: user.id, source: requestBody.source },
   });
 }
 ```
 
 **Nie logować:**
+
 - Validation errors (expected)
 - 401 Unauthorized (expected)
 - User-initiated errors (np. no recipes selected)
@@ -842,11 +888,13 @@ if (unexpectedError) {
 **1. Database Queries**
 
 **Bottleneck**: N+1 problem przy pobieraniu ingredients
+
 - **Problem**: Zapytanie dla każdego recipe_id osobno
 - **Solution**: Użyć JOIN lub `recipe_id = ANY($1)` dla batch fetch
 - **Expected latency**: <100ms dla 20 recipes × 50 ingredients
 
 **Optimization**:
+
 ```sql
 -- ✅ GOOD: Single query
 SELECT i.* FROM ingredients i
@@ -857,6 +905,7 @@ SELECT * FROM ingredients WHERE recipe_id = $1; -- × N times
 ```
 
 **Indexes (already exist):**
+
 ```sql
 CREATE INDEX idx_ingredients_recipe_id ON ingredients(recipe_id);
 CREATE INDEX idx_meal_plan_user_week ON meal_plan(user_id, week_start_date);
@@ -865,6 +914,7 @@ CREATE INDEX idx_meal_plan_user_week ON meal_plan(user_id, week_start_date);
 **2. AI Categorization**
 
 **Bottleneck**: OpenAI API call (10s timeout)
+
 - **Expected latency**: 2-5s dla 50 składników
 - **Worst case**: 30s (3 attempts × 10s)
 - **Mitigation**:
@@ -873,6 +923,7 @@ CREATE INDEX idx_meal_plan_user_week ON meal_plan(user_id, week_start_date);
   - Graceful degradation (fallback do "Inne")
 
 **Cost optimization**:
+
 ```typescript
 // ✅ GOOD: 1 API call dla wszystkich składników
 categorizeIngredients(["jajka", "parmesan", "pomidory", ...]); // 1 request
@@ -886,6 +937,7 @@ for (const ingredient of ingredients) {
 **3. Aggregation Logic**
 
 **Complexity**: O(n log n) gdzie n = liczba składników
+
 - **Normalization**: O(n) - trim + lowercase
 - **Grouping**: O(n) - Map lookups
 - **Sorting**: O(n log n) - category order + alphabetical
@@ -894,6 +946,7 @@ for (const ingredient of ingredients) {
 **4. Memory Usage**
 
 **Estimate dla 20 recipes × 50 ingredients = 1000 items:**
+
 - Raw ingredients: ~100 KB (JSON)
 - Aggregated: ~50 KB (deduplicated)
 - OpenAI response: ~20 KB (JSON mapping)
@@ -902,6 +955,7 @@ for (const ingredient of ingredients) {
 **5. Caching (Future Optimization)**
 
 **Not implemented in MVP, but consider for scale:**
+
 ```typescript
 // Redis cache dla common ingredients
 const categoryCache = await redis.get(`ingredient:category:${normalizedName}`);
@@ -917,17 +971,18 @@ await redis.setex(`ingredient:category:${normalizedName}`, 604800, category);
 
 ### Performance Targets (MVP)
 
-| Metric | Target | Notes |
-|--------|--------|-------|
-| **p50 latency** | <3s | Typical case (AI success, ~20 items) |
-| **p95 latency** | <8s | AI retry scenario |
-| **p99 latency** | <30s | Worst case (3 AI retries) |
-| **Throughput** | 10 req/s | Limited by OpenAI API rate limits |
-| **Concurrent users** | 100 | Supabase free tier: 50 req/s |
+| Metric               | Target   | Notes                                |
+| -------------------- | -------- | ------------------------------------ |
+| **p50 latency**      | <3s      | Typical case (AI success, ~20 items) |
+| **p95 latency**      | <8s      | AI retry scenario                    |
+| **p99 latency**      | <30s     | Worst case (3 AI retries)            |
+| **Throughput**       | 10 req/s | Limited by OpenAI API rate limits    |
+| **Concurrent users** | 100      | Supabase free tier: 50 req/s         |
 
 ### Monitoring
 
 **Metrics to track (Sentry Performance):**
+
 - Average response time
 - AI categorization success rate
 - AI retry rate
@@ -935,6 +990,7 @@ await redis.setex(`ingredient:category:${normalizedName}`, 604800, category);
 - Error rate by type (401, 400, 500)
 
 **Alerts:**
+
 - p95 latency >10s
 - AI failure rate >10%
 - Error rate >5%
@@ -944,9 +1000,11 @@ await redis.setex(`ingredient:category:${normalizedName}`, 604800, category);
 ## 9. Etapy wdrożenia
 
 ### Krok 1: Utworzenie Zod Schema (Validation)
+
 **File**: `src/lib/validation/shopping-list.schema.ts`
 
 **Tasks:**
+
 1. Zaimportować Zod i typy z `src/types.ts`
 2. Utworzyć `calendarSelectionSchema`:
    - `day_of_week`: integer 1-7
@@ -966,9 +1024,11 @@ await redis.setex(`ingredient:category:${normalizedName}`, 604800, category);
 ---
 
 ### Krok 2: Utworzenie AI Categorization Service
+
 **File**: `src/lib/services/ai-categorization.service.ts`
 
 **Tasks:**
+
 1. Utworzyć interface `CategorizationResult`:
    ```typescript
    interface CategorizationResult {
@@ -991,6 +1051,7 @@ await redis.setex(`ingredient:category:${normalizedName}`, 604800, category);
 4. Error logging do console (Sentry opcjonalnie)
 
 **Dependencies**:
+
 ```typescript
 import OpenAI from "openai";
 import type { IngredientCategory } from "@/types";
@@ -1001,9 +1062,11 @@ import type { IngredientCategory } from "@/types";
 ---
 
 ### Krok 3: Utworzenie Shopping List Preview Service
+
 **File**: `src/lib/services/shopping-list-preview.service.ts`
 
 **Tasks:**
+
 1. Importy: Supabase client type, DTOs, AI service
 2. Interface `RawIngredient`:
    ```typescript
@@ -1063,9 +1126,11 @@ import type { IngredientCategory } from "@/types";
 ---
 
 ### Krok 4: Utworzenie API Endpoint
+
 **File**: `src/pages/api/shopping-lists/preview.ts`
 
 **Tasks:**
+
 1. Dodać `export const prerender = false;`
 2. Importy:
    - Supabase client z `context.locals.supabase`
@@ -1073,16 +1138,20 @@ import type { IngredientCategory } from "@/types";
    - Service funkcja `generateShoppingListPreview`
    - Types
 3. Implementować `POST()` handler:
+
    ```typescript
    export async function POST(context: APIContext) {
      try {
        // Step 1: Auth check
-       const { data: { user }, error: authError } = await context.locals.supabase.auth.getUser();
+       const {
+         data: { user },
+         error: authError,
+       } = await context.locals.supabase.auth.getUser();
        if (authError || !user) {
-         return new Response(
-           JSON.stringify({ error: "Unauthorized" }),
-           { status: 401, headers: { "Content-Type": "application/json" } }
-         );
+         return new Response(JSON.stringify({ error: "Unauthorized" }), {
+           status: 401,
+           headers: { "Content-Type": "application/json" },
+         });
        }
 
        // Step 2: Parse & validate request body
@@ -1092,40 +1161,32 @@ import type { IngredientCategory } from "@/types";
          return new Response(
            JSON.stringify({
              error: "Validation failed",
-             details: validation.error.flatten().fieldErrors
+             details: validation.error.flatten().fieldErrors,
            }),
            { status: 400, headers: { "Content-Type": "application/json" } }
          );
        }
 
        // Step 3: Generate preview
-       const preview = await generateShoppingListPreview(
-         context.locals.supabase,
-         user.id,
-         validation.data
-       );
+       const preview = await generateShoppingListPreview(context.locals.supabase, user.id, validation.data);
 
        // Step 4: Return 200 OK
-       return new Response(
-         JSON.stringify(preview),
-         { status: 200, headers: { "Content-Type": "application/json" } }
-       );
-
+       return new Response(JSON.stringify(preview), { status: 200, headers: { "Content-Type": "application/json" } });
      } catch (error) {
        // Business logic errors (thrown from service)
        if (error.message === "No recipes found") {
-         return new Response(
-           JSON.stringify({ error: "No recipes selected or all selected meals are empty" }),
-           { status: 400, headers: { "Content-Type": "application/json" } }
-         );
+         return new Response(JSON.stringify({ error: "No recipes selected or all selected meals are empty" }), {
+           status: 400,
+           headers: { "Content-Type": "application/json" },
+         });
        }
 
        // Unexpected errors
        console.error("[POST /api/shopping-lists/preview]", error);
-       return new Response(
-         JSON.stringify({ error: "Internal server error" }),
-         { status: 500, headers: { "Content-Type": "application/json" } }
-       );
+       return new Response(JSON.stringify({ error: "Internal server error" }), {
+         status: 500,
+         headers: { "Content-Type": "application/json" },
+       });
      }
    }
    ```
@@ -1141,6 +1202,7 @@ import type { IngredientCategory } from "@/types";
 **File**: `src/lib/services/__tests__/shopping-list-preview.service.test.ts`
 
 **Test cases**:
+
 1. `aggregateIngredients()`:
    - Identyczne składniki (same name + unit) → sumowanie quantity
    - Różne units → osobne pozycje
@@ -1191,6 +1253,7 @@ import type { IngredientCategory } from "@/types";
 ### Krok 6: Documentation & Code Review
 
 **Tasks**:
+
 1. Dodać JSDoc comments do wszystkich exported functions
 2. Dodać przykłady usage w komentarzach
 3. Zaktualizować README.md (jeśli istnieje) z nowym endpointem
@@ -1210,6 +1273,7 @@ import type { IngredientCategory } from "@/types";
 ### Krok 7: Deployment & Monitoring
 
 **Tasks**:
+
 1. Merge do branch głównego (przez PR)
 2. Deploy na Vercel (automatic via GitHub Actions)
 3. Verify environment variables:
@@ -1225,16 +1289,16 @@ import type { IngredientCategory } from "@/types";
 
 ## 10. Total Estimated Time
 
-| Krok | Estimated Time |
-|------|---------------|
-| 1. Zod Schema | 30 min |
-| 2. AI Service | 2h |
-| 3. Preview Service | 3h |
-| 4. API Endpoint | 1h |
-| 5. Testing | 2h |
-| 6. Documentation | 1h |
-| 7. Deployment | 30 min |
-| **TOTAL** | **10 hours** |
+| Krok               | Estimated Time |
+| ------------------ | -------------- |
+| 1. Zod Schema      | 30 min         |
+| 2. AI Service      | 2h             |
+| 3. Preview Service | 3h             |
+| 4. API Endpoint    | 1h             |
+| 5. Testing         | 2h             |
+| 6. Documentation   | 1h             |
+| 7. Deployment      | 30 min         |
+| **TOTAL**          | **10 hours**   |
 
 **Buffer dla nieprzewidzianych problemów**: +2h
 **Final estimate**: **12 hours** (1.5 dnia dla 1 developera)
@@ -1244,11 +1308,13 @@ import type { IngredientCategory } from "@/types";
 ## 11. Checklist przed wdrożeniem
 
 **Pre-implementation:**
+
 - [ ] RLS policies na recipes, ingredients, meal_plan zweryfikowane
 - [ ] OpenAI API key dodany do Vercel environment variables
 - [ ] Rate limits OpenAI sprawdzone (tier/quota)
 
 **During implementation:**
+
 - [ ] Zod schema validates all edge cases
 - [ ] AI retry logic implementowany poprawnie
 - [ ] Aggregation logic obsługuje null quantities
@@ -1257,6 +1323,7 @@ import type { IngredientCategory } from "@/types";
 - [ ] Logging nie zawiera PII (ingredient names OK, ale nie user_id w public logs)
 
 **Post-implementation:**
+
 - [ ] Manual tests pass (wszystkie scenariusze)
 - [ ] Linter pass (`npm run lint`)
 - [ ] TypeScript compile pass (`npm run build`)
@@ -1268,15 +1335,15 @@ import type { IngredientCategory } from "@/types";
 
 ## 12. Potential Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| OpenAI quota exceeded | High | Low | Fallback do "Inne", monitor usage |
-| OpenAI timeout frequent | Medium | Medium | 3 retries + exponential backoff |
-| RLS misconfiguration (data leak) | **CRITICAL** | Low | Code review + penetration testing |
-| Large ingredient lists (>100) | Medium | Low | Validation cap at 100, batch into chunks if needed |
-| AI returns invalid categories | Low | Low | Validate categories against allowed list |
-| Database query slow (>1s) | Medium | Low | Indexes already exist, monitor query performance |
-| Memory issue (large lists) | Low | Very Low | Pagination future consideration, 1000 items = 200KB |
+| Risk                             | Impact       | Probability | Mitigation                                          |
+| -------------------------------- | ------------ | ----------- | --------------------------------------------------- |
+| OpenAI quota exceeded            | High         | Low         | Fallback do "Inne", monitor usage                   |
+| OpenAI timeout frequent          | Medium       | Medium      | 3 retries + exponential backoff                     |
+| RLS misconfiguration (data leak) | **CRITICAL** | Low         | Code review + penetration testing                   |
+| Large ingredient lists (>100)    | Medium       | Low         | Validation cap at 100, batch into chunks if needed  |
+| AI returns invalid categories    | Low          | Low         | Validate categories against allowed list            |
+| Database query slow (>1s)        | Medium       | Low         | Indexes already exist, monitor query performance    |
+| Memory issue (large lists)       | Low          | Very Low    | Pagination future consideration, 1000 items = 200KB |
 
 ---
 

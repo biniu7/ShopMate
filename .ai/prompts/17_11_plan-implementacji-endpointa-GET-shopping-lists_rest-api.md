@@ -3,7 +3,7 @@ Jesteś doświadczonym architektem oprogramowania, którego zadaniem jest stworz
 Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 
 1. Route API specification:
-<route_api_specification>
+   <route_api_specification>
    **Method:** `GET`
    **Path:** `/api/shopping-lists/:id`
    **Description:** Get single shopping list with all items
@@ -46,10 +46,12 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - `404 Not Found` - Shopping list not found or doesn't belong to user
 
 ---
+
 </route_api_specification>
 
 2. Related database resources:
    <related_db_resources>
+
 ### Tabela: `shopping_lists`
 
 **Opis:** Zapisane listy zakupów (snapshot pattern)
@@ -95,6 +97,7 @@ Zanim zaczniemy, zapoznaj się z poniższymi informacjami:
 - Maksimum 100 pozycji na listę (walidacja w aplikacji - Zod)
 
 ---
+
 </related_db_resources>
 
 3. Definicje typów:
