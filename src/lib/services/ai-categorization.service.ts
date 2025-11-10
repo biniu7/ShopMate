@@ -1,9 +1,9 @@
 /**
  * AI Categorization Service
- * Uses OpenAI GPT-4o mini to categorize ingredients into predefined categories
+ * Uses OpenRouter API (GPT-4o mini) to categorize ingredients into predefined categories
  */
 
-import OpenAI from "openai";
+import { OpenRouterService } from "./openrouter";
 import type { IngredientCategory } from "@/types";
 import { INGREDIENT_CATEGORIES } from "@/types";
 
@@ -22,24 +22,6 @@ export interface CategorizationResult {
 const MAX_INGREDIENTS_PER_REQUEST = 100;
 
 /**
- * Timeout for OpenAI API call in milliseconds
- */
-const OPENAI_TIMEOUT_MS = 10000; // 10 seconds
-
-/**
- * Number of retry attempts
- */
-const MAX_RETRY_ATTEMPTS = 3;
-
-/**
- * Helper function to sleep for a given duration
- * @param ms - Milliseconds to sleep
- */
-const sleep = (ms: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/**
  * Validate that a category string is a valid IngredientCategory
  */
 const isValidCategory = (category: string): category is IngredientCategory => {
@@ -47,76 +29,33 @@ const isValidCategory = (category: string): category is IngredientCategory => {
 };
 
 /**
- * Create OpenAI client instance
- */
-const getOpenAIClient = (): OpenAI => {
-  const apiKey = import.meta.env.OPENAI_API_KEY;
-
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY environment variable is not set");
-  }
-
-  return new OpenAI({
-    apiKey,
-    timeout: OPENAI_TIMEOUT_MS,
-  });
-};
-
-/**
- * Call OpenAI API to categorize ingredients
+ * Call OpenRouter API to categorize ingredients
  * @param ingredients - Array of ingredient names (normalized)
  * @returns Map of ingredient name to category
  */
-const callOpenAI = async (ingredients: string[]): Promise<Map<string, IngredientCategory>> => {
-  const openai = getOpenAIClient();
+const callOpenRouter = async (ingredients: string[]): Promise<Map<string, IngredientCategory>> => {
+  const service = new OpenRouterService();
 
-  // Build numbered list of ingredients for the prompt
-  const ingredientsList = ingredients.map((ing, index) => `${index + 1}. ${ing}`).join("\n");
+  // Prepare ingredients with temporary IDs (using index as ID)
+  const ingredientsWithIds = ingredients.map((name, index) => ({
+    id: String(index),
+    name,
+  }));
 
-  // System prompt with category instructions
-  const systemPrompt = `Kategoryzuj składniki do kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne.
-Zwróć JSON w formacie: {"1": "kategoria", "2": "kategoria", ...} gdzie numer to pozycja składnika z listy.
-Kategorie muszą być dokładnie: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne (wielkość liter ma znaczenie).`;
+  // Call OpenRouterService
+  const result = await service.categorizeIngredients(ingredientsWithIds);
 
-  const userPrompt = `Kategoryzuj następujące składniki:\n${ingredientsList}`;
-
-  // Call OpenAI API
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    temperature: 0,
-    max_tokens: 500,
-    messages: [
-      {
-        role: "system",
-        content: systemPrompt,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
-    response_format: { type: "json_object" },
-  });
-
-  // Parse response
-  const content = response.choices[0]?.message?.content;
-  if (!content) {
-    throw new Error("Empty response from OpenAI");
+  // Check if categorization failed
+  if (!result.success) {
+    throw new Error(result.error?.message || "Categorization failed");
   }
 
-  let parsedResponse: Record<string, string>;
-  try {
-    parsedResponse = JSON.parse(content);
-  } catch (error) {
-    throw new Error(`Failed to parse OpenAI response as JSON: ${error}`);
-  }
-
-  // Map response to ingredients
+  // Map result back to ingredient names
   const categoriesMap = new Map<string, IngredientCategory>();
 
   ingredients.forEach((ingredient, index) => {
-    const key = String(index + 1); // OpenAI uses 1-indexed keys
-    const category = parsedResponse[key];
+    const indexKey = String(index);
+    const category = result.categories[indexKey];
 
     // Validate category
     if (category && isValidCategory(category)) {
@@ -176,46 +115,31 @@ export async function categorizeIngredientsWithRetry(ingredients: string[]): Pro
     };
   }
 
-  // Retry loop with exponential backoff
-  let lastError: Error | null = null;
+  // Call OpenRouter service (it has built-in retry mechanism)
+  try {
+    console.log(`[AI Categorization] Categorizing ${ingredients.length} ingredients via OpenRouter`);
 
-  for (let attempt = 1; attempt <= MAX_RETRY_ATTEMPTS; attempt++) {
-    try {
-      console.log(`[AI Categorization] Attempt ${attempt}/${MAX_RETRY_ATTEMPTS} for ${ingredients.length} ingredients`);
+    const categories = await callOpenRouter(ingredients);
 
-      const categories = await callOpenAI(ingredients);
+    console.log(`[AI Categorization] Successfully categorized ${categories.size} ingredients`);
+    return {
+      success: true,
+      categories,
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error(`[AI Categorization] Failed to categorize ingredients:`, errorMessage);
 
-      console.log(`[AI Categorization] Success on attempt ${attempt}`);
-      return {
-        success: true,
-        categories,
-      };
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-      console.error(`[AI Categorization] Attempt ${attempt} failed:`, lastError.message);
+    // Fallback: all items → "Inne"
+    const fallbackCategories = new Map<string, IngredientCategory>();
+    ingredients.forEach((ing) => {
+      fallbackCategories.set(ing, "Inne");
+    });
 
-      // If not the last attempt, wait before retrying
-      if (attempt < MAX_RETRY_ATTEMPTS) {
-        const backoffMs = Math.pow(2, attempt - 1) * 1000; // 1s, 2s
-        console.log(`[AI Categorization] Retrying in ${backoffMs}ms...`);
-        await sleep(backoffMs);
-      }
-    }
+    return {
+      success: false,
+      categories: fallbackCategories,
+      error: errorMessage,
+    };
   }
-
-  // All retries failed - fallback to "Inne" for all items
-  console.error(
-    `[AI Categorization] All ${MAX_RETRY_ATTEMPTS} attempts failed. Using fallback category "Inne" for all items.`
-  );
-
-  const fallbackCategories = new Map<string, IngredientCategory>();
-  ingredients.forEach((ing) => {
-    fallbackCategories.set(ing, "Inne");
-  });
-
-  return {
-    success: false,
-    categories: fallbackCategories,
-    error: lastError?.message || "Unknown error after all retries",
-  };
 }
