@@ -1,0 +1,25 @@
+---
+/**
+ * Recipe Edit Page
+ * Page for editing existing recipes
+ *
+ * Route: /recipes/:id/edit
+ * Requires authentication (handled by middleware)
+ */
+import Layout from "@/layouts/Layout.astro";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { RecipeEditView } from "@/components/recipes/RecipeEditView";
+import { Toaster } from "@/components/ui/toaster";
+
+// Get recipe ID from URL params
+const { id } = Astro.params;
+
+const title = "Edytuj przepis - ShopMate";
+---
+
+<Layout title={title}>
+  <QueryProvider client:load>
+    <RecipeEditView client:load recipeId={id!} />
+    <Toaster client:load />
+  </QueryProvider>
+</Layout>

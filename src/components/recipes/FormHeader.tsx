@@ -33,22 +33,38 @@ const Breadcrumbs = memo<{ items: Array<{ label: string; href: string }> }>(({ i
 
 Breadcrumbs.displayName = "Breadcrumbs";
 
+interface FormHeaderProps {
+  mode?: "create" | "edit";
+  recipeName?: string;
+}
+
 /**
  * Form Header Component
  * Displays breadcrumbs and page title
  */
-export const FormHeader = memo(() => {
+export const FormHeader = memo<FormHeaderProps>(({ mode = "create", recipeName }) => {
+  const isEdit = mode === "edit";
+  const truncatedName = recipeName && recipeName.length > 30 ? `${recipeName.slice(0, 30)}...` : recipeName;
+
   return (
     <div className="form-header mb-8">
       <Breadcrumbs
         items={[
           { label: "Przepisy", href: "/recipes" },
-          { label: "Dodaj przepis", href: "/recipes/new" },
+          isEdit
+            ? { label: truncatedName || "Edytuj przepis", href: "" }
+            : { label: "Dodaj przepis", href: "/recipes/new" },
         ]}
       />
 
-      <h1 className="text-3xl font-bold text-gray-900">Dodaj nowy przepis</h1>
-      <p className="text-gray-600 mt-2">Wypełnij poniższy formularz, aby dodać nowy przepis do swojej kolekcji</p>
+      <h1 className="text-3xl font-bold text-gray-900">
+        {isEdit ? "Edytuj przepis" : "Dodaj nowy przepis"}
+      </h1>
+      <p className="text-gray-600 mt-2">
+        {isEdit
+          ? "Wprowadź zmiany w poniższym formularzu"
+          : "Wypełnij poniższy formularz, aby dodać nowy przepis do swojej kolekcji"}
+      </p>
     </div>
   );
 });
