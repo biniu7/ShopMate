@@ -1,0 +1,17 @@
+---
+/**
+ * Recipe Create Page
+ * Page for creating new recipes
+ *
+ * Route: /recipes/new
+ * Requires authentication (handled by middleware)
+ */
+import Layout from "@/layouts/Layout.astro";
+import RecipeCreateView from "@/components/recipes/RecipeCreateView";
+
+const title = "Dodaj nowy przepis - ShopMate";
+---
+
+<Layout title={title}>
+  <RecipeCreateView client:load />
+</Layout>

@@ -5,13 +5,13 @@ import { z } from "zod";
  * Used when creating or updating recipes
  */
 export const IngredientInputSchema = z.object({
-  name: z.string().min(1, "Ingredient name is required").max(100, "Ingredient name must not exceed 100 characters"),
+  name: z.string().trim().min(1, "Nazwa składnika jest wymagana").max(100, "Nazwa składnika nie może przekroczyć 100 znaków"),
 
-  quantity: z.number().positive("Quantity must be a positive number").nullable(),
+  quantity: z.number().positive("Ilość musi być liczbą dodatnią").nullable(),
 
-  unit: z.string().max(50, "Unit must not exceed 50 characters").nullable(),
+  unit: z.string().trim().max(50, "Jednostka nie może przekroczyć 50 znaków").nullable(),
 
-  sort_order: z.number().int("Sort order must be an integer").min(0, "Sort order must be non-negative").default(0),
+  sort_order: z.number().int("Kolejność musi być liczbą całkowitą").min(0, "Kolejność nie może być ujemna").default(0),
 });
 
 /**
@@ -19,18 +19,18 @@ export const IngredientInputSchema = z.object({
  * Enforces business rules: 3-100 chars for name, 10-5000 for instructions, 1-50 ingredients
  */
 export const RecipeSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters").max(100, "Name must not exceed 100 characters").trim(),
+  name: z.string().trim().min(3, "Nazwa musi mieć minimum 3 znaki").max(100, "Nazwa może mieć maksimum 100 znaków"),
 
   instructions: z
     .string()
-    .min(10, "Instructions must be at least 10 characters")
-    .max(5000, "Instructions must not exceed 5000 characters")
-    .trim(),
+    .trim()
+    .min(10, "Instrukcje muszą mieć minimum 10 znaków")
+    .max(5000, "Instrukcje mogą mieć maksimum 5000 znaków"),
 
   ingredients: z
     .array(IngredientInputSchema)
-    .min(1, "At least 1 ingredient required")
-    .max(50, "Maximum 50 ingredients allowed"),
+    .min(1, "Wymagany jest minimum 1 składnik")
+    .max(50, "Maksimum 50 składników"),
 });
 
 /**
