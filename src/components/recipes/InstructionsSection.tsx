@@ -11,21 +11,14 @@ interface InstructionsSectionProps {
  * InstructionsSection
  * Sekcja z instrukcjami wyświetlana jako paragraph z zachowaniem formatowania
  */
-export function InstructionsSection({
-  instructions,
-}: InstructionsSectionProps) {
+export function InstructionsSection({ instructions }: InstructionsSectionProps) {
   return (
     <section className="instructions-section" aria-labelledby="instructions-heading">
-      <h2
-        id="instructions-heading"
-        className="text-2xl font-semibold text-gray-900 mb-4"
-      >
+      <h2 id="instructions-heading" className="text-2xl font-semibold text-gray-900 mb-4">
         Instrukcje
       </h2>
 
-      <p className="whitespace-pre-wrap leading-relaxed text-gray-800">
-        {instructions}
-      </p>
+      <p className="whitespace-pre-wrap leading-relaxed text-gray-800">{instructions}</p>
     </section>
   );
 }

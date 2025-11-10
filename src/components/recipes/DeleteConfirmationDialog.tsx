@@ -51,8 +51,7 @@ export function DeleteConfirmationDialog({
                 <strong>
                   {assignmentsCount} {mealLabel}
                 </strong>{" "}
-                w kalendarzu. Usunięcie spowoduje usunięcie wszystkich
-                przypisań.
+                w kalendarzu. Usunięcie spowoduje usunięcie wszystkich przypisań.
               </>
             ) : (
               <>Czy na pewno chcesz usunąć przepis &quot;{recipeName}&quot;?</>
@@ -65,17 +64,10 @@ export function DeleteConfirmationDialog({
             Anuluj
           </Button>
 
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            disabled={isDeleting}
-          >
+          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
             {isDeleting ? (
               <>
-                <Loader2
-                  className="h-4 w-4 mr-2 animate-spin"
-                  aria-hidden="true"
-                />
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" />
                 Usuwanie...
               </>
             ) : assignmentsCount > 0 ? (

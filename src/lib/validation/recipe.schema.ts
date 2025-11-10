@@ -5,7 +5,11 @@ import { z } from "zod";
  * Used when creating or updating recipes
  */
 export const IngredientInputSchema = z.object({
-  name: z.string().trim().min(1, "Nazwa składnika jest wymagana").max(100, "Nazwa składnika nie może przekroczyć 100 znaków"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Nazwa składnika jest wymagana")
+    .max(100, "Nazwa składnika nie może przekroczyć 100 znaków"),
 
   quantity: z.number().positive("Ilość musi być liczbą dodatnią").nullable(),
 

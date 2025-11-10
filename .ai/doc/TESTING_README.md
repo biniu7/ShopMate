@@ -17,25 +17,29 @@ Serwer powinien być dostępny na `http://localhost:3000` lub `http://localhost:
 ### 2. Zdobądź Access Token
 
 **Metoda 1: Z przeglądarki (DevTools Console)**
+
 ```javascript
 const { data } = await window.supabase.auth.getSession();
-console.log('Token:', data.session?.access_token);
+console.log("Token:", data.session?.access_token);
 ```
 
 **Metoda 2: Z localStorage**
+
 ```javascript
 // Sprawdź klucze w localStorage
-Object.keys(localStorage).filter(k => k.includes('auth'));
+Object.keys(localStorage).filter((k) => k.includes("auth"));
 ```
 
 ### 3. Ustaw token jako zmienną środowiskową
 
 **PowerShell:**
+
 ```powershell
 $env:ACCESS_TOKEN = "YOUR_TOKEN_HERE"
 ```
 
 **Bash/Zsh:**
+
 ```bash
 export ACCESS_TOKEN="YOUR_TOKEN_HERE"
 ```
@@ -43,6 +47,7 @@ export ACCESS_TOKEN="YOUR_TOKEN_HERE"
 ### 4. Uruchom testy
 
 **Opcja A: Automatyczny skrypt (PowerShell)**
+
 ```powershell
 cd .ai/doc
 .\test-shopping-lists.ps1
@@ -56,29 +61,32 @@ Kopiuj i wklej komendy curl
 
 ## 📁 Pliki testowe
 
-| Plik | Opis |
-|------|------|
-| `18_10_POST-GET-shopping-lists-manual-tests.md` | Kompletny przewodnik z 21 test cases (curl commands) |
-| `test-shopping-lists.ps1` | Automatyczny skrypt PowerShell (10 podstawowych testów) |
-| `18_10_shopping-lists-database-setup.sql` | SQL queries dla setup bazy danych (RLS, indexes) |
-| `18_10_POST-GET-shopping-lists-IMPLEMENTATION_SUMMARY.md` | Podsumowanie implementacji |
+| Plik                                                      | Opis                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| `18_10_POST-GET-shopping-lists-manual-tests.md`           | Kompletny przewodnik z 21 test cases (curl commands)    |
+| `test-shopping-lists.ps1`                                 | Automatyczny skrypt PowerShell (10 podstawowych testów) |
+| `18_10_shopping-lists-database-setup.sql`                 | SQL queries dla setup bazy danych (RLS, indexes)        |
+| `18_10_POST-GET-shopping-lists-IMPLEMENTATION_SUMMARY.md` | Podsumowanie implementacji                              |
 
 ---
 
 ## 🧪 Test Cases
 
 ### POST /api/shopping-lists
+
 - ✅ TC1-3: Successful creation (full data, minimal, from recipes)
 - ❌ TC4-9: Validation errors (empty items, invalid category, name too long, etc.)
 - ❌ TC10: Authentication error
 - ⚡ TC11: Performance test (100 items)
 
 ### GET /api/shopping-lists
+
 - ✅ TC12-15: Successful fetch (default pagination, custom, page 2, empty)
 - ❌ TC16-19: Validation errors (invalid page/limit, no token)
 - ✅ TC20: Cache headers verification
 
 ### Security
+
 - 🔐 TC21: User isolation (RLS)
 
 ---
@@ -99,6 +107,7 @@ cd .ai/doc
 ```
 
 **Co testuje skrypt:**
+
 - 5 test cases dla POST (success, validation, auth)
 - 5 test cases dla GET (success, validation, auth)
 - Automatyczne sprawdzanie status codes
@@ -110,12 +119,14 @@ cd .ai/doc
 ## 📋 Manual Testing Checklist
 
 ### Before Testing
+
 - [ ] Server is running (`npm run dev`)
 - [ ] Database setup completed (RLS policies, indexes)
 - [ ] Access token obtained
 - [ ] Environment variable set
 
 ### POST Endpoint
+
 - [ ] TC1: Create list with full data (201)
 - [ ] TC2: Create list with minimal data (201)
 - [ ] TC3: Create list from recipes mode (201, week_start_date=null)
@@ -125,6 +136,7 @@ cd .ai/doc
 - [ ] TC11: 100 items performance test (< 500ms)
 
 ### GET Endpoint
+
 - [ ] TC12: Default pagination (200)
 - [ ] TC13: Custom pagination (200)
 - [ ] TC15: Empty result for new user (200)
@@ -133,6 +145,7 @@ cd .ai/doc
 - [ ] TC19: No auth token (401)
 
 ### Security
+
 - [ ] TC21: User isolation - verify RLS works
 
 ---
@@ -140,6 +153,7 @@ cd .ai/doc
 ## 🐛 Troubleshooting
 
 ### "ACCESS_TOKEN not set"
+
 ```powershell
 # Check if set
 $env:ACCESS_TOKEN
@@ -149,16 +163,19 @@ $env:ACCESS_TOKEN = "paste_token_here"
 ```
 
 ### "401 Unauthorized" with valid token
+
 - Token might be expired - get fresh one from browser
 - Check format: `Bearer <token>` in header
 - Verify user is logged in Supabase
 
 ### "Connection refused"
+
 - Check if server is running: `npm run dev`
 - Verify port: 3000 or 3001
 - Try: `curl http://localhost:3001`
 
 ### PowerShell script permission error
+
 ```powershell
 # Allow script execution
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -172,6 +189,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ## 📊 Expected Results
 
 ### Successful POST (201 Created)
+
 ```json
 {
   "id": "uuid",
@@ -185,6 +203,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### Successful GET (200 OK)
+
 ```json
 {
   "data": [...],
@@ -198,6 +217,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### Validation Error (400)
+
 ```json
 {
   "error": "Validation failed",
@@ -208,6 +228,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
 ### Auth Error (401)
+
 ```json
 {
   "error": "Unauthorized",

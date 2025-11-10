@@ -113,9 +113,7 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.error || errorData.message || "Nie udało się zaktualizować przepisu"
-        );
+        throw new Error(errorData.error || errorData.message || "Nie udało się zaktualizować przepisu");
       }
 
       return response.json() as Promise<RecipeResponseDto>;
@@ -139,8 +137,7 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
     onError: (error: Error) => {
       // Show error notification
       toast.error("Nie udało się zaktualizować przepisu", {
-        description:
-          error.message || "Sprawdź połączenie z internetem i spróbuj ponownie.",
+        description: error.message || "Sprawdź połączenie z internetem i spróbuj ponownie.",
       });
       console.error("Recipe update error:", error);
     },
@@ -193,16 +190,9 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
         <div className="recipe-edit-view min-h-screen bg-gray-50">
           <div className="container mx-auto max-w-3xl p-4 py-16 text-center">
             <div className="max-w-md mx-auto">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-                Przepis nie znaleziony
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Przepis o podanym ID nie istnieje lub nie masz do niego dostępu.
-              </p>
-              <a
-                href="/recipes"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
+              <h2 className="text-2xl font-semibold text-gray-900 mb-2">Przepis nie znaleziony</h2>
+              <p className="text-gray-600 mb-6">Przepis o podanym ID nie istnieje lub nie masz do niego dostępu.</p>
+              <a href="/recipes" className="inline-flex items-center gap-2 text-primary hover:underline">
                 Powrót do listy przepisów
               </a>
             </div>
@@ -243,8 +233,8 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
           <Alert className="my-6">
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Zmiany zaktualizują wszystkie przypisania w kalendarzu. Wcześniej
-              wygenerowane listy zakupów pozostaną niezmienione (snapshot).
+              Zmiany zaktualizują wszystkie przypisania w kalendarzu. Wcześniej wygenerowane listy zakupów pozostaną
+              niezmienione (snapshot).
             </AlertDescription>
           </Alert>
 
@@ -255,11 +245,7 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
               name="name"
               control={control}
               render={({ field }) => (
-                <NameInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.name?.message}
-                />
+                <NameInput value={field.value} onChange={field.onChange} error={errors.name?.message} />
               )}
             />
 
@@ -290,12 +276,7 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
           </div>
 
           {/* Form Actions (sticky bottom) */}
-          <FormActions
-            onCancel={handleCancel}
-            isSubmitting={mutation.isPending}
-            isValid={isValid}
-            mode="edit"
-          />
+          <FormActions onCancel={handleCancel} isSubmitting={mutation.isPending} isValid={isValid} mode="edit" />
         </form>
 
         {/* Discard Changes Dialog */}

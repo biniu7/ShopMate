@@ -33,8 +33,10 @@ export const FormActions = memo<FormActionsProps>(({ onCancel, isSubmitting, isV
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               {isEdit ? "Aktualizowanie..." : "Zapisywanie..."}
             </>
+          ) : isEdit ? (
+            "Zapisz zmiany"
           ) : (
-            isEdit ? "Zapisz zmiany" : "Zapisz przepis"
+            "Zapisz przepis"
           )}
         </Button>
       </div>

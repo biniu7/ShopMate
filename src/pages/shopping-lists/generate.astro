@@ -1,0 +1,17 @@
+---
+import MainLayout from "@/layouts/MainLayout.astro";
+import ShoppingListGenerateView from "@/components/ShoppingListGenerateView";
+import { Toaster } from "@/components/ui/toaster";
+
+const { user } = Astro.locals;
+
+// Middleware already checks authentication
+if (!user) {
+  return Astro.redirect("/login");
+}
+---
+
+<MainLayout title="Generuj listę zakupów - ShopMate">
+  <ShoppingListGenerateView client:load />
+  <Toaster client:load />
+</MainLayout>

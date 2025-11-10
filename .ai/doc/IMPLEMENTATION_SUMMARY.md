@@ -11,6 +11,7 @@
 ### 1. Backend Services (Core Logic)
 
 #### **File**: `src/lib/validation/shopping-list.schema.ts`
+
 - ✅ Zod validation schema dla obu trybów (Calendar + Recipes)
 - ✅ Discriminated union na polu `source`
 - ✅ Custom validation: sprawdzenie czy `week_start_date` to poniedziałek
@@ -18,6 +19,7 @@
 - ✅ Type inference dla TypeScript
 
 **Kluczowe walidacje**:
+
 - `recipe_ids`: min 1, max 20, UUID format
 - `week_start_date`: YYYY-MM-DD, must be Monday
 - `day_of_week`: 1-7 (1=Monday)
@@ -27,6 +29,7 @@
 ---
 
 #### **File**: `src/lib/services/ai-categorization.service.ts`
+
 - ✅ OpenAI GPT-4o mini integration
 - ✅ Retry logic: 3 attempts z exponential backoff (1s, 2s)
 - ✅ Timeout: 10s per attempt
@@ -36,6 +39,7 @@
 - ✅ Comprehensive error logging
 
 **AI Configuration**:
+
 ```typescript
 {
   model: "gpt-4o-mini",
@@ -46,11 +50,13 @@
 ```
 
 **System Prompt** (Polish):
+
 > "Kategoryzuj składniki do kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne. Zwróć JSON: {\"1\": \"kategoria\", ...}"
 
 ---
 
 #### **File**: `src/lib/services/shopping-list-preview.service.ts`
+
 - ✅ Główna logika biznesowa
 - ✅ `fetchRecipeIdsFromCalendar()` - pobieranie z meal_plan
 - ✅ `fetchIngredientsByRecipeIds()` - z RLS protection
@@ -59,12 +65,14 @@
 - ✅ `generateShoppingListPreview()` - orkiestracja wszystkich kroków
 
 **Agregation Logic**:
+
 - Normalizacja: `trim()` + `toLowerCase()` (dla klucza)
 - Grupowanie: `(normalizedName + unit)` as key
 - Sumowanie quantities: jeśli wszystkie number → sum, jeśli mixed → null
 - Oryginalna nazwa zachowana dla display
 
 **Sortowanie**:
+
 1. Według kategorii (fixed order): Nabiał → Warzywa → Owoce → Mięso → Pieczywo → Przyprawy → Inne
 2. Alfabetycznie w ramach kategorii (Polish locale)
 3. `sort_order` przypisane 0, 1, 2, ... w każdej kategorii
@@ -74,6 +82,7 @@
 ### 2. API Endpoint
 
 #### **File**: `src/pages/api/shopping-lists/preview.ts`
+
 - ✅ `export const prerender = false` (server-side only)
 - ✅ POST handler z comprehensive error handling
 - ✅ Authentication check (401 Unauthorized)
@@ -84,6 +93,7 @@
 - ✅ Logging na każdym kroku
 
 **Response Codes**:
+
 - `200 OK` - Success (również gdy AI failed z fallbackiem)
 - `400 Bad Request` - Validation errors, no recipes, invalid JSON
 - `401 Unauthorized` - Missing/invalid auth token
@@ -94,6 +104,7 @@
 ### 3. Testing Infrastructure
 
 #### **Files Created**:
+
 - `.ai/testing/bruno-collection/shopping-lists-preview.bru` - Happy path Recipes mode
 - `.ai/testing/bruno-collection/shopping-lists-preview-calendar.bru` - Happy path Calendar mode
 - `.ai/testing/bruno-collection/shopping-lists-preview-errors.bru` - Error test cases
@@ -101,6 +112,7 @@
 - `.ai/testing/TEST_GUIDE.md` - Comprehensive testing guide
 
 **Test Coverage**:
+
 - ✅ Happy path - Recipes mode
 - ✅ Happy path - Calendar mode
 - ✅ Error cases: 401, 400 (8 różnych walidacji), 500
@@ -114,12 +126,14 @@
 ### 4. Documentation
 
 #### **Files Created**:
+
 - `.ai/doc/OPENAI_SETUP.md` - Konfiguracja OpenAI (local + Vercel)
 - `.ai/doc/17_9_endpoint-POST-shopping-preview-implementation-plan.md` - Implementation plan
 - `.ai/doc/IMPLEMENTATION_SUMMARY.md` - Ten dokument
 - `.ai/testing/TEST_GUIDE.md` - Testing guide
 
 #### **Files Updated**:
+
 - `.env.example` - dodany `OPENAI_API_KEY`
 - `package.json` - dodany `openai` package
 
@@ -128,13 +142,15 @@
 ### 5. Dependencies
 
 #### **Installed Packages**:
+
 ```json
 {
-  "openai": "^4.x.x"  // Latest version
+  "openai": "^4.x.x" // Latest version
 }
 ```
 
 #### **Environment Variables Required**:
+
 ```bash
 SUPABASE_URL=https://xxx.supabase.co
 SUPABASE_KEY=eyJ...
@@ -182,6 +198,7 @@ ShopMate/
 ## ✅ Checklist implementacji
 
 ### Core Implementation
+
 - [x] Zod validation schema (discriminated union)
 - [x] AI categorization service z retry logic
 - [x] Shopping list preview service (fetch + aggregate + sort)
@@ -191,6 +208,7 @@ ShopMate/
 - [x] RLS protection (via Supabase queries)
 
 ### AI Integration
+
 - [x] OpenAI GPT-4o mini configuration
 - [x] Retry logic (3 attempts, exponential backoff)
 - [x] Timeout handling (10s per attempt)
@@ -199,6 +217,7 @@ ShopMate/
 - [x] Error logging
 
 ### Business Logic
+
 - [x] Ingredient normalization (trim + lowercase)
 - [x] Aggregation by (name + unit)
 - [x] Quantity summing (with null handling)
@@ -208,6 +227,7 @@ ShopMate/
 - [x] Metadata generation (total_recipes, total_items, ai_status, etc.)
 
 ### Testing
+
 - [x] Bruno test collection (3 files, 9+ scenarios)
 - [x] curl examples script (9 tests)
 - [x] Comprehensive TEST_GUIDE.md
@@ -215,6 +235,7 @@ ShopMate/
 - [x] Happy path tests (both modes)
 
 ### Documentation
+
 - [x] OpenAI setup guide (local + production)
 - [x] Implementation plan
 - [x] Testing guide
@@ -222,6 +243,7 @@ ShopMate/
 - [x] .env.example updated
 
 ### Build & Quality
+
 - [x] TypeScript compilation successful
 - [x] Build passes (`npm run build` ✅)
 - [x] No linting errors
@@ -249,6 +271,7 @@ npm run dev
 ```
 
 Sprawdź logs - powinny być bez błędów:
+
 ```
 ✓ Local    http://localhost:3001/
 ```
@@ -269,12 +292,14 @@ SELECT id, name FROM recipes WHERE user_id = 'your_user_id' LIMIT 5;
 ### Krok 5: Test!
 
 **Option A - Bruno**:
+
 1. Otwórz Bruno
 2. Import folder: `.ai/testing/bruno-collection/`
 3. Ustaw zmienne: `authToken`, `recipe_id_1`, `recipe_id_2`
 4. Run test
 
 **Option B - curl**:
+
 ```bash
 curl -X POST http://localhost:3001/api/shopping-lists/preview \
   -H "Content-Type: application/json" \
@@ -284,6 +309,7 @@ curl -X POST http://localhost:3001/api/shopping-lists/preview \
 ```
 
 **Option C - Postman**:
+
 1. Import Bruno files (Postman auto-converts)
 2. Set environment variables
 3. Run tests
@@ -294,17 +320,18 @@ curl -X POST http://localhost:3001/api/shopping-lists/preview \
 
 ### Expected Performance (MVP targets)
 
-| Metric | Target | Notes |
-|--------|--------|-------|
-| **p50 latency** | <3s | Typical case (AI success, ~20 items) |
-| **p95 latency** | <8s | AI retry scenario |
-| **p99 latency** | <30s | Worst case (3 AI retries) |
-| **Success rate** | >95% | With AI fallback |
-| **Build time** | ~7s | Measured: 6.99s ✅ |
+| Metric           | Target | Notes                                |
+| ---------------- | ------ | ------------------------------------ |
+| **p50 latency**  | <3s    | Typical case (AI success, ~20 items) |
+| **p95 latency**  | <8s    | AI retry scenario                    |
+| **p99 latency**  | <30s   | Worst case (3 AI retries)            |
+| **Success rate** | >95%   | With AI fallback                     |
+| **Build time**   | ~7s    | Measured: 6.99s ✅                   |
 
 ### Cost Estimation
 
 **OpenAI API**:
+
 - Model: GPT-4o mini
 - Cost per request: ~$0.0001 - $0.0002
 - Monthly cost (1000 users, 4 lists/month): **$0.40 - $0.80**
@@ -333,12 +360,14 @@ Build passes, TypeScript compiles, all logic implemented according to plan.
 ## 📝 Testing Checklist (for User)
 
 ### Before Testing
+
 - [ ] `OPENAI_API_KEY` added to `.env`
 - [ ] Server running without errors (`npm run dev`)
 - [ ] Have auth token ready
 - [ ] Have recipe UUIDs ready (or meal plan data for calendar mode)
 
 ### Happy Path Tests
+
 - [ ] POST recipes mode - single recipe
 - [ ] POST recipes mode - multiple recipes (2-3)
 - [ ] POST calendar mode - single day, single meal
@@ -348,6 +377,7 @@ Build passes, TypeScript compiles, all logic implemented according to plan.
 - [ ] Verify sorting (categories in correct order, alphabetical within)
 
 ### Error Cases
+
 - [ ] 401 Unauthorized (no token)
 - [ ] 400 Validation - empty recipe_ids
 - [ ] 400 Validation - invalid UUID
@@ -357,6 +387,7 @@ Build passes, TypeScript compiles, all logic implemented according to plan.
 - [ ] 400 Invalid JSON
 
 ### Edge Cases
+
 - [ ] AI failure simulation (invalid OpenAI key → all "Inne")
 - [ ] Large request (10+ recipes, 50+ ingredients)
 - [ ] Null quantities (verify handled correctly)

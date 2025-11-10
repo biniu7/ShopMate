@@ -57,9 +57,7 @@ export const FormHeader = memo<FormHeaderProps>(({ mode = "create", recipeName }
         ]}
       />
 
-      <h1 className="text-3xl font-bold text-gray-900">
-        {isEdit ? "Edytuj przepis" : "Dodaj nowy przepis"}
-      </h1>
+      <h1 className="text-3xl font-bold text-gray-900">{isEdit ? "Edytuj przepis" : "Dodaj nowy przepis"}</h1>
       <p className="text-gray-600 mt-2">
         {isEdit
           ? "Wprowadź zmiany w poniższym formularzu"

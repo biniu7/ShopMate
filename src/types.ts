@@ -60,6 +60,19 @@ export const INGREDIENT_CATEGORIES: IngredientCategory[] = [
   "Inne",
 ];
 
+/**
+ * Kolejność kategorii składników (dla sortowania i wyświetlania)
+ */
+export const CATEGORY_ORDER: IngredientCategory[] = [
+  "Nabiał",
+  "Warzywa",
+  "Owoce",
+  "Mięso",
+  "Pieczywo",
+  "Przyprawy",
+  "Inne",
+];
+
 // ============================================================================
 // Recipe DTOs
 // ============================================================================

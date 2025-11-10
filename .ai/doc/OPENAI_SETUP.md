@@ -3,6 +3,7 @@
 ## Overview
 
 The Shopping List Preview endpoint (`POST /api/shopping-lists/preview`) uses OpenAI GPT-4o mini to categorize ingredients into Polish categories:
+
 - Nabiał (Dairy)
 - Warzywa (Vegetables)
 - Owoce (Fruits)
@@ -35,11 +36,13 @@ OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ### 3. Verify Configuration
 
 Start dev server:
+
 ```bash
 npm run dev
 ```
 
 Check console logs for:
+
 - ✅ No errors about missing `OPENAI_API_KEY`
 - ✅ Server starts successfully
 
@@ -57,6 +60,7 @@ Check console logs for:
 ### 2. Redeploy
 
 After adding env variable:
+
 ```bash
 git push origin main
 ```
@@ -69,11 +73,13 @@ Vercel will automatically redeploy with new environment variable.
 **Pricing**: ~$0.000150 per 1K input tokens, ~$0.000600 per 1K output tokens
 
 **Average request**:
+
 - Input: ~50 ingredients × 10 tokens = 500 tokens + prompt (~200 tokens) = **~700 input tokens**
 - Output: JSON response ~50 tokens = **~50 output tokens**
 - **Cost per request**: ~$0.0001 - $0.0002
 
 **Monthly estimates**:
+
 - 1,000 users × 4 lists/month = 4,000 requests = **~$0.40 - $0.80/month**
 - 10,000 users × 4 lists/month = 40,000 requests = **~$4 - $8/month**
 
@@ -82,6 +88,7 @@ Very affordable for MVP! 🎉
 ## Fallback Behavior
 
 If OpenAI API fails (timeout, quota exceeded, network error):
+
 - ✅ Endpoint still returns **200 OK**
 - ✅ All ingredients get category **"Inne"** (Other)
 - ✅ Metadata includes `ai_categorization_status: "failed"` and error message
@@ -92,17 +99,20 @@ This ensures the app never breaks due to AI failures.
 ## Monitoring
 
 **Check OpenAI usage**:
+
 1. Go to https://platform.openai.com/usage
 2. Monitor daily/monthly usage
 3. Set up billing alerts if needed
 
 **Console logs** (development):
+
 ```
 [AI Categorization] Attempt 1/3 for 50 ingredients
 [AI Categorization] Success on attempt 1
 ```
 
 **Error logs** (if AI fails):
+
 ```
 [AI Categorization] Attempt 1 failed: Timeout
 [AI Categorization] Retrying in 1000ms...
@@ -118,6 +128,7 @@ This ensures the app never breaks due to AI failures.
 ### Error: "OpenAI timeout after 2 retries"
 
 **Possible causes**:
+
 - Network issues
 - OpenAI API downtime
 - Timeout too short (currently 10s)
@@ -145,17 +156,15 @@ To test without actual API calls, temporarily modify `ai-categorization.service.
 
 ```typescript
 // Mock categorization for testing
-export async function categorizeIngredientsWithRetry(
-  ingredients: string[]
-): Promise<CategorizationResult> {
+export async function categorizeIngredientsWithRetry(ingredients: string[]): Promise<CategorizationResult> {
   console.log('[AI Categorization] MOCKED - returning all "Inne"');
 
   const categories = new Map<string, IngredientCategory>();
-  ingredients.forEach(ing => categories.set(ing, "Inne"));
+  ingredients.forEach((ing) => categories.set(ing, "Inne"));
 
   return {
     success: true,
-    categories
+    categories,
   };
 }
 ```
@@ -163,6 +172,7 @@ export async function categorizeIngredientsWithRetry(
 ### Test with Real OpenAI
 
 Use Postman/Bruno to call:
+
 ```
 POST http://localhost:3001/api/shopping-lists/preview
 Authorization: Bearer <supabase_jwt_token>
@@ -175,6 +185,7 @@ Content-Type: application/json
 ```
 
 Check response metadata:
+
 ```json
 {
   "metadata": {

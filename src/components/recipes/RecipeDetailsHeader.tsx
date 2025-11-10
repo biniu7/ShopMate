@@ -23,14 +23,9 @@ interface RecipeDetailsHeaderProps {
  * RecipeDetailsHeader
  * Sticky header z breadcrumbs i przyciskami akcji
  */
-export function RecipeDetailsHeader({
-  recipeName,
-  recipeId,
-  onDelete,
-}: RecipeDetailsHeaderProps) {
+export function RecipeDetailsHeader({ recipeName, recipeId, onDelete }: RecipeDetailsHeaderProps) {
   // Truncate recipe name if too long for breadcrumb
-  const truncatedName =
-    recipeName.length > 30 ? `${recipeName.slice(0, 30)}...` : recipeName;
+  const truncatedName = recipeName.length > 30 ? `${recipeName.slice(0, 30)}...` : recipeName;
 
   return (
     <header className="recipe-details-header sticky top-0 bg-white z-10 border-b shadow-sm">
@@ -57,11 +52,7 @@ export function RecipeDetailsHeader({
             </a>
           </Button>
 
-          <Button
-            onClick={onDelete}
-            variant="destructive"
-            aria-label={`Usuń przepis ${recipeName}`}
-          >
+          <Button onClick={onDelete} variant="destructive" aria-label={`Usuń przepis ${recipeName}`}>
             <Trash2 className="h-4 w-4 mr-2" aria-hidden="true" />
             Usuń
           </Button>

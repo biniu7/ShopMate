@@ -78,7 +78,8 @@ export const IngredientsList = memo<IngredientsListProps>(({ ingredients, onAdd,
       {/* Helper text */}
       <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
         <p className="text-xs text-blue-800">
-          <strong>💡 Wskazówka:</strong> Ilość (np. 200) i jednostka (np. g, kg, sztuki) są opcjonalne. Nazwa składnika jest wymagana.
+          <strong>💡 Wskazówka:</strong> Ilość (np. 200) i jednostka (np. g, kg, sztuki) są opcjonalne. Nazwa składnika
+          jest wymagana.
         </p>
       </div>
     </div>

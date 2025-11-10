@@ -19,6 +19,7 @@ npm run dev
 ```
 
 Sprawdź w konsoli:
+
 ```
 ✓ Local    http://localhost:3001/
 ```
@@ -37,16 +38,19 @@ OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxx
 ### 3. Pobierz token autoryzacji
 
 **Metoda 1: Przez Supabase Dashboard**
+
 1. Idź do Supabase Dashboard → Authentication → Users
 2. Skopiuj JWT token zalogowanego użytkownika
 
 **Metoda 2: Przez browser DevTools**
+
 1. Zaloguj się w aplikacji
 2. Otwórz DevTools → Application → Storage → Local Storage
 3. Znajdź klucz `supabase.auth.token` lub podobny
 4. Skopiuj `access_token`
 
 **Metoda 3: Przez Supabase CLI**
+
 ```bash
 supabase auth login --email user@example.com --password password123
 ```
@@ -54,11 +58,13 @@ supabase auth login --email user@example.com --password password123
 ### 4. Znajdź recipe UUIDs
 
 **SQL query w Supabase Dashboard**:
+
 ```sql
 SELECT id, name FROM recipes WHERE user_id = 'your_user_id' LIMIT 5;
 ```
 
 Lub przez API:
+
 ```bash
 curl http://localhost:3001/api/recipes \
   -H "Authorization: Bearer YOUR_TOKEN"
@@ -69,6 +75,7 @@ curl http://localhost:3001/api/recipes \
 ## Opcja 1: Testowanie z Bruno
 
 ### Instalacja Bruno
+
 ```bash
 # Windows
 winget install Bruno.Bruno
@@ -81,6 +88,7 @@ snap install bruno
 ```
 
 ### Import Collection
+
 1. Otwórz Bruno
 2. Import Collection → Select Folder
 3. Wybierz: `.ai/testing/bruno-collection/`
@@ -91,6 +99,7 @@ snap install bruno
    - `baseUrl`: `http://localhost:3001`
 
 ### Uruchom testy
+
 1. **shopping-lists-preview.bru** - Recipes Mode (happy path)
 2. **shopping-lists-preview-calendar.bru** - Calendar Mode (happy path)
 3. **shopping-lists-preview-errors.bru** - Error cases
@@ -100,13 +109,16 @@ snap install bruno
 ## Opcja 2: Testowanie z Postman
 
 ### Import Collection
+
 1. Otwórz Postman
 2. Import → File → Select Files
 3. Wybierz wszystkie pliki `.bru` z `.ai/testing/bruno-collection/`
 4. Postman automatycznie skonwertuje format Bruno
 
 ### Konfiguracja Environment
+
 Utwórz environment `ShopMate Local`:
+
 ```json
 {
   "baseUrl": "http://localhost:3001",
@@ -157,6 +169,7 @@ chmod +x .ai/testing/curl-examples.sh
 ### ✅ Test 1: Recipes Mode - Happy Path
 
 **Request**:
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -169,6 +182,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (200 OK)**:
+
 ```json
 {
   "items": [
@@ -197,6 +211,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Sprawdź**:
+
 - ✅ Status code: 200
 - ✅ Items są posortowane według kategorii (Nabiał → Warzywa → Owoce → Mięso → Pieczywo → Przyprawy → Inne)
 - ✅ Alfabetycznie w ramach kategorii
@@ -208,6 +223,7 @@ POST /api/shopping-lists/preview
 ### ✅ Test 2: Calendar Mode - Happy Path
 
 **Request**:
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -227,6 +243,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (200 OK)**:
+
 ```json
 {
   "items": [...],
@@ -242,6 +259,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Sprawdź**:
+
 - ✅ Status code: 200
 - ✅ `week_start_date` obecne w metadata
 - ✅ `skipped_empty_meals` pokazuje ile posiłków nie miało przypisanych przepisów
@@ -252,6 +270,7 @@ POST /api/shopping-lists/preview
 ### ❌ Test 3: Error - Unauthorized (401)
 
 **Request** (BEZ Authorization header):
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -261,6 +280,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (401)**:
+
 ```json
 {
   "error": "Unauthorized"
@@ -272,6 +292,7 @@ POST /api/shopping-lists/preview
 ### ❌ Test 4: Error - Validation Failed (400)
 
 **Request** (pusta tablica recipe_ids):
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -281,6 +302,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (400)**:
+
 ```json
 {
   "error": "Validation failed",
@@ -295,6 +317,7 @@ POST /api/shopping-lists/preview
 ### ❌ Test 5: Error - Invalid UUID (400)
 
 **Request**:
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -304,6 +327,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (400)**:
+
 ```json
 {
   "error": "Validation failed",
@@ -318,6 +342,7 @@ POST /api/shopping-lists/preview
 ### ❌ Test 6: Error - Not Monday (400)
 
 **Request** (2025-11-05 to wtorek):
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -330,6 +355,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (400)**:
+
 ```json
 {
   "error": "Validation failed",
@@ -344,6 +370,7 @@ POST /api/shopping-lists/preview
 ### ❌ Test 7: Error - No Recipes Found (400)
 
 **Request** (UUID nie należy do użytkownika lub nie istnieje):
+
 ```json
 POST /api/shopping-lists/preview
 {
@@ -353,6 +380,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Oczekiwana odpowiedź (400)**:
+
 ```json
 {
   "error": "No recipes selected or all selected meals are empty"
@@ -366,6 +394,7 @@ POST /api/shopping-lists/preview
 **Symulacja**: Nieprawidłowy OPENAI_API_KEY lub timeout
 
 **Oczekiwana odpowiedź (200 OK)**:
+
 ```json
 {
   "items": [
@@ -388,6 +417,7 @@ POST /api/shopping-lists/preview
 ```
 
 **Sprawdź**:
+
 - ✅ Status code: 200 (NIE 422 lub 500!)
 - ✅ Wszystkie items mają `category: "Inne"`
 - ✅ `ai_categorization_status: "failed"`
@@ -398,6 +428,7 @@ POST /api/shopping-lists/preview
 ## Checklist testów
 
 ### Podstawowe testy
+
 - [ ] Server uruchomiony bez błędów
 - [ ] OPENAI_API_KEY skonfigurowany w .env
 - [ ] Token autoryzacji działa (401 bez tokena)
@@ -405,6 +436,7 @@ POST /api/shopping-lists/preview
 - [ ] Happy path - Calendar mode (200 OK)
 
 ### Walidacja
+
 - [ ] Empty recipe_ids → 400
 - [ ] Invalid UUID → 400
 - [ ] Invalid date format → 400
@@ -414,6 +446,7 @@ POST /api/shopping-lists/preview
 - [ ] day_of_week < 1 lub > 7 → 400
 
 ### Business Logic
+
 - [ ] Agregacja ingredients (same name+unit → sumowanie quantity)
 - [ ] Agregacja null quantities (mixed → null)
 - [ ] Sortowanie według kategorii
@@ -423,11 +456,13 @@ POST /api/shopping-lists/preview
 - [ ] Empty meals skipped (skipped_empty_meals counter)
 
 ### AI Integration
+
 - [ ] AI success → kategorie poprawne
 - [ ] AI failed → wszystkie "Inne", status "failed"
 - [ ] Console logs pokazują retry attempts
 
 ### Performance
+
 - [ ] Response time < 3s (p50)
 - [ ] Response time < 8s (p95, z AI retries)
 - [ ] Brak memory leaks (powtórz test 10x)
@@ -439,6 +474,7 @@ POST /api/shopping-lists/preview
 ### Problem: "OPENAI_API_KEY environment variable is not set"
 
 **Rozwiązanie**:
+
 1. Sprawdź czy `.env` istnieje w root projektu
 2. Sprawdź czy `OPENAI_API_KEY=sk-...` jest w pliku
 3. Restart servera (`npm run dev`)
@@ -446,6 +482,7 @@ POST /api/shopping-lists/preview
 ### Problem: "Unauthorized" mimo poprawnego tokena
 
 **Rozwiązanie**:
+
 1. Sprawdź czy token jest aktualny (Supabase JWT ma expiration)
 2. Sprawdź format: `Authorization: Bearer YOUR_TOKEN` (ze spacją!)
 3. Zweryfikuj token na https://jwt.io (powinna być sekcja `sub` z user_id)
@@ -453,6 +490,7 @@ POST /api/shopping-lists/preview
 ### Problem: "No recipes found" mimo istniejących przepisów
 
 **Rozwiązanie**:
+
 1. Sprawdź czy recipe należy do zalogowanego użytkownika (RLS filtruje)
 2. Sprawdź czy recipe ma ingredients (bez ingredients → pusta lista)
 3. Verify user_id w token vs user_id w recipes table
@@ -460,23 +498,27 @@ POST /api/shopping-lists/preview
 ### Problem: AI zawsze zwraca "Inne"
 
 **Możliwe przyczyny**:
+
 1. Nieprawidłowy OPENAI_API_KEY
 2. Brak środków na koncie OpenAI
 3. Rate limit exceeded (sprawdź https://platform.openai.com/usage)
 4. Network issue (firewall, proxy)
 
 **Debug**:
+
 - Sprawdź console logs: `[AI Categorization] Attempt 1/3...`
 - Jeśli widzisz error, sprawdź OpenAI dashboard
 
 ### Problem: Response time > 10s
 
 **Możliwe przyczyny**:
+
 1. Duża liczba ingredients (>50) → AI call zajmuje więcej czasu
 2. AI timeout + retries (10s × 3 = 30s worst case)
 3. Wolne zapytania do bazy (missing indexes)
 
 **Rozwiązanie**:
+
 - Sprawdź logi czasów
 - Rozważ cache dla common ingredients (post-MVP)
 
@@ -523,6 +565,7 @@ VALUES
 ### Console Logs (Development)
 
 Prawidłowe logi:
+
 ```
 [POST /api/shopping-lists/preview] User abc123 requesting preview
 [Shopping List Preview] Generating preview for source: recipes
@@ -534,11 +577,13 @@ Prawidłowe logi:
 ```
 
 Logi z błędem:
+
 ```
 [POST /api/shopping-lists/preview] Unauthorized access attempt
 ```
 
 Logi AI failure:
+
 ```
 [AI Categorization] Attempt 1 failed: Timeout
 [AI Categorization] Retrying in 1000ms...

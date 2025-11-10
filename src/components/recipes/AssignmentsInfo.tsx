@@ -21,9 +21,7 @@ export function AssignmentsInfo({ count }: AssignmentsInfoProps) {
   return (
     <Alert variant="default" className="mt-8 bg-blue-50 border-blue-200">
       <Info className="h-4 w-4 text-blue-600" aria-hidden="true" />
-      <AlertTitle className="text-blue-900">
-        Ten przepis jest przypisany do kalendarza
-      </AlertTitle>
+      <AlertTitle className="text-blue-900">Ten przepis jest przypisany do kalendarza</AlertTitle>
       <AlertDescription className="text-blue-800">
         Ten przepis jest przypisany do {count} {mealLabel} w kalendarzu.{" "}
         <a

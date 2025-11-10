@@ -98,16 +98,9 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
       return (
         <div className="py-16 text-center">
           <div className="max-w-md mx-auto">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-              Przepis nie znaleziony
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Przepis o podanym ID nie istnieje lub nie masz do niego dostępu.
-            </p>
-            <a
-              href="/recipes"
-              className="inline-flex items-center gap-2 text-primary hover:underline"
-            >
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Przepis nie znaleziony</h2>
+            <p className="text-gray-600 mb-6">Przepis o podanym ID nie istnieje lub nie masz do niego dostępu.</p>
+            <a href="/recipes" className="inline-flex items-center gap-2 text-primary hover:underline">
               Powrót do listy przepisów
             </a>
           </div>
@@ -127,11 +120,7 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
   // Render recipe details
   return (
     <div className="recipe-details-view">
-      <RecipeDetailsHeader
-        recipeName={recipe.name}
-        recipeId={recipe.id}
-        onDelete={() => setDeleteDialogOpen(true)}
-      />
+      <RecipeDetailsHeader recipeName={recipe.name} recipeId={recipe.id} onDelete={() => setDeleteDialogOpen(true)} />
 
       <RecipeDetailsContent recipe={recipe} />
 

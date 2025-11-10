@@ -24,10 +24,7 @@ export function RecipeDetailsContent({ recipe }: RecipeDetailsContentProps) {
       <h1 className="text-4xl font-bold text-gray-900 mb-2">{recipe.name}</h1>
 
       {/* Meta information */}
-      <RecipeMeta
-        createdAt={recipe.created_at}
-        updatedAt={recipe.updated_at}
-      />
+      <RecipeMeta createdAt={recipe.created_at} updatedAt={recipe.updated_at} />
 
       {/* Ingredients and Instructions grid */}
       <div className="grid md:grid-cols-2 gap-8 mt-8">

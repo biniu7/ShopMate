@@ -85,7 +85,11 @@ export const IngredientRow = memo<IngredientRowProps>(({ index, ingredient, onUp
 
       {/* Error Message */}
       {error?.name && (
-        <p id={`ingredient-${index}-error`} className="text-sm text-red-600 mt-1 ml-1 flex items-center gap-1" role="alert">
+        <p
+          id={`ingredient-${index}-error`}
+          className="text-sm text-red-600 mt-1 ml-1 flex items-center gap-1"
+          role="alert"
+        >
           <span>⚠</span> {error.name.message || error.name}
         </p>
       )}
