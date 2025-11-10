@@ -1,5 +1,5 @@
 ---
-import MainLayout from "@/layouts/MainLayout.astro";
+import Layout from "@/layouts/Layout.astro";
 import ShoppingListGenerateView from "@/components/ShoppingListGenerateView";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -11,7 +11,7 @@ if (!user) {
 }
 ---
 
-<MainLayout title="Generuj listę zakupów - ShopMate">
+<Layout title="Generuj listę zakupów - ShopMate">
   <ShoppingListGenerateView client:load />
   <Toaster client:load />
-</MainLayout>
+</Layout>

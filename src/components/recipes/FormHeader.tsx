@@ -8,7 +8,7 @@ import { memo } from "react";
  * Breadcrumbs Component
  * Simple breadcrumbs navigation
  */
-const Breadcrumbs = memo<{ items: Array<{ label: string; href: string }> }>(({ items }) => {
+const Breadcrumbs = memo<{ items: { label: string; href: string }[] }>(({ items }) => {
   return (
     <nav aria-label="Breadcrumb" className="mb-4">
       <ol className="flex items-center space-x-2 text-sm text-gray-600">

@@ -10,7 +10,7 @@ import { IngredientRow } from "./IngredientRow";
 import type { IngredientInputDto } from "@/types";
 
 interface IngredientsListProps {
-  ingredients: Array<IngredientInputDto & { id: string }>;
+  ingredients: (IngredientInputDto & { id: string })[];
   onAdd: (ingredient: IngredientInputDto) => void;
   onRemove: (index: number) => void;
   onUpdate: (index: number, field: keyof IngredientInputDto, value: any) => void;
