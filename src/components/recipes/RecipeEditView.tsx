@@ -7,13 +7,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { Info } from "lucide-react";
 import { RecipeSchema, type RecipeSchemaType } from "@/lib/validation/recipe.schema";
 import type { RecipeResponseDto } from "@/types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormHeader } from "./FormHeader";
 import { NameInput } from "./NameInput";
 import { InstructionsTextarea } from "./InstructionsTextarea";
 import { IngredientsList } from "./IngredientsList";
 import { FormActions } from "./FormActions";
+import { DiscardChangesDialog } from "./DiscardChangesDialog";
 import { RecipeDetailsSkeleton } from "./RecipeDetailsSkeleton";
 import { ErrorMessage } from "./ErrorMessage";
 
@@ -27,6 +30,7 @@ interface RecipeEditViewProps {
  */
 export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
   const queryClient = useQueryClient();
+  const [discardDialogOpen, setDiscardDialogOpen] = React.useState(false);
 
   // Fetch recipe details
   const {
@@ -64,7 +68,7 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
     reset,
   } = useForm<RecipeSchemaType>({
     resolver: zodResolver(RecipeSchema),
@@ -117,9 +121,10 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
       return response.json() as Promise<RecipeResponseDto>;
     },
     onSuccess: (updatedRecipe) => {
-      // Invalidate queries
+      // Invalidate all related queries
       queryClient.invalidateQueries({ queryKey: ["recipe", recipeId] });
       queryClient.invalidateQueries({ queryKey: ["recipes"] });
+      queryClient.invalidateQueries({ queryKey: ["meal-plan"] }); // Live update in calendar
 
       // Show success notification
       toast.success("Przepis zaktualizowany pomyślnie!", {
@@ -157,33 +162,17 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
 
   // Cancel handler with dirty check
   const handleCancel = () => {
-    const hasChanges =
-      nameValue !== recipe?.name ||
-      instructionsValue !== recipe?.instructions ||
-      fields.length !== recipe?.ingredients.length ||
-      fields.some(
-        (field, index) =>
-          field.name !== recipe?.ingredients[index]?.name ||
-          field.quantity !== recipe?.ingredients[index]?.quantity ||
-          field.unit !== recipe?.ingredients[index]?.unit
-      );
-
-    if (hasChanges) {
-      if (
-        confirm(
-          "Czy na pewno chcesz anulować? Niezapisane zmiany zostaną utracone."
-        )
-      ) {
-        window.location.href = `/recipes/${recipeId}`;
-      }
+    if (isDirty) {
+      setDiscardDialogOpen(true);
     } else {
       window.location.href = `/recipes/${recipeId}`;
     }
   };
 
-  // Watch form values
-  const nameValue = watch("name");
-  const instructionsValue = watch("instructions");
+  // Handle discard action from dialog
+  const handleDiscard = () => {
+    window.location.href = `/recipes/${recipeId}`;
+  };
 
   // Handle loading state
   if (isLoading) {
@@ -250,6 +239,15 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
           {/* Header with breadcrumbs */}
           <FormHeader mode="edit" recipeName={recipe.name} />
 
+          {/* Info Alert about propagation */}
+          <Alert className="my-6">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Zmiany zaktualizują wszystkie przypisania w kalendarzu. Wcześniej
+              wygenerowane listy zakupów pozostaną niezmienione (snapshot).
+            </AlertDescription>
+          </Alert>
+
           {/* Form Fields */}
           <div className="space-y-8">
             {/* Name Input */}
@@ -299,6 +297,13 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
             mode="edit"
           />
         </form>
+
+        {/* Discard Changes Dialog */}
+        <DiscardChangesDialog
+          isOpen={discardDialogOpen}
+          onClose={() => setDiscardDialogOpen(false)}
+          onDiscard={handleDiscard}
+        />
       </div>
     </div>
   );
