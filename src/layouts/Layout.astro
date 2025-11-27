@@ -1,15 +1,20 @@
 ---
 import "../styles/global.css";
+import Navigation from "@/components/Navigation";
+import { Toaster } from "@/components/ui/toaster";
 
 interface Props {
   title?: string;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "ShopMate" } = Astro.props;
+
+// Get user from middleware (if authenticated)
+const user = Astro.locals.user;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -18,7 +23,16 @@ const { title = "10x Astro Starter" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <!-- Navigation with user info -->
+    <Navigation client:load user={user} />
+
+    <!-- Main content -->
+    <main class="container mx-auto px-4 py-8">
+      <slot />
+    </main>
+
+    <!-- Toast notifications -->
+    <Toaster client:load />
   </body>
 </html>
 

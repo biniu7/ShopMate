@@ -6,7 +6,8 @@
       "Bash(npm run dev)",
       "Bash(cat:*)",
       "Bash(mkdir:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [
       "Read(./.env)",

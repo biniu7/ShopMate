@@ -37,14 +37,33 @@ export default function ResetPasswordView({ isResetCallback }: ResetPasswordView
     setIsLoading(true);
 
     try {
-      // TODO: Implement Supabase Auth call when backend is ready
-      // For now, just show a placeholder message
-      toast.info("Funkcja resetu hasła zostanie wkrótce zaimplementowana");
-      console.log("Reset password for:", validation.data.email);
+      // Call server-side reset password API endpoint
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: validation.data.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        // Server returned error
+        const errorMessage = data.error || "Nie udało się wysłać emaila. Sprawdź adres email.";
+        toast.error(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - email sent (or silently ignored if email doesn't exist)
+      toast.success(data.message || "Link do resetowania hasła został wysłany na email");
       setEmailSent(true);
     } catch (error) {
       console.error("Reset password error:", error);
-      toast.error("Nie udało się wysłać emaila. Sprawdź adres email.");
+      toast.error("Brak połączenia. Sprawdź internet i spróbuj ponownie.");
     } finally {
       setIsLoading(false);
     }
@@ -70,14 +89,38 @@ export default function ResetPasswordView({ isResetCallback }: ResetPasswordView
     setIsLoading(true);
 
     try {
-      // TODO: Implement Supabase Auth call when backend is ready
-      // For now, just show a placeholder message
-      toast.info("Funkcja zmiany hasła zostanie wkrótce zaimplementowana");
-      console.log("Update password");
+      // Call server-side update password API endpoint
+      const response = await fetch("/api/auth/update-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newPassword: validation.data.newPassword,
+          confirmPassword: validation.data.confirmPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        // Server returned error
+        const errorMessage = data.error || "Nie udało się zmienić hasła";
+        toast.error(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - password updated
+      toast.success(data.message || "Hasło zostało zmienione");
+
+      // Redirect to login page
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
     } catch (error) {
       console.error("Update password error:", error);
-      toast.error("Nie udało się zmienić hasła");
-    } finally {
+      toast.error("Brak połączenia. Sprawdź internet i spróbuj ponownie.");
       setIsLoading(false);
     }
   };

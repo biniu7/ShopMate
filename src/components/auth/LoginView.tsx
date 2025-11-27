@@ -23,7 +23,7 @@ export default function LoginView({ redirectUrl = "/dashboard" }: LoginViewProps
     e.preventDefault();
     setErrors({});
 
-    // Validation
+    // Client-side validation
     const validation = loginSchema.safeParse(formData);
     if (!validation.success) {
       const fieldErrors: Record<string, string> = {};
@@ -39,15 +39,37 @@ export default function LoginView({ redirectUrl = "/dashboard" }: LoginViewProps
     setIsLoading(true);
 
     try {
-      // TODO: Implement Supabase Auth call when backend is ready
-      // For now, just show a placeholder message
-      toast.info("Funkcja logowania zostanie wkrótce zaimplementowana");
-      console.log("Login data:", validation.data);
-      console.log("Redirect URL:", redirectUrl);
+      // Call server-side login API endpoint (answer 2.B - server-side auth)
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: validation.data.email,
+          password: validation.data.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        // Server returned error
+        const errorMessage = data.error || "Nieprawidłowy email lub hasło";
+        toast.error(errorMessage);
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - cookies are set by server
+      // Hybrid redirect (answer 3.C): API returns success, client does redirect
+      toast.success("Zostałeś pomyślnie zalogowany");
+
+      // Redirect to original URL or dashboard
+      window.location.href = redirectUrl;
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Wystąpił błąd podczas logowania");
-    } finally {
+      toast.error("Brak połączenia. Sprawdź internet i spróbuj ponownie.");
       setIsLoading(false);
     }
   };
