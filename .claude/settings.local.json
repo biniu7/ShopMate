@@ -1,6 +1,13 @@
 {
   "permissions": {
-    "allow": ["Bash(npx tsc:*)", "Bash(npm run lint)", "Bash(npm run dev)", "Bash(cat:*)", "Bash(mkdir:*)"],
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run dev)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(sed:*)"
+    ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.*)",
