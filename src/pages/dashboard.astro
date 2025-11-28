@@ -4,8 +4,12 @@
  */
 import Layout from "@/layouts/Layout.astro";
 
-// Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
+// Defense in depth: explicit auth check even though middleware protects this route
 const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect("/login");
+}
 ---
 
 <Layout title="Dashboard - ShopMate">
