@@ -41,20 +41,20 @@ export default function Navigation({ user }: NavigationProps) {
 
       if (!response.ok || !data.success) {
         // Server returned error
-        const errorMessage = data.error || "Nie udaBo si wylogowa";
+        const errorMessage = data.error || "Nie udało się wylogować";
         toast.error(errorMessage);
         setIsLoading(false);
         return;
       }
 
       // Success - session cleared on server
-      toast.success("ZostaBe[ wylogowany");
+      toast.success("Zostałeś wylogowany");
 
       // Redirect to login page
       window.location.href = "/login";
     } catch (error) {
       console.error("Logout error:", error);
-      toast.error("Brak poBczenia. Sprawdz internet i spr�buj ponownie.");
+      toast.error("Brak połączenia. Sprawdź internet i spróbuj ponownie.");
       setIsLoading(false);
     }
   };
@@ -98,22 +98,22 @@ export default function Navigation({ user }: NavigationProps) {
                   href="/shopping-lists"
                   className="text-gray-700 hover:text-primary transition-colors"
                 >
-                  Listy zakup�w
+                  Listy zakupów
                 </a>
 
                 {/* Logout button */}
                 <Button onClick={handleLogout} variant="outline" disabled={isLoading}>
-                  {isLoading ? "Wylogowuj..." : "Wyloguj"}
+                  {isLoading ? "Wylogowuj..." : "Wyloguj"}
                 </Button>
               </>
             ) : (
               <>
                 {/* Guest menu */}
                 <a href="/login">
-                  <Button variant="outline">Zaloguj si</Button>
+                  <Button variant="outline">Zaloguj się</Button>
                 </a>
                 <a href="/register">
-                  <Button>Zarejestruj si</Button>
+                  <Button>Zarejestruj się</Button>
                 </a>
               </>
             )}
@@ -171,7 +171,7 @@ export default function Navigation({ user }: NavigationProps) {
                   href="/shopping-lists"
                   className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                 >
-                  Listy zakup�w
+                  Listy zakupów
                 </a>
                 <div className="px-4 pt-2">
                   <Button
@@ -180,7 +180,7 @@ export default function Navigation({ user }: NavigationProps) {
                     className="w-full"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Wylogowuj..." : "Wyloguj"}
+                    {isLoading ? "Wylogowuj..." : "Wyloguj"}
                   </Button>
                 </div>
               </div>
@@ -188,11 +188,11 @@ export default function Navigation({ user }: NavigationProps) {
               <div className="flex flex-col space-y-3 px-4">
                 <a href="/login" className="w-full">
                   <Button variant="outline" className="w-full">
-                    Zaloguj si
+                    Zaloguj się
                   </Button>
                 </a>
                 <a href="/register" className="w-full">
-                  <Button className="w-full">Zarejestruj si</Button>
+                  <Button className="w-full">Zarejestruj się</Button>
                 </a>
               </div>
             )}

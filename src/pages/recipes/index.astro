@@ -4,14 +4,11 @@
  * Route: /recipes
  */
 import Layout from "@/layouts/Layout.astro";
-import { QueryProvider } from "@/components/providers/QueryProvider";
-import { RecipesListView } from "@/components/recipes/RecipesListView";
+import { RecipesListViewWrapper } from "@/components/recipes/RecipesListViewWrapper";
 
 // Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
 ---
 
 <Layout title="Przepisy - ShopMate">
-  <QueryProvider client:load>
-    <RecipesListView client:load />
-  </QueryProvider>
+  <RecipesListViewWrapper client:only="react" />
 </Layout>
