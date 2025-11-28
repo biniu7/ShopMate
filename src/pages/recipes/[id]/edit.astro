@@ -14,12 +14,17 @@ import { Toaster } from "@/components/ui/toaster";
 // Get recipe ID from URL params
 const { id } = Astro.params;
 
+// Validate that id exists
+if (!id) {
+  return Astro.redirect("/recipes");
+}
+
 const title = "Edytuj przepis - ShopMate";
 ---
 
 <Layout title={title}>
-  <QueryProvider client:load>
-    <RecipeEditView client:load recipeId={id!} />
-    <Toaster client:load />
+  <QueryProvider client:only="react">
+    <RecipeEditView recipeId={id} client:load />
   </QueryProvider>
+  <Toaster client:only="react" />
 </Layout>

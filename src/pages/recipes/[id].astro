@@ -11,12 +11,17 @@ import { Toaster } from "@/components/ui/toaster";
 // Get recipe ID from URL params
 const { id } = Astro.params;
 
+// Validate that id exists
+if (!id) {
+  return Astro.redirect("/recipes");
+}
+
 // Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
 ---
 
 <Layout title="Szczegóły przepisu - ShopMate">
-  <QueryProvider client:load>
-    <RecipeDetailsView client:load recipeId={id!} />
-    <Toaster client:load />
+  <QueryProvider client:only="react">
+    <RecipeDetailsView recipeId={id} client:load />
   </QueryProvider>
+  <Toaster client:only="react" />
 </Layout>
