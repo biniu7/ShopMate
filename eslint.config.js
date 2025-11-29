@@ -6,6 +6,8 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import pluginReact from "eslint-plugin-react";
 import reactCompiler from "eslint-plugin-react-compiler";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
+import vitest from "eslint-plugin-vitest";
+import playwright from "eslint-plugin-playwright";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
@@ -56,6 +58,40 @@ const reactConfig = tseslint.config({
   },
 });
 
+// Vitest configuration dla testów jednostkowych
+const vitestConfig = tseslint.config({
+  files: ["**/*.test.{ts,tsx}", "tests/**/*.{ts,tsx}", "!tests/e2e/**"],
+  plugins: {
+    vitest,
+  },
+  rules: {
+    ...vitest.configs.recommended.rules,
+    "vitest/expect-expect": "warn",
+    "vitest/no-disabled-tests": "warn",
+    "vitest/no-focused-tests": "error",
+    "vitest/valid-expect": "error",
+  },
+  languageOptions: {
+    globals: {
+      ...vitest.environments.env.globals,
+    },
+  },
+});
+
+// Playwright configuration dla testów E2E
+const playwrightConfig = tseslint.config({
+  files: ["tests/e2e/**/*.spec.{ts,tsx}"],
+  plugins: {
+    playwright,
+  },
+  rules: {
+    ...playwright.configs["flat/recommended"].rules,
+    "playwright/no-focused-test": "error",
+    "playwright/valid-expect": "error",
+    "playwright/prefer-web-first-assertions": "warn",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   {
@@ -64,6 +100,8 @@ export default tseslint.config(
   baseConfig,
   jsxA11yConfig,
   reactConfig,
+  vitestConfig,
+  playwrightConfig,
   eslintPluginAstro.configs["flat/recommended"],
   eslintPluginPrettier
 );
