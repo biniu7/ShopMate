@@ -84,7 +84,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: "Nie udaBo si utworzy konta. Spr�buj ponownie.",
+          error: "Nie udało się utworzyć konta. Spróbuj ponownie.",
         }),
         {
           status: 500,
@@ -117,7 +117,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "WystpiB nieoczekiwany bBd. Spr�buj ponownie.",
+        error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
       }),
       {
         status: 500,
