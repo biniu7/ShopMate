@@ -30,8 +30,8 @@ export const NameInput = memo<NameInputProps>(({ value, onChange, error }) => {
         placeholder="np. Spaghetti Carbonara"
         aria-invalid={!!error}
         aria-describedby={error ? "name-error" : undefined}
-        autoFocus
         className={error ? "border-red-500 focus-visible:ring-red-500" : ""}
+        data-testid="recipe-name-input"
       />
       {error && (
         <p id="name-error" className="text-sm text-red-600 flex items-center gap-1" role="alert">

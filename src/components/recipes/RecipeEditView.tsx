@@ -8,6 +8,7 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Info } from "lucide-react";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import { RecipeSchema, type RecipeSchemaType } from "@/lib/validation/recipe.schema";
 import type { RecipeResponseDto } from "@/types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -25,10 +26,10 @@ interface RecipeEditViewProps {
 }
 
 /**
- * Recipe Edit View Component
- * Fetches recipe data and provides editing form
+ * RecipeEditData
+ * Wewnętrzny komponent z logiką pobierania danych i formularza
  */
-export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
+function RecipeEditData({ recipeId }: RecipeEditViewProps) {
   const queryClient = useQueryClient();
   const [discardDialogOpen, setDiscardDialogOpen] = React.useState(false);
 
@@ -287,5 +288,17 @@ export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
         />
       </div>
     </div>
+  );
+}
+
+/**
+ * RecipeEditView
+ * Główny komponent z QueryProvider
+ */
+export function RecipeEditView({ recipeId }: RecipeEditViewProps) {
+  return (
+    <QueryProvider>
+      <RecipeEditData recipeId={recipeId} />
+    </QueryProvider>
   );
 }

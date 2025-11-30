@@ -70,6 +70,7 @@ export const IngredientsList = memo<IngredientsListProps>(({ ingredients, onAdd,
         disabled={!canAddMore}
         className="w-full border-dashed border-2 hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         title={!canAddMore ? "Osiągnięto maksimum 50 składników" : "Dodaj składnik"}
+        data-testid="add-ingredient-button"
       >
         <Plus className="h-4 w-4 mr-2" />
         Dodaj składnik {!canAddMore && `(${ingredients.length}/50)`}

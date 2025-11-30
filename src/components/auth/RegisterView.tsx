@@ -91,14 +91,12 @@ export default function RegisterView() {
             <strong>Konto zostało utworzone!</strong>
           </p>
           <p className="text-green-700 text-sm">
-            Na adres <strong>{formData.email}</strong> wysłaliśmy link aktywacyjny.
-            Kliknij w link, aby potwierdzić swoje konto i móc się zalogować.
+            Na adres <strong>{formData.email}</strong> wysłaliśmy link aktywacyjny. Kliknij w link, aby potwierdzić
+            swoje konto i móc się zalogować.
           </p>
         </div>
         <div className="space-y-2">
-          <p className="text-sm text-gray-600">
-            Nie widzisz wiadomości? Sprawdź folder spam lub poczekaj kilka minut.
-          </p>
+          <p className="text-sm text-gray-600">Nie widzisz wiadomości? Sprawdź folder spam lub poczekaj kilka minut.</p>
           <p className="text-center mt-4">
             <a href="/login" className="text-primary hover:underline">
               Wróć do logowania
@@ -151,9 +149,7 @@ export default function RegisterView() {
               {errors.password}
             </p>
           )}
-          <p className="text-xs text-gray-500 mt-1">
-            Min. 8 znaków, 1 wielka litera, 1 cyfra
-          </p>
+          <p className="text-xs text-gray-500 mt-1">Min. 8 znaków, 1 wielka litera, 1 cyfra</p>
         </div>
 
         {/* Confirm password field */}

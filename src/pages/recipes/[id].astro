@@ -4,8 +4,7 @@
  * Route: /recipes/:id
  */
 import Layout from "@/layouts/Layout.astro";
-import { QueryProvider } from "@/components/providers/QueryProvider";
-import { RecipeDetailsView } from "@/components/recipes/RecipeDetailsView";
+import { RecipeDetailsViewWrapper } from "@/components/recipes/RecipeDetailsViewWrapper";
 import { Toaster } from "@/components/ui/toaster";
 
 // Get recipe ID from URL params
@@ -20,8 +19,6 @@ if (!id) {
 ---
 
 <Layout title="Szczegóły przepisu - ShopMate">
-  <QueryProvider client:only="react">
-    <RecipeDetailsView recipeId={id} client:load />
-  </QueryProvider>
+  <RecipeDetailsViewWrapper recipeId={id} client:load />
   <Toaster client:only="react" />
 </Layout>

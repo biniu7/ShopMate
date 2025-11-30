@@ -38,7 +38,10 @@ const RecipePreviewModal = memo<RecipePreviewModalProps>(
       error,
     } = useQuery<RecipeResponseDto>({
       queryKey: ["recipe", recipeId],
-      queryFn: () => fetchRecipe(recipeId!),
+      queryFn: () => {
+        if (!recipeId) throw new Error("Recipe ID is required");
+        return fetchRecipe(recipeId);
+      },
       enabled: !!recipeId && isOpen,
       staleTime: 5 * 60 * 1000, // 5 minutes
     });

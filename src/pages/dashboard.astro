@@ -17,11 +17,9 @@ if (!user) {
     <!-- Dashboard Header -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900">
-        Witaj w ShopMate{user?.email ? `, ${user.email.split('@')[0]}` : ''}!
+        Witaj w ShopMate{user?.email ? `, ${user.email.split("@")[0]}` : ""}!
       </h1>
-      <p class="mt-2 text-gray-600">
-        Zacznij planować swoje posiłki i listy zakupów
-      </p>
+      <p class="mt-2 text-gray-600">Zacznij planować swoje posiłki i listy zakupów</p>
     </div>
 
     <!-- Quick Actions -->
@@ -33,12 +31,7 @@ if (!user) {
       >
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-semibold text-gray-900">Przepisy</h2>
-          <svg
-            class="w-8 h-8 text-primary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -47,12 +40,8 @@ if (!user) {
             ></path>
           </svg>
         </div>
-        <p class="text-gray-600 text-sm">
-          Zarządzaj swoimi przepisami kulinarnymi
-        </p>
-        <div class="mt-4 text-primary font-medium text-sm">
-          Przejdź do przepisów →
-        </div>
+        <p class="text-gray-600 text-sm">Zarządzaj swoimi przepisami kulinarnymi</p>
+        <div class="mt-4 text-primary font-medium text-sm">Przejdź do przepisów →</div>
       </a>
 
       <!-- Kalendarz Card -->
@@ -62,26 +51,16 @@ if (!user) {
       >
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-semibold text-gray-900">Kalendarz</h2>
-          <svg
-            class="w-8 h-8 text-primary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            ></path>
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
         </div>
-        <p class="text-gray-600 text-sm">
-          Planuj posiłki w kalendarzu tygodniowym
-        </p>
-        <div class="mt-4 text-primary font-medium text-sm">
-          Otwórz kalendarz →
-        </div>
+        <p class="text-gray-600 text-sm">Planuj posiłki w kalendarzu tygodniowym</p>
+        <div class="mt-4 text-primary font-medium text-sm">Otwórz kalendarz →</div>
       </a>
 
       <!-- Listy zakupów Card -->
@@ -91,12 +70,7 @@ if (!user) {
       >
         <div class="flex items-center justify-between mb-4">
           <h2 class="text-xl font-semibold text-gray-900">Listy zakupów</h2>
-          <svg
-            class="w-8 h-8 text-primary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -105,20 +79,14 @@ if (!user) {
             ></path>
           </svg>
         </div>
-        <p class="text-gray-600 text-sm">
-          Generuj i zarządzaj listami zakupów
-        </p>
-        <div class="mt-4 text-primary font-medium text-sm">
-          Zobacz listy →
-        </div>
+        <p class="text-gray-600 text-sm">Generuj i zarządzaj listami zakupów</p>
+        <div class="mt-4 text-primary font-medium text-sm">Zobacz listy →</div>
       </a>
     </div>
 
     <!-- Getting Started Guide -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        Jak zacząć korzystać z ShopMate?
-      </h2>
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">Jak zacząć korzystać z ShopMate?</h2>
       <ol class="space-y-3 text-gray-700">
         <li class="flex items-start">
           <span class="font-bold text-primary mr-2">1.</span>
@@ -138,9 +106,7 @@ if (!user) {
           <span class="font-bold text-primary mr-2">3.</span>
           <span>
             Wygeneruj listę zakupów i wyeksportuj ją do PDF w
-            <a href="/shopping-lists" class="text-primary underline hover:no-underline"
-              >Listach zakupów</a
-            >
+            <a href="/shopping-lists" class="text-primary underline hover:no-underline">Listach zakupów</a>
           </span>
         </li>
       </ol>
@@ -151,11 +117,7 @@ if (!user) {
         >
           Dodaj pierwszy przepis
           <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 5l7 7-7 7"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
           </svg>
         </a>
       </div>

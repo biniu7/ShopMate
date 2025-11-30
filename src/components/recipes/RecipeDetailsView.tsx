@@ -5,6 +5,7 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 import type { RecipeResponseDto, DeleteRecipeResponseDto } from "@/types";
 import { RecipeDetailsHeader } from "./RecipeDetailsHeader";
 import { RecipeDetailsContent } from "./RecipeDetailsContent";
@@ -17,10 +18,10 @@ interface RecipeDetailsViewProps {
 }
 
 /**
- * RecipeDetailsView
- * Główny komponent widoku szczegółów przepisu
+ * RecipeDetailsData
+ * Wewnętrzny komponent z logiką pobierania danych
  */
-export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
+function RecipeDetailsData({ recipeId }: RecipeDetailsViewProps) {
   const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
 
@@ -86,8 +87,11 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
     },
   });
 
+  // Debug logging
+  console.log("RecipeDetailsView render:", { recipeId, isLoading, error, recipe });
+
   // Handle loading state
-  if (isLoading) {
+  if (isLoading || !recipe) {
     return <RecipeDetailsSkeleton />;
   }
 
@@ -134,5 +138,17 @@ export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
         isDeleting={deleteMutation.isPending}
       />
     </div>
+  );
+}
+
+/**
+ * RecipeDetailsView
+ * Główny komponent z QueryProvider
+ */
+export function RecipeDetailsView({ recipeId }: RecipeDetailsViewProps) {
+  return (
+    <QueryProvider>
+      <RecipeDetailsData recipeId={recipeId} />
+    </QueryProvider>
   );
 }

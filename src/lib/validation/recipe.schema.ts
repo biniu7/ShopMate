@@ -15,7 +15,7 @@ export const IngredientInputSchema = z.object({
 
   unit: z.string().trim().max(50, "Jednostka nie może przekroczyć 50 znaków").nullable(),
 
-  sort_order: z.number().int("Kolejność musi być liczbą całkowitą").min(0, "Kolejność nie może być ujemna").default(0),
+  sort_order: z.number().int("Kolejność musi być liczbą całkowitą").min(0, "Kolejność nie może być ujemna"),
 });
 
 /**

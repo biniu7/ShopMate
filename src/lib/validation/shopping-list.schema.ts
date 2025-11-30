@@ -4,7 +4,6 @@
  */
 
 import { z } from "zod";
-import { INGREDIENT_CATEGORIES } from "@/types";
 
 /**
  * Schema for calendar selection (day + meal types)

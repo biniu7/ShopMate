@@ -120,6 +120,7 @@ export function RecipeForm() {
       className="recipe-form bg-white rounded-lg shadow-sm p-6 sm:p-8"
       noValidate
       aria-label="Formularz dodawania przepisu"
+      data-testid="recipe-form"
     >
       {/* Header with breadcrumbs */}
       <FormHeader />

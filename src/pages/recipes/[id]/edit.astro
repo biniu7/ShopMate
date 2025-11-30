@@ -7,8 +7,7 @@
  * Requires authentication (handled by middleware)
  */
 import Layout from "@/layouts/Layout.astro";
-import { QueryProvider } from "@/components/providers/QueryProvider";
-import { RecipeEditView } from "@/components/recipes/RecipeEditView";
+import { RecipeEditViewWrapper } from "@/components/recipes/RecipeEditViewWrapper";
 import { Toaster } from "@/components/ui/toaster";
 
 // Get recipe ID from URL params
@@ -23,8 +22,6 @@ const title = "Edytuj przepis - ShopMate";
 ---
 
 <Layout title={title}>
-  <QueryProvider client:only="react">
-    <RecipeEditView recipeId={id} client:load />
-  </QueryProvider>
+  <RecipeEditViewWrapper recipeId={id} client:load />
   <Toaster client:only="react" />
 </Layout>

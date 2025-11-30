@@ -38,6 +38,7 @@ export const InstructionsTextarea = memo<InstructionsTextareaProps>(({ value, on
         className={`resize-none ${error ? "border-red-500 focus-visible:ring-red-500" : ""}`}
         aria-invalid={!!error}
         aria-describedby={error ? "instructions-error" : "instructions-counter"}
+        data-testid="recipe-instructions-textarea"
       />
       <div className="flex justify-between items-center">
         <p

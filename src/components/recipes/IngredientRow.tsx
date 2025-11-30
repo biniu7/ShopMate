@@ -36,6 +36,7 @@ export const IngredientRow = memo<IngredientRowProps>(({ index, ingredient, onUp
             step="0.01"
             aria-label={`Ilość składnika ${index + 1}`}
             className="text-sm"
+            data-testid={`ingredient-quantity-${index}`}
           />
         </div>
 
@@ -49,6 +50,7 @@ export const IngredientRow = memo<IngredientRowProps>(({ index, ingredient, onUp
             maxLength={50}
             aria-label={`Jednostka składnika ${index + 1}`}
             className="text-sm"
+            data-testid={`ingredient-unit-${index}`}
           />
         </div>
 
@@ -65,6 +67,7 @@ export const IngredientRow = memo<IngredientRowProps>(({ index, ingredient, onUp
             required
             className={`text-sm ${error?.name ? "border-red-500 focus-visible:ring-red-500" : ""}`}
             aria-label={`Nazwa składnika ${index + 1}`}
+            data-testid={`ingredient-name-${index}`}
           />
         </div>
 
@@ -78,6 +81,7 @@ export const IngredientRow = memo<IngredientRowProps>(({ index, ingredient, onUp
           aria-label={`Usuń składnik ${index + 1}`}
           className="flex-shrink-0 h-10 w-10 hover:bg-red-50 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
           title={!canRemove ? "Wymagany minimum 1 składnik" : "Usuń składnik"}
+          data-testid={`remove-ingredient-${index}`}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

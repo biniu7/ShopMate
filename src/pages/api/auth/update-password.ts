@@ -91,7 +91,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "WystpiB nieoczekiwany bBd. Spróbuj ponownie.",
+        error: "WystpiB nieoczekiwany bBd. Sprï¿½buj ponownie.",
       }),
       {
         status: 500,

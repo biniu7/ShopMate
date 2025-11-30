@@ -16,10 +16,11 @@ import { CATEGORY_ORDER } from "@/types";
 export function groupByCategory(items: ShoppingListItemDto[]): Record<IngredientCategory, ShoppingListItemDto[]> {
   return items.reduce(
     (acc, item) => {
-      if (!acc[item.category]) {
-        acc[item.category] = [];
+      const category = item.category as IngredientCategory;
+      if (!acc[category]) {
+        acc[category] = [];
       }
-      acc[item.category].push(item);
+      acc[category].push(item);
       return acc;
     },
     {} as Record<IngredientCategory, ShoppingListItemDto[]>

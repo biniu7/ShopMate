@@ -3,12 +3,12 @@
  * Main container for recipe creation form
  */
 import { QueryProvider } from "@/components/providers/QueryProvider";
-import { Toaster } from "@/components/ui/toaster";
 import { RecipeForm } from "./RecipeForm";
 
 /**
  * Recipe Create View Component
  * Wraps RecipeForm with QueryProvider for TanStack Query
+ * Note: Toaster is already in Layout.astro, no need to duplicate it here
  */
 export default function RecipeCreateView() {
   return (
@@ -18,7 +18,6 @@ export default function RecipeCreateView() {
           <RecipeForm />
         </div>
       </div>
-      <Toaster />
     </QueryProvider>
   );
 }
