@@ -7,16 +7,8 @@ import { RecipesListPage, RecipeCreatePage, type RecipeData } from "./page-objec
 import { generateRecipeName } from "./helpers/test-data";
 
 test.describe("Recipe Creation Flow", () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to recipes list before each test
-    const recipesListPage = new RecipesListPage(page);
-    await recipesListPage.goto();
-    await recipesListPage.waitForLoad();
-  });
-
   test("should create a new recipe with multiple ingredients", async ({ page }) => {
-    // Arrange - Prepare test data and page objects
-    const recipesListPage = new RecipesListPage(page);
+    // Arrange - Prepare test data and page object
     const recipeCreatePage = new RecipeCreatePage(page);
 
     // Generate unique recipe name to avoid conflicts
@@ -36,20 +28,10 @@ test.describe("Recipe Creation Flow", () => {
       ],
     };
 
-    // Act - Click "Add Recipe" button
-    await recipesListPage.clickAddRecipeButton();
+    // Act - Use helper method to create recipe
+    await recipeCreatePage.createRecipe(testRecipe);
 
-    // Wait for form to load
-    await recipeCreatePage.waitForFormLoad();
-
-    // Fill the form
-    await recipeCreatePage.fillRecipeForm(testRecipe);
-
-    // Submit the form
-    await recipeCreatePage.clickSubmit();
-
-    // Assert - Verify successful redirect to recipe details
-    await recipeCreatePage.waitForSuccessRedirect();
+    // Assert - Verify we're on recipe details page
     expect(page.url()).toMatch(/\/recipes\/[a-f0-9-]+$/);
 
     // Verify recipe name is displayed on details page
@@ -66,10 +48,7 @@ test.describe("Recipe Creation Flow", () => {
     await recipesListPage.clickAddRecipeButton();
     await recipeCreatePage.waitForFormLoad();
 
-    // Try to submit empty form
-    await recipeCreatePage.clickSubmit();
-
-    // Assert - Submit button should be disabled for invalid form
+    // Assert - Submit button should be disabled for empty form
     await expect(recipeCreatePage.submitButton).toBeDisabled();
   });
 
@@ -112,15 +91,18 @@ test.describe("Recipe Creation Flow", () => {
       unit: "sztuki",
     });
 
-    // Remove second ingredient
+    // Remove second ingredient (cukier)
     await recipeCreatePage.removeIngredient(1);
+    await page.waitForTimeout(300); // Wait for removal animation
 
-    // Assert - Verify ingredients are visible
+    // Assert - Verify that only 2 ingredients remain (mąka and jajka)
+    // After removal, indices are updated: jajka shifts from index 2 to index 1
     const ingredient0 = recipeCreatePage.getIngredient(0);
-    const ingredient2 = recipeCreatePage.getIngredient(2);
-
     await expect(ingredient0.name).toHaveValue("mąka");
-    await expect(ingredient2.name).toHaveValue("jajka");
+
+    // After removal, jajka is now at index 1 (shifted down)
+    const ingredient1 = recipeCreatePage.getIngredient(1);
+    await expect(ingredient1.name).toHaveValue("jajka");
   });
 
   test("should cancel recipe creation with confirmation", async ({ page }) => {

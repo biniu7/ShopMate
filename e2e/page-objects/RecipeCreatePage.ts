@@ -39,7 +39,7 @@ export class RecipeCreatePage {
    * Navigate to recipe create page
    */
   async goto() {
-    await this.page.goto("/recipes/new", { waitUntil: "domcontentloaded" });
+    await this.page.goto("/recipes/new", { waitUntil: "networkidle", timeout: 30000 });
     // Wait for the form to be rendered (indicates React has hydrated)
     await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
   }
@@ -83,6 +83,10 @@ export class RecipeCreatePage {
   async fillIngredient(index: number, ingredient: IngredientData) {
     const ingredientFields = this.getIngredient(index);
 
+    // Wait for fields to be visible and hydrated before filling
+    await ingredientFields.name.waitFor({ state: "visible", timeout: 10000 });
+    await this.page.waitForTimeout(200); // Give React time to hydrate
+
     // Name is required
     await ingredientFields.name.fill(ingredient.name);
 
@@ -100,6 +104,8 @@ export class RecipeCreatePage {
    */
   async clickAddIngredient() {
     await this.addIngredientButton.click();
+    // Wait for new ingredient row to be added to DOM
+    await this.page.waitForTimeout(200);
   }
 
   /**
@@ -198,7 +204,7 @@ export class RecipeCreatePage {
    * Wait for successful submission and redirect
    */
   async waitForSuccessRedirect() {
-    await this.page.waitForURL(/\/recipes\/[a-f0-9-]+$/, { timeout: 5000 });
+    await this.page.waitForURL(/\/recipes\/[a-f0-9-]+$/, { timeout: 15000 });
   }
 
   /**

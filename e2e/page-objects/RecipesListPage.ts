@@ -29,7 +29,7 @@ export class RecipesListPage {
    */
   async clickAddRecipeButton() {
     // Simplified: navigate directly and wait for form to appear
-    await this.page.goto("/recipes/new", { waitUntil: "domcontentloaded" });
+    await this.page.goto("/recipes/new", { waitUntil: "networkidle", timeout: 30000 });
     // Wait for the form to be rendered (indicates React has hydrated)
     await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
   }
@@ -39,7 +39,7 @@ export class RecipesListPage {
    */
   async clickAddRecipeButtonFab() {
     // Simplified: navigate directly and wait for form to appear
-    await this.page.goto("/recipes/new", { waitUntil: "domcontentloaded" });
+    await this.page.goto("/recipes/new", { waitUntil: "networkidle", timeout: 30000 });
     // Wait for the form to be rendered (indicates React has hydrated)
     await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
   }

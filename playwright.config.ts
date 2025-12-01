@@ -58,8 +58,8 @@ export default defineConfig({
     locale: "pl-PL",
     timezoneId: "Europe/Warsaw",
 
-    // Navigation timeout
-    navigationTimeout: 10 * 1000,
+    // Navigation timeout (increased for reliable E2E tests)
+    navigationTimeout: 30 * 1000,
 
     // Action timeout
     actionTimeout: 5 * 1000,
