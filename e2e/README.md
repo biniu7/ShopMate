@@ -82,6 +82,16 @@ Testy używają zapisanej sesji:
 - Nie ma potrzeby logowania w każdym teście
 - Testy są izolowane dzięki browser contexts
 
+### 3. Teardown project (`e2e/db.teardown.ts`)
+
+Po zakończeniu wszystkich testów, Playwright:
+1. Uruchamia `db.teardown.ts`
+2. Loguje się jako użytkownik testowy
+3. Usuwa wszystkie przepisy utworzone podczas testów
+4. Składniki są automatycznie usuwane przez CASCADE
+
+**WAŻNE**: Teardown czyści bazę danych po testach, dzięki czemu każdy cykl testów zaczyna się od czystego środowiska.
+
 ## Struktura
 
 ```
@@ -99,7 +109,9 @@ e2e/
 │   ├── index.ts
 │   └── README.md                # Dokumentacja POM
 ├── auth.setup.ts                # Setup autoryzacji
+├── db.teardown.ts               # Teardown - czyszczenie bazy danych
 ├── recipe-create.spec.ts        # Testy tworzenia przepisów
+├── GLOBAL-SETUP-TEARDOWN.md     # Dokumentacja setup/teardown
 └── README.md                    # Ten plik
 ```
 
@@ -172,5 +184,6 @@ npm run test:e2e:codegen
 ## Więcej informacji
 
 - [Playwright Documentation](https://playwright.dev)
+- [Global Setup & Teardown](./GLOBAL-SETUP-TEARDOWN.md) - Szczegółowa dokumentacja setup/teardown
 - [Page Object Model README](./page-objects/README.md)
 - [CLAUDE.md](../CLAUDE.md) - Project guidelines

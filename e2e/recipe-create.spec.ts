@@ -34,8 +34,8 @@ test.describe("Recipe Creation Flow", () => {
     // Assert - Verify we're on recipe details page
     expect(page.url()).toMatch(/\/recipes\/[a-f0-9-]+$/);
 
-    // Verify recipe name is displayed on details page
-    const recipeNameElement = page.locator("h1").first();
+    // Verify recipe name is displayed on details page (use specific selector to avoid Astro Dev Toolbar)
+    const recipeNameElement = page.locator(".recipe-details-content h1");
     await expect(recipeNameElement).toContainText(uniqueRecipeName);
   });
 
@@ -154,8 +154,8 @@ test.describe("Recipe Creation Flow", () => {
     // Assert - Verify we're on recipe details page
     expect(page.url()).toMatch(/\/recipes\/[a-f0-9-]+$/);
 
-    // Verify the unique recipe name is displayed
-    const recipeNameElement = page.locator("h1").first();
+    // Verify the unique recipe name is displayed (use specific selector to avoid Astro Dev Toolbar)
+    const recipeNameElement = page.locator(".recipe-details-content h1");
     await expect(recipeNameElement).toContainText(uniqueRecipeName);
   });
 });

@@ -71,6 +71,12 @@ export default defineConfig({
     {
       name: "setup",
       testMatch: /.*\.setup\.ts/,
+      teardown: "cleanup", // Run cleanup after all tests complete
+    },
+    // Cleanup project - runs once after all tests
+    {
+      name: "cleanup",
+      testMatch: /.*\.teardown\.ts/,
     },
     // Main test project - uses authenticated state
     {
