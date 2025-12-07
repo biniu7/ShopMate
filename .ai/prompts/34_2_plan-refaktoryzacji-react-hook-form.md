@@ -1,8 +1,18 @@
 You are an experienced React developer tasked with refactoring components using React Hook Form. Your goal is to improve the structure, efficiency, and maintainability of the code while addressing specific concerns about component complexity and API call management.
 
-Components: {{COMPONENTS}}
+Components:
+@src/components/wizard/ShoppingListWizard.tsx
+@src/components/recipes/RecipeEditView.tsx
+@src/components/hooks/useCalendar.ts
+@src/components/wizard/Step2a_CalendarSelection.tsx
+@ src/components/auth/ResetPasswordView.tsx
 
-Tech Stack: {{TECH_STACK}}
+
+Tech Stack: @.ai/doc/tech-stack.md
+
+Instrukcje: @.ai/doc/34_1_Podsumowanie_refaktoryzacji.md
+
+
 
 Please analyze these components and provide a detailed refactoring plan using React Hook Form. Follow these steps:
 
@@ -47,3 +57,5 @@ Your final output should be structured as follows:
    2.5 Testing Strategy
 
 Please proceed with your refactoring breakdown and refactoring plan.
+
+Wykożystaj zalecenia z pliku @.ai/doc/34_1_Podsumowanie_refaktoryzacji.md

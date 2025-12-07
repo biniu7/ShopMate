@@ -3,6 +3,7 @@
  * Dynamic list of ingredients with add/remove functionality
  */
 import { memo } from "react";
+import type { Control } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -11,9 +12,9 @@ import type { IngredientInputDto } from "@/types";
 
 interface IngredientsListProps {
   ingredients: (IngredientInputDto & { id: string })[];
+  control: Control<any>;
   onAdd: (ingredient: IngredientInputDto) => void;
   onRemove: (index: number) => void;
-  onUpdate: (index: number, field: keyof IngredientInputDto, value: any) => void;
   errors?: Record<number, any>;
 }
 
@@ -21,7 +22,7 @@ interface IngredientsListProps {
  * Ingredients List Component
  * Manages dynamic list of ingredient rows (min 1, max 50)
  */
-export const IngredientsList = memo<IngredientsListProps>(({ ingredients, onAdd, onRemove, onUpdate, errors }) => {
+export const IngredientsList = memo<IngredientsListProps>(({ ingredients, control, onAdd, onRemove, errors }) => {
   const canAddMore = ingredients.length < 50;
   const canRemove = ingredients.length > 1;
 
@@ -52,9 +53,8 @@ export const IngredientsList = memo<IngredientsListProps>(({ ingredients, onAdd,
           <div key={ingredient.id} role="listitem">
             <IngredientRow
               index={index}
-              ingredient={ingredient}
-              onUpdate={(field, value) => onUpdate(index, field, value)}
-              onRemove={() => onRemove(index)}
+              control={control}
+              onRemove={onRemove}
               canRemove={canRemove}
               error={errors?.[index]}
             />

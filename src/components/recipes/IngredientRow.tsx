@@ -2,17 +2,17 @@
  * Ingredient Row Component
  * Single row for ingredient input (quantity, unit, name, delete button)
  */
-import { memo } from "react";
+import { memo, useCallback } from "react";
+import { Controller } from "react-hook-form";
+import type { Control } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import type { IngredientInputDto } from "@/types";
 
 interface IngredientRowProps {
   index: number;
-  ingredient: IngredientInputDto;
-  onUpdate: (field: keyof IngredientInputDto, value: any) => void;
-  onRemove: () => void;
+  control: Control<any>;
+  onRemove: (index: number) => void;
   canRemove: boolean;
   error?: any;
 }
@@ -21,60 +21,105 @@ interface IngredientRowProps {
  * Ingredient Row Component
  * Displays inputs for quantity, unit, name and delete button
  */
-export const IngredientRow = memo<IngredientRowProps>(({ index, ingredient, onUpdate, onRemove, canRemove, error }) => {
+export const IngredientRow = memo<IngredientRowProps>(({ index, control, onRemove, canRemove, error }) => {
+  const handleRemoveClick = useCallback(() => {
+    onRemove(index);
+  }, [index, onRemove]);
+
+  // Block non-numeric input for quantity field
+  const handleQuantityKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Allow: backspace, delete, tab, escape, enter, decimal point
+    if (
+      [46, 8, 9, 27, 13, 110, 190].indexOf(e.keyCode) !== -1 ||
+      // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+      (e.keyCode === 65 && e.ctrlKey === true) ||
+      (e.keyCode === 67 && e.ctrlKey === true) ||
+      (e.keyCode === 86 && e.ctrlKey === true) ||
+      (e.keyCode === 88 && e.ctrlKey === true) ||
+      // Allow: home, end, left, right
+      (e.keyCode >= 35 && e.keyCode <= 39)
+    ) {
+      return;
+    }
+    // Block if not a number (0-9)
+    if ((e.shiftKey || e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
+    }
+  }, []);
+
   return (
     <div className="ingredient-row">
       <div className="flex gap-2 items-start">
         {/* Quantity Input */}
         <div className="w-24">
-          <Input
-            type="number"
-            value={ingredient.quantity ?? ""}
-            onChange={(e) => onUpdate("quantity", e.target.value ? Number(e.target.value) : null)}
-            placeholder="200"
-            min="0"
-            step="0.01"
-            aria-label={`Ilość składnika ${index + 1}`}
-            className="text-sm"
-            data-testid={`ingredient-quantity-${index}`}
+          <Controller
+            name={`ingredients.${index}.quantity`}
+            control={control}
+            render={({ field }) => (
+              <Input
+                type="number"
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : null)}
+                onKeyDown={handleQuantityKeyDown}
+                placeholder="200"
+                min="0"
+                step="0.01"
+                inputMode="numeric"
+                aria-label={`Ilość składnika ${index + 1}`}
+                className="text-sm"
+                data-testid={`ingredient-quantity-${index}`}
+              />
+            )}
           />
         </div>
 
         {/* Unit Input */}
         <div className="w-24">
-          <Input
-            type="text"
-            value={ingredient.unit ?? ""}
-            onChange={(e) => onUpdate("unit", e.target.value || null)}
-            placeholder="g"
-            maxLength={50}
-            aria-label={`Jednostka składnika ${index + 1}`}
-            className="text-sm"
-            data-testid={`ingredient-unit-${index}`}
+          <Controller
+            name={`ingredients.${index}.unit`}
+            control={control}
+            render={({ field }) => (
+              <Input
+                type="text"
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value || null)}
+                placeholder="g"
+                maxLength={50}
+                aria-label={`Jednostka składnika ${index + 1}`}
+                className="text-sm"
+                data-testid={`ingredient-unit-${index}`}
+              />
+            )}
           />
         </div>
 
         {/* Name Input */}
         <div className="flex-1">
-          <Input
-            type="text"
-            value={ingredient.name}
-            onChange={(e) => onUpdate("name", e.target.value)}
-            placeholder="np. mąka"
-            maxLength={100}
-            aria-invalid={!!error?.name}
-            aria-describedby={error?.name ? `ingredient-${index}-error` : undefined}
-            required
-            className={`text-sm ${error?.name ? "border-red-500 focus-visible:ring-red-500" : ""}`}
-            aria-label={`Nazwa składnika ${index + 1}`}
-            data-testid={`ingredient-name-${index}`}
+          <Controller
+            name={`ingredients.${index}.name`}
+            control={control}
+            render={({ field }) => (
+              <Input
+                type="text"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="np. mąka"
+                maxLength={100}
+                aria-invalid={!!error?.name}
+                aria-describedby={error?.name ? `ingredient-${index}-error` : undefined}
+                required
+                className={`text-sm ${error?.name ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                aria-label={`Nazwa składnika ${index + 1}`}
+                data-testid={`ingredient-name-${index}`}
+              />
+            )}
           />
         </div>
 
         {/* Delete Button */}
         <Button
           type="button"
-          onClick={onRemove}
+          onClick={handleRemoveClick}
           variant="ghost"
           size="icon"
           disabled={!canRemove}
