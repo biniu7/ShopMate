@@ -12,6 +12,7 @@ Musisz mieć konto testowe w bazie danych Supabase. Możesz je utworzyć:
 2. **Przez Supabase Dashboard** - dodaj użytkownika w Authentication
 
 **Zalecenia:**
+
 - Email: `test@shopmate.local` (lub inny, który łatwo zapamiętasz)
 - Hasło: Silne hasło min. 8 znaków
 - **WAŻNE**: Ten użytkownik będzie używany TYLKO do testów!
@@ -71,6 +72,7 @@ npm run test:e2e:codegen
 ### 1. Setup project (`e2e/auth.setup.ts`)
 
 Przed uruchomieniem testów, Playwright:
+
 1. Uruchamia `auth.setup.ts`
 2. Loguje się jako użytkownik testowy
 3. Zapisuje sesję do `playwright/.auth/user.json`
@@ -78,6 +80,7 @@ Przed uruchomieniem testów, Playwright:
 ### 2. Main tests (`e2e/**/*.spec.ts`)
 
 Testy używają zapisanej sesji:
+
 - Każdy test rozpoczyna się jako zalogowany użytkownik
 - Nie ma potrzeby logowania w każdym teście
 - Testy są izolowane dzięki browser contexts
@@ -85,6 +88,7 @@ Testy używają zapisanej sesji:
 ### 3. Teardown project (`e2e/db.teardown.ts`)
 
 Po zakończeniu wszystkich testów, Playwright:
+
 1. Uruchamia `db.teardown.ts`
 2. Loguje się jako użytkownik testowy
 3. Usuwa wszystkie przepisy utworzone podczas testów

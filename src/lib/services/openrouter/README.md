@@ -15,6 +15,7 @@ Serwis do komunikacji z OpenRouter API w projekcie ShopMate.
 ## Instalacja
 
 Wymagane pakiety zostały już zainstalowane w projekcie:
+
 - `axios` - klient HTTP
 - `zod` - walidacja danych
 
@@ -50,10 +51,10 @@ Możesz nadpisać domyślne ustawienia podczas tworzenia instancji:
 
 ```typescript
 const service = new OpenRouterService({
-  defaultModel: 'anthropic/claude-3-haiku',
+  defaultModel: "anthropic/claude-3-haiku",
   timeout: 15000,
   maxRetries: 3,
-  defaultTemperature: 0.7
+  defaultTemperature: 0.7,
 });
 ```
 
@@ -62,7 +63,7 @@ const service = new OpenRouterService({
 ### Import
 
 ```typescript
-import { OpenRouterService } from '@/lib/services/openrouter';
+import { OpenRouterService } from "@/lib/services/openrouter";
 ```
 
 ### Proste zapytanie
@@ -71,14 +72,14 @@ import { OpenRouterService } from '@/lib/services/openrouter';
 const service = new OpenRouterService();
 
 const response = await service.chat({
-  systemMessage: 'Jesteś pomocnym asystentem kulinarnym.',
-  userMessage: 'Zaproponuj szybki przepis na obiad.',
-  temperature: 0.7
+  systemMessage: "Jesteś pomocnym asystentem kulinarnym.",
+  userMessage: "Zaproponuj szybki przepis na obiad.",
+  temperature: 0.7,
 });
 
 if (response.success) {
   console.log(response.rawContent);
-  console.log('Użyte tokeny:', response.tokensUsed);
+  console.log("Użyte tokeny:", response.tokensUsed);
 } else {
   console.error(response.error);
 }
@@ -88,9 +89,9 @@ if (response.success) {
 
 ```typescript
 const result = await service.categorizeIngredients([
-  { id: '123e4567-e89b-12d3-a456-426614174000', name: 'mleko' },
-  { id: '123e4567-e89b-12d3-a456-426614174001', name: 'pomidor' },
-  { id: '123e4567-e89b-12d3-a456-426614174002', name: 'kurczak' }
+  { id: "123e4567-e89b-12d3-a456-426614174000", name: "mleko" },
+  { id: "123e4567-e89b-12d3-a456-426614174001", name: "pomidor" },
+  { id: "123e4567-e89b-12d3-a456-426614174002", name: "kurczak" },
 ]);
 
 if (result.success) {
@@ -122,6 +123,7 @@ constructor(config?: Partial<OpenRouterConfig>)
 Główna metoda do komunikacji z modelem LLM.
 
 **Parametry:**
+
 - `systemMessage` (string) - Instrukcje dla modelu (max 5000 znaków)
 - `userMessage` (string) - Zapytanie użytkownika (max 10000 znaków)
 - `model` (string, opcjonalny) - Nazwa modelu
@@ -131,6 +133,7 @@ Główna metoda do komunikacji z modelem LLM.
 - `responseFormat` (ResponseFormat, opcjonalny) - Format odpowiedzi (JSON Schema)
 
 **Zwraca:** `ChatResponse<T>` z polami:
+
 - `success` (boolean) - Czy zapytanie się powiodło
 - `data` (T, opcjonalny) - Sparsowane dane (jeśli użyto JSON Schema)
 - `rawContent` (string, opcjonalny) - Surowa treść odpowiedzi
@@ -143,14 +146,17 @@ Główna metoda do komunikacji z modelem LLM.
 Kategoryzuje składniki do predefiniowanych kategorii.
 
 **Parametry:**
+
 - `ingredients` - Tablica składników (max 100 elementów)
 
 **Zwraca:** `CategorizeIngredientsResponse` z polami:
+
 - `success` (boolean)
 - `categories` (Record<string, string>) - Mapowanie ID → kategoria
 - `error` (object, opcjonalny)
 
 **Dostępne kategorie:**
+
 - Nabiał
 - Warzywa
 - Owoce
@@ -171,23 +177,23 @@ Testuje połączenie z API OpenRouter.
 
 ```typescript
 const response = await service.chat<{ answer: string }>({
-  systemMessage: 'Odpowiadaj w formacie JSON.',
-  userMessage: 'Jaka jest stolica Polski?',
+  systemMessage: "Odpowiadaj w formacie JSON.",
+  userMessage: "Jaka jest stolica Polski?",
   responseFormat: {
-    type: 'json_schema',
+    type: "json_schema",
     json_schema: {
-      name: 'answer_format',
+      name: "answer_format",
       strict: true,
       schema: {
-        type: 'object',
+        type: "object",
         properties: {
-          answer: { type: 'string' }
+          answer: { type: "string" },
         },
-        required: ['answer'],
-        additionalProperties: false
-      }
-    }
-  }
+        required: ["answer"],
+        additionalProperties: false,
+      },
+    },
+  },
 });
 
 console.log(response.data?.answer); // "Warszawa"
@@ -197,11 +203,11 @@ console.log(response.data?.answer); // "Warszawa"
 
 ```typescript
 const response = await service.chat({
-  systemMessage: 'Jesteś ekspertem od programowania.',
-  userMessage: 'Wyjaśnij koncepcję closure w JavaScript.',
-  model: 'anthropic/claude-3-sonnet',
+  systemMessage: "Jesteś ekspertem od programowania.",
+  userMessage: "Wyjaśnij koncepcję closure w JavaScript.",
+  model: "anthropic/claude-3-sonnet",
   temperature: 0.3,
-  maxTokens: 1000
+  maxTokens: 1000,
 });
 ```
 
@@ -209,19 +215,22 @@ const response = await service.chat({
 
 ```typescript
 const ingredients = [
-  { id: '1', name: 'mleko' },
-  { id: '2', name: 'masło' },
+  { id: "1", name: "mleko" },
+  { id: "2", name: "masło" },
   // ... do 100 składników
 ];
 
 const result = await service.categorizeIngredients(ingredients);
 
 // Grupowanie według kategorii
-const grouped = Object.entries(result.categories).reduce((acc, [id, category]) => {
-  if (!acc[category]) acc[category] = [];
-  acc[category].push(id);
-  return acc;
-}, {} as Record<string, string[]>);
+const grouped = Object.entries(result.categories).reduce(
+  (acc, [id, category]) => {
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(id);
+    return acc;
+  },
+  {} as Record<string, string[]>
+);
 
 console.log(grouped);
 // {
@@ -240,7 +249,7 @@ const service = new OpenRouterService();
 const isConnected = await service.testConnection();
 
 if (!isConnected) {
-  console.error('Nie można połączyć się z OpenRouter API');
+  console.error("Nie można połączyć się z OpenRouter API");
 }
 ```
 
@@ -260,6 +269,7 @@ curl -X POST http://localhost:3000/api/ai/categorize-ingredients \
 ```
 
 **Oczekiwana odpowiedź:**
+
 ```json
 {
   "success": true,
@@ -276,22 +286,23 @@ curl -X POST http://localhost:3000/api/ai/categorize-ingredients \
 
 Serwis definiuje następujące kody błędów:
 
-| Kod | HTTP Status | Retryable | Opis |
-|-----|-------------|-----------|------|
-| `MISSING_API_KEY` | - | ❌ | Brak klucza API |
-| `INVALID_CONFIG` | - | ❌ | Nieprawidłowa konfiguracja |
-| `INVALID_REQUEST` | 400 | ❌ | Nieprawidłowe zapytanie |
-| `UNAUTHORIZED` | 401 | ❌ | Nieprawidłowy klucz API |
-| `FORBIDDEN` | 403 | ❌ | Brak dostępu |
-| `MODEL_NOT_FOUND` | 404 | ❌ | Model nie istnieje |
-| `RATE_LIMIT_EXCEEDED` | 429 | ✅ | Przekroczono limit |
-| `SERVER_ERROR` | 500-504 | ✅ | Błąd serwera |
-| `TIMEOUT` | - | ✅ | Przekroczono czas oczekiwania |
-| `PARSE_ERROR` | - | ❌ | Nie można sparsować JSON |
+| Kod                   | HTTP Status | Retryable | Opis                          |
+| --------------------- | ----------- | --------- | ----------------------------- |
+| `MISSING_API_KEY`     | -           | ❌        | Brak klucza API               |
+| `INVALID_CONFIG`      | -           | ❌        | Nieprawidłowa konfiguracja    |
+| `INVALID_REQUEST`     | 400         | ❌        | Nieprawidłowe zapytanie       |
+| `UNAUTHORIZED`        | 401         | ❌        | Nieprawidłowy klucz API       |
+| `FORBIDDEN`           | 403         | ❌        | Brak dostępu                  |
+| `MODEL_NOT_FOUND`     | 404         | ❌        | Model nie istnieje            |
+| `RATE_LIMIT_EXCEEDED` | 429         | ✅        | Przekroczono limit            |
+| `SERVER_ERROR`        | 500-504     | ✅        | Błąd serwera                  |
+| `TIMEOUT`             | -           | ✅        | Przekroczono czas oczekiwania |
+| `PARSE_ERROR`         | -           | ❌        | Nie można sparsować JSON      |
 
 ### Mechanizm retry
 
 Serwis automatycznie ponawia zapytania dla błędów typu `retryable`:
+
 - Exponential backoff: 1s → 2s → 4s
 - Maksymalnie 2 próby (domyślnie)
 - Retry tylko dla błędów: 408, 429, 500-504, timeout
@@ -300,22 +311,22 @@ Serwis automatycznie ponawia zapytania dla błędów typu `retryable`:
 
 ```typescript
 const response = await service.chat({
-  systemMessage: 'Odpowiedz krótko.',
-  userMessage: 'Test'
+  systemMessage: "Odpowiedz krótko.",
+  userMessage: "Test",
 });
 
 if (!response.success) {
   const { code, message, statusCode } = response.error!;
 
   switch (code) {
-    case 'UNAUTHORIZED':
-      console.error('Sprawdź klucz API w zmiennych środowiskowych');
+    case "UNAUTHORIZED":
+      console.error("Sprawdź klucz API w zmiennych środowiskowych");
       break;
-    case 'RATE_LIMIT_EXCEEDED':
-      console.warn('Limit zapytań osiągnięty, spróbuj za chwilę');
+    case "RATE_LIMIT_EXCEEDED":
+      console.warn("Limit zapytań osiągnięty, spróbuj za chwilę");
       break;
-    case 'TIMEOUT':
-      console.warn('Zapytanie zbyt długo czekało, spróbuj ponownie');
+    case "TIMEOUT":
+      console.warn("Zapytanie zbyt długo czekało, spróbuj ponownie");
       break;
     default:
       console.error(`Błąd: ${message}`);
@@ -332,10 +343,13 @@ const result = await service.categorizeIngredients(ingredients);
 
 const categories = result.success
   ? result.categories
-  : ingredients.reduce((acc, ing) => {
-      acc[ing.id] = 'Inne';
-      return acc;
-    }, {} as Record<string, string>);
+  : ingredients.reduce(
+      (acc, ing) => {
+        acc[ing.id] = "Inne";
+        return acc;
+      },
+      {} as Record<string, string>
+    );
 ```
 
 ## Bezpieczeństwo
@@ -351,6 +365,7 @@ const categories = result.success
 ### Walidacja danych wejściowych
 
 Serwis automatycznie:
+
 - Sanityzuje control characters
 - Limituje długość komunikatów (5000/10000 znaków)
 - Waliduje liczbę składników (max 100)
@@ -361,23 +376,23 @@ Serwis automatycznie:
 
 ```typescript
 // Błędy są automatycznie logowane do konsoli
-console.warn('[OpenRouter] Retry attempt 1/2 po 1000ms');
-console.error('[OpenRouter] Test connection failed:', error);
+console.warn("[OpenRouter] Retry attempt 1/2 po 1000ms");
+console.error("[OpenRouter] Test connection failed:", error);
 ```
 
 ### Integracja z Sentry (TODO)
 
 ```typescript
-import * as Sentry from '@sentry/astro';
+import * as Sentry from "@sentry/astro";
 
 const response = await service.chat(options);
 
-if (!response.success && !response.error?.code?.includes('RETRY')) {
+if (!response.success && !response.error?.code?.includes("RETRY")) {
   Sentry.captureException(new Error(response.error?.message), {
     tags: {
-      service: 'openrouter',
-      errorCode: response.error?.code
-    }
+      service: "openrouter",
+      errorCode: response.error?.code,
+    },
   });
 }
 ```
@@ -385,6 +400,7 @@ if (!response.success && !response.error?.code?.includes('RETRY')) {
 ## Koszty
 
 Przykładowe koszty użycia GPT-4o-mini:
+
 - Średnie zapytanie: ~$0.0001
 - Kategoryzacja 50 składników: ~$0.0001
 - Miesięczny koszt dla 1000 użytkowników: ~$0.40
@@ -392,15 +408,19 @@ Przykładowe koszty użycia GPT-4o-mini:
 ## Troubleshooting
 
 ### Problem: "Brak klucza API OpenRouter"
+
 **Rozwiązanie:** Dodaj `OPENROUTER_API_KEY` do `.env.local`
 
 ### Problem: Timeout
+
 **Rozwiązanie:** Zwiększ timeout w konfiguracji lub sprawdź połączenie internetowe
 
 ### Problem: Rate limit exceeded
+
 **Rozwiązanie:** Zaimplementuj kolejkowanie zapytań lub poczekaj
 
 ### Problem: Błąd parsowania JSON
+
 **Rozwiązanie:** Sprawdź czy responseFormat jest poprawnie zdefiniowany
 
 ## Licencja

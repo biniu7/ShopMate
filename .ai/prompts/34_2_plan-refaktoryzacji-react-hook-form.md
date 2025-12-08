@@ -7,12 +7,9 @@ Components:
 @src/components/wizard/Step2a_CalendarSelection.tsx
 @ src/components/auth/ResetPasswordView.tsx
 
-
 Tech Stack: @.ai/doc/tech-stack.md
 
 Instrukcje: @.ai/doc/34_1_Podsumowanie_refaktoryzacji.md
-
-
 
 Please analyze these components and provide a detailed refactoring plan using React Hook Form. Follow these steps:
 

@@ -3,6 +3,7 @@
 ## Opis
 
 Diagram przedstawia podróż użytkownika przez system autentykacji aplikacji ShopMate, obejmując:
+
 - Rejestrację nowych użytkowników
 - Logowanie istniejących użytkowników
 - Reset i odzyskiwanie hasła
@@ -10,6 +11,7 @@ Diagram przedstawia podróż użytkownika przez system autentykacji aplikacji Sh
 - Ochronę tras przed nieautoryzowanym dostępem
 
 Diagram został utworzony w oparciu o:
+
 - Dokument PRD (4_prd.md) - Historie użytkownika US-001 do US-005
 - Specyfikację architektury autentykacji (31_1_auth-spec.md)
 - Wytyczne dotyczące User Journey

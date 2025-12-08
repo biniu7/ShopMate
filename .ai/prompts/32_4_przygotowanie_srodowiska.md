@@ -6,6 +6,7 @@
 ## Podsumowanie
 
 Środowisko testowe zostało w pełni przygotowane i naprawione zgodnie z:
+
 - ✅ `.ai/doc/tech-stack.md` (Sekcja 7)
 - ✅ `.ai/prompts/32_3_Rule_Vitest.md`
 - ✅ `.ai/prompts/32_3_Rule_Playwright.md`
@@ -15,6 +16,7 @@
 ## 1. Zainstalowane Zależności
 
 ### Vitest i Testing Library
+
 ```bash
 npm install -D vitest @vitest/ui @vitest/coverage-v8
 npm install -D @testing-library/react @testing-library/jest-dom @testing-library/user-event
@@ -22,17 +24,20 @@ npm install -D jsdom happy-dom @vitejs/plugin-react
 ```
 
 ### Playwright
+
 ```bash
 npm install -D @playwright/test
 npx playwright install chromium  # Tylko Chromium zgodnie z wytycznymi
 ```
 
 ### TypeScript Types
+
 ```bash
 npm install -D @types/node
 ```
 
 ### ESLint Plugins dla Testów
+
 ```bash
 npm install -D eslint-plugin-vitest eslint-plugin-playwright
 ```
@@ -42,7 +47,9 @@ npm install -D eslint-plugin-vitest eslint-plugin-playwright
 ## 2. Pliki Konfiguracyjne
 
 ### `vitest.config.ts`
+
 **Utworzono:** Pełna konfiguracja Vitest
+
 - ✅ Environment: `jsdom` dla testów DOM
 - ✅ Globals: `true` - globalne funkcje testowe
 - ✅ Setup file: `./tests/setup.ts`
@@ -51,11 +58,14 @@ npm install -D eslint-plugin-vitest eslint-plugin-playwright
 - ✅ Aliasy: `@` wskazuje na `./src`
 
 **Poprawki:**
+
 - ✅ Naprawiono `coverage.exclude` - bardziej precyzyjne wykluczenia
 - ✅ Dodano komentarze dla lepszej czytelności
 
 ### `playwright.config.ts`
+
 **Utworzono:** Pełna konfiguracja Playwright
+
 - ✅ Tylko Chromium/Desktop Chrome (zgodnie z wytycznymi)
 - ✅ Test dir: `./tests/e2e`
 - ✅ Timeout: 30s (test), 5s (expect)
@@ -65,7 +75,9 @@ npm install -D eslint-plugin-vitest eslint-plugin-playwright
 - ✅ Trace/screenshot/video on failure
 
 ### `tsconfig.json`
+
 **Zaktualizowano:** Dodano kompatybilność z testami
+
 ```json
 {
   "compilerOptions": {
@@ -78,7 +90,9 @@ npm install -D eslint-plugin-vitest eslint-plugin-playwright
 ```
 
 ### `eslint.config.js`
+
 **Zaktualizowano:** Dodano pluginy dla testów
+
 - ✅ Import `eslint-plugin-vitest`
 - ✅ Import `eslint-plugin-playwright`
 - ✅ Konfiguracja dla plików `.test.{ts,tsx}`
@@ -86,7 +100,9 @@ npm install -D eslint-plugin-vitest eslint-plugin-playwright
 - ✅ Reguły: no-focused-tests (error), expect-expect (warn), prefer-web-first-assertions (warn)
 
 ### `package.json`
+
 **Zaktualizowano:** Dodano skrypty testowe
+
 ```json
 {
   "scripts": {
@@ -104,7 +120,9 @@ npm install -D eslint-plugin-vitest eslint-plugin-playwright
 ```
 
 ### `.gitignore`
+
 **Zaktualizowano:** Dodano pliki testowe
+
 ```
 # testing
 coverage/
@@ -119,6 +137,7 @@ playwright/.cache/
 ## 3. Struktura Katalogów i Pliki
 
 ### `tests/` - Katalog główny testów
+
 ```
 tests/
 ├── README.md              ✅ Kompletna dokumentacja testowania
@@ -146,34 +165,41 @@ tests/
 ## 4. Naprawione Problemy
 
 ### Problem 1: Coverage Exclude - Za szerokie wykluczenie
+
 **Naprawiono:** vitest.config.ts:21-33
+
 ```typescript
 exclude: [
-  'node_modules/',
-  'dist/',
-  '.astro/',
-  'build/',
-  'tests/**',                  // Wszystkie testy w folderze tests/
-  'src/**/*.test.{ts,tsx}',    // Pliki testowe kolokowane z kodem
-  'src/**/*.spec.{ts,tsx}',    // Pliki spec
-  '**/*.config.*',             // Pliki konfiguracyjne
-  '**/*.d.ts',                 // Definicje TypeScript
-  '**/types.ts',               // Pliki z typami
-  'src/env.d.ts',              // Env types
-]
+  "node_modules/",
+  "dist/",
+  ".astro/",
+  "build/",
+  "tests/**", // Wszystkie testy w folderze tests/
+  "src/**/*.test.{ts,tsx}", // Pliki testowe kolokowane z kodem
+  "src/**/*.spec.{ts,tsx}", // Pliki spec
+  "**/*.config.*", // Pliki konfiguracyjne
+  "**/*.d.ts", // Definicje TypeScript
+  "**/types.ts", // Pliki z typami
+  "src/env.d.ts", // Env types
+];
 ```
 
 ### Problem 2: Brak @types/node
+
 **Naprawiono:** Zainstalowano `@types/node@^24.10.1`
 
 ### Problem 3: Brak ESLint plugins dla testów
+
 **Naprawiono:**
+
 - `eslint-plugin-vitest@^0.5.4`
 - `eslint-plugin-playwright@^2.3.0`
 - Skonfigurowano w `eslint.config.js:62-93`
 
 ### Problem 4: TypeScript moduleResolution
+
 **Naprawiono:** tsconfig.json:12-16
+
 ```json
 {
   "moduleResolution": "bundler",
@@ -188,18 +214,21 @@ exclude: [
 ## 5. Weryfikacja
 
 ### ✅ Testy Jednostkowe
+
 ```bash
 npm run test -- --run
 # Rezultat: 7/7 testów przeszło
 ```
 
 ### ✅ Coverage
+
 ```bash
 npm run test:coverage -- --run
 # Rezultat: Działa poprawnie (0% - brak kodu w src/)
 ```
 
 ### ✅ TypeScript
+
 Konfiguracja poprawna, brak błędów w plikach projektu.
 
 ---
@@ -207,16 +236,18 @@ Konfiguracja poprawna, brak błędów w plikach projektu.
 ## 6. Zgodność z Dokumentacją
 
 ### Tech-stack.md (Sekcja 7)
-| Wymaganie | Status |
-|-----------|--------|
-| Vitest framework | ✅ v4.0.14 |
-| React Testing Library | ✅ v16.3.0 |
-| Playwright E2E | ✅ v1.57.0 (tylko Chromium) |
-| Coverage min 80% dla src/lib | ✅ |
-| Coverage min 60% dla components | ✅ |
-| Piramida testów | ✅ |
+
+| Wymaganie                       | Status                      |
+| ------------------------------- | --------------------------- |
+| Vitest framework                | ✅ v4.0.14                  |
+| React Testing Library           | ✅ v16.3.0                  |
+| Playwright E2E                  | ✅ v1.57.0 (tylko Chromium) |
+| Coverage min 80% dla src/lib    | ✅                          |
+| Coverage min 60% dla components | ✅                          |
+| Piramida testów                 | ✅                          |
 
 ### Rule_Vitest.md - Wszystkie 11 zasad ✅
+
 ### Rule_Playwright.md - Wszystkie 11 zasad ✅
 
 ---
@@ -224,6 +255,7 @@ Konfiguracja poprawna, brak błędów w plikach projektu.
 ## 7. Dostępne Komendy
 
 ### Testy Jednostkowe
+
 ```bash
 npm run test              # Uruchom wszystkie testy
 npm run test:watch        # Watch mode
@@ -232,6 +264,7 @@ npm run test:ui           # UI mode
 ```
 
 ### Testy E2E
+
 ```bash
 npm run test:e2e          # Uruchom testy E2E
 npm run test:e2e:ui       # UI mode

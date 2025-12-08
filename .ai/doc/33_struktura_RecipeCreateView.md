@@ -65,11 +65,13 @@ RecipeCreateView
 ### Główne Komponenty
 
 #### RecipeCreateView
+
 - **Lokalizacja**: `src/components/recipes/RecipeCreateView.tsx:13`
 - **Rola**: Główny kontener widoku tworzenia przepisu
 - **Cechy**: Wraps form with QueryProvider for TanStack Query
 
 #### QueryProvider
+
 - **Lokalizacja**: `src/components/providers/QueryProvider.tsx:8`
 - **Rola**: Dostarcza context dla TanStack Query
 - **Konfiguracja**:
@@ -78,6 +80,7 @@ RecipeCreateView
   - retry: 3 (exponential backoff)
 
 #### RecipeForm
+
 - **Lokalizacja**: `src/components/recipes/RecipeForm.tsx:21`
 - **Rola**: Główny formularz z logiką walidacji i submisji
 - **Hooki**:
@@ -89,6 +92,7 @@ RecipeCreateView
 ### Komponenty Formularza
 
 #### FormHeader
+
 - **Lokalizacja**: `src/components/recipes/FormHeader.tsx:45`
 - **Rola**: Nagłówek z breadcrumbs i tytułem
 - **Podkomponenty**:
@@ -96,12 +100,14 @@ RecipeCreateView
 - **Props**: mode (create|edit), recipeName (optional)
 
 #### NameInput
+
 - **Lokalizacja**: `src/components/recipes/NameInput.tsx:19`
 - **Rola**: Pole nazwy przepisu z walidacją
 - **Walidacja**: 3-100 znaków, wymagane
 - **Cechy**: autofocus, error handling, ARIA attributes
 
 #### InstructionsTextarea
+
 - **Lokalizacja**: `src/components/recipes/InstructionsTextarea.tsx:19`
 - **Rola**: Pole instrukcji z licznikiem znaków
 - **Walidacja**: 10-5000 znaków, wymagane
@@ -112,6 +118,7 @@ RecipeCreateView
   - aria-live="polite" dla licznika
 
 #### IngredientsList
+
 - **Lokalizacja**: `src/components/recipes/IngredientsList.tsx:24`
 - **Rola**: Zarządzanie dynamiczną listą składników
 - **Limity**: min 1, max 50 składników
@@ -121,6 +128,7 @@ RecipeCreateView
   - role="list" dla accessibility
 
 #### IngredientRow
+
 - **Lokalizacja**: `src/components/recipes/IngredientRow.tsx:24`
 - **Rola**: Pojedynczy wiersz składnika
 - **Pola**:
@@ -131,6 +139,7 @@ RecipeCreateView
 - **Cechy**: Error handling per field, ARIA labels
 
 #### FormActions
+
 - **Lokalizacja**: `src/components/recipes/FormActions.tsx:20`
 - **Rola**: Sticky footer z przyciskami akcji
 - **Przyciski**:
@@ -225,7 +234,7 @@ RecipeSchema {
 - **Spacing**: space-y-8, space-y-4, gap-2
 - **Responsive**: sm:p-8 (mobile-first)
 - **States**: hover:, focus-visible:, disabled:
-- **Colors**: gray-*, blue-*, red-* (semantic)
+- **Colors**: gray-_, blue-_, red-\* (semantic)
 
 ## Pliki Zależne
 

@@ -16,9 +16,7 @@ import type {
  * @returns Preview with items and metadata
  * @throws Error if request fails
  */
-export async function generatePreview(
-  request: ShoppingListPreviewRequestDto
-): Promise<ShoppingListPreviewResponseDto> {
+export async function generatePreview(request: ShoppingListPreviewRequestDto): Promise<ShoppingListPreviewResponseDto> {
   const response = await fetch("/api/shopping-lists/preview", {
     method: "POST",
     headers: {

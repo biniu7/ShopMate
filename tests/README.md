@@ -25,6 +25,7 @@ tests/
 ```
 
 **Dodatkowo:**
+
 - Testy jednostkowe mogą być kolokowane z kodem: `src/**/*.test.ts`
 - Testy komponentów: `src/components/**/*.test.tsx`
 
@@ -86,21 +87,23 @@ npm run test:e2e:codegen
 #### 1. Testy Jednostkowe (80% testów)
 
 **Co testować:**
+
 - Funkcje utility (`src/lib/utils/`)
 - Schematy walidacji Zod (`src/lib/validation/`)
 - Serwisy logiczne (`src/lib/services/`)
 - Czyste funkcje biznesowe
 
 **Przykład:**
-```typescript
-import { describe, it, expect } from 'vitest';
-import { aggregateIngredients } from '@/lib/utils/ingredients';
 
-describe('aggregateIngredients', () => {
-  it('should combine ingredients with same name', () => {
+```typescript
+import { describe, it, expect } from "vitest";
+import { aggregateIngredients } from "@/lib/utils/ingredients";
+
+describe("aggregateIngredients", () => {
+  it("should combine ingredients with same name", () => {
     const ingredients = [
-      { name: 'Makaron', quantity: 200, unit: 'g' },
-      { name: 'Makaron', quantity: 300, unit: 'g' },
+      { name: "Makaron", quantity: 200, unit: "g" },
+      { name: "Makaron", quantity: 300, unit: "g" },
     ];
 
     const result = aggregateIngredients(ingredients);
@@ -114,12 +117,14 @@ describe('aggregateIngredients', () => {
 #### 2. Testy Integracyjne (15% testów)
 
 **Co testować:**
+
 - Komponenty React z logiką
 - Formularze (react-hook-form + Zod)
 - Custom hooks
 - Integracje z API (z mockowaniem)
 
 **Przykład:**
+
 ```typescript
 import { render, screen, userEvent } from '@/tests/helpers/test-utils';
 import { RecipeForm } from '@/components/RecipeForm';
@@ -143,29 +148,31 @@ describe('RecipeForm', () => {
 #### 3. Testy E2E (5% testów)
 
 **Co testować:**
+
 - Krytyczne ścieżki użytkownika:
   - Rejestracja → Login → Dodanie przepisu → Przypisanie do kalendarza → Generowanie listy → Export
 - Error scenarios (błędy sieciowe, walidacja)
 - Edge cases (empty states, loading states)
 
 **Przykład:**
-```typescript
-import { test, expect } from '@playwright/test';
 
-test('user can create recipe and generate shopping list', async ({ page }) => {
+```typescript
+import { test, expect } from "@playwright/test";
+
+test("user can create recipe and generate shopping list", async ({ page }) => {
   // Login
-  await page.goto('/login');
-  await page.fill('[name="email"]', 'test@example.com');
-  await page.fill('[name="password"]', 'password123');
+  await page.goto("/login");
+  await page.fill('[name="email"]', "test@example.com");
+  await page.fill('[name="password"]', "password123");
   await page.click('button[type="submit"]');
 
   // Create recipe
-  await page.goto('/recipes/new');
-  await page.fill('[name="name"]', 'Spaghetti Carbonara');
+  await page.goto("/recipes/new");
+  await page.fill('[name="name"]', "Spaghetti Carbonara");
   await page.click('button:has-text("Zapisz")');
 
   // Verify success
-  await expect(page.locator('text=Przepis został zapisany')).toBeVisible();
+  await expect(page.locator("text=Przepis został zapisany")).toBeVisible();
 });
 ```
 
@@ -174,11 +181,12 @@ test('user can create recipe and generate shopping list', async ({ page }) => {
 ### Vitest
 
 1. **Używaj `vi` object dla mocków:**
+
    ```typescript
-   import { vi } from 'vitest';
+   import { vi } from "vitest";
 
    const mockFn = vi.fn();
-   vi.spyOn(console, 'error').mockImplementation(() => {});
+   vi.spyOn(console, "error").mockImplementation(() => {});
    ```
 
 2. **Setup files dla reusable configuration:**
@@ -186,8 +194,9 @@ test('user can create recipe and generate shopping list', async ({ page }) => {
    - Custom matchers w setup files
 
 3. **Leverage TypeScript:**
+
    ```typescript
-   import { expectTypeOf } from 'vitest';
+   import { expectTypeOf } from "vitest";
 
    expectTypeOf(result).toMatchTypeOf<Recipe>();
    ```
@@ -199,17 +208,19 @@ test('user can create recipe and generate shopping list', async ({ page }) => {
 ### Playwright
 
 1. **Używaj locators resilient do zmian:**
+
    ```typescript
    // ✅ Dobre
-   page.getByRole('button', { name: 'Zapisz' });
-   page.getByLabel('Email');
+   page.getByRole("button", { name: "Zapisz" });
+   page.getByLabel("Email");
 
    // ❌ Złe (kruche)
-   page.locator('.btn-primary');
-   page.locator('#submit-button');
+   page.locator(".btn-primary");
+   page.locator("#submit-button");
    ```
 
 2. **Page Object Model dla maintainability:**
+
    ```typescript
    class LoginPage {
      constructor(private page: Page) {}
@@ -223,10 +234,11 @@ test('user can create recipe and generate shopping list', async ({ page }) => {
    ```
 
 3. **Używaj test hooks:**
+
    ```typescript
    test.beforeEach(async ({ page }) => {
      // Setup przed każdym testem
-     await page.goto('/');
+     await page.goto("/");
    });
    ```
 
@@ -242,18 +254,18 @@ test('user can create recipe and generate shopping list', async ({ page }) => {
 Używaj factory functions z `tests/fixtures/sample-data.ts`:
 
 ```typescript
-import { createRecipe, createIngredient } from '@/tests/fixtures/sample-data';
+import { createRecipe, createIngredient } from "@/tests/fixtures/sample-data";
 
-const recipe = createRecipe({ name: 'Custom Recipe' });
+const recipe = createRecipe({ name: "Custom Recipe" });
 const ingredient = createIngredient({ quantity: 500 });
 ```
 
 ### Mockowanie Supabase
 
 ```typescript
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
-vi.mock('@/db/supabase.client', () => ({
+vi.mock("@/db/supabase.client", () => ({
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
@@ -281,12 +293,14 @@ Testy są uruchamiane automatycznie w GitHub Actions:
 ### Problem: Playwright timeout
 
 **Rozwiązanie:**
+
 - Zwiększ timeout: `test.setTimeout(60000)`
 - Sprawdź czy dev server działa: `npm run dev`
 
 ### Problem: Coverage jest za niski
 
 **Rozwiązanie:**
+
 - Uruchom `npm run test:coverage` i sprawdź raport w `coverage/index.html`
 - Skup się na testowaniu krytycznych funkcji w `src/lib`
 

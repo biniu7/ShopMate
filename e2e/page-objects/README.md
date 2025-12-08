@@ -18,6 +18,7 @@ e2e/
 ## Wzorzec Page Object Model
 
 Page Object Model (POM) to wzorzec projektowy, który:
+
 - Enkapsuluje logikę stron w osobne klasy
 - Separuje strukturę strony od logiki testów
 - Ułatwia utrzymanie testów przy zmianach w UI
@@ -39,10 +40,12 @@ this.submitButton = page.getByText("Zapisz przepis");
 ### Mapa data-test-id
 
 #### RecipesListPage
+
 - `add-recipe-button` - Przycisk "Dodaj przepis" (desktop)
 - `add-recipe-button-fab` - FAB "Dodaj przepis" (mobile)
 
 #### RecipeCreatePage
+
 - `recipe-form` - Kontener formularza
 - `recipe-name-input` - Pole nazwy przepisu
 - `recipe-instructions-textarea` - Pole instrukcji
@@ -83,8 +86,9 @@ const testRecipe: RecipeData = {
 ```
 
 Funkcja `generateRecipeName()` dodaje timestamp do nazwy:
+
 ```typescript
-generateRecipeName("Test Recipe")
+generateRecipeName("Test Recipe");
 // Zwraca: "Test Recipe 1234567890123"
 ```
 
@@ -99,9 +103,7 @@ test("should create recipe", async ({ page }) => {
   const testRecipe: RecipeData = {
     name: "Test Recipe",
     instructions: "Test instructions",
-    ingredients: [
-      { name: "ingredient 1", quantity: "100", unit: "g" }
-    ]
+    ingredients: [{ name: "ingredient 1", quantity: "100", unit: "g" }],
   };
 
   // Act - Wykonaj akcje
@@ -122,7 +124,9 @@ test("should create recipe", async ({ page }) => {
 test("should create recipe - simplified", async ({ page }) => {
   // Arrange
   const recipeCreatePage = new RecipeCreatePage(page);
-  const testRecipe: RecipeData = { /* ... */ };
+  const testRecipe: RecipeData = {
+    /* ... */
+  };
 
   // Act - createRecipe() łączy Arrange, Act
   await recipeCreatePage.createRecipe(testRecipe);
@@ -137,11 +141,13 @@ test("should create recipe - simplified", async ({ page }) => {
 ### RecipesListPage
 
 #### Konstruktor
+
 ```typescript
 new RecipesListPage(page: Page)
 ```
 
 #### Metody
+
 - `goto()` - Nawiguj do /recipes
 - `clickAddRecipeButton()` - Kliknij przycisk "Dodaj przepis" (desktop)
 - `clickAddRecipeButtonFab()` - Kliknij FAB "Dodaj przepis" (mobile)
@@ -150,23 +156,27 @@ new RecipesListPage(page: Page)
 ### RecipeCreatePage
 
 #### Konstruktor
+
 ```typescript
 new RecipeCreatePage(page: Page)
 ```
 
 #### Metody podstawowe
+
 - `goto()` - Nawiguj do /recipes/new
 - `waitForFormLoad()` - Czekaj na załadowanie formularza
 - `fillName(name: string)` - Wypełnij nazwę przepisu
 - `fillInstructions(instructions: string)` - Wypełnij instrukcje
 
 #### Metody składników
+
 - `getIngredient(index: number)` - Pobierz lokatory składnika
 - `fillIngredient(index: number, data: IngredientData)` - Wypełnij składnik
 - `clickAddIngredient()` - Dodaj nowy wiersz składnika
 - `removeIngredient(index: number)` - Usuń składnik
 
 #### Metody formularza
+
 - `fillRecipeForm(recipe: RecipeData)` - Wypełnij cały formularz
 - `clickSubmit()` - Kliknij "Zapisz przepis"
 - `clickCancel()` - Kliknij "Anuluj"
@@ -174,11 +184,13 @@ new RecipeCreatePage(page: Page)
 - `isSubmitButtonDisabled()` - Sprawdź czy przycisk submit jest nieaktywny
 
 #### Metody walidacji
+
 - `getNameError()` - Pobierz błąd walidacji nazwy
 - `getInstructionsError()` - Pobierz błąd walidacji instrukcji
 - `getIngredientError(index: number)` - Pobierz błąd składnika
 
 #### Metody pomocnicze
+
 - `waitForSuccessRedirect()` - Czekaj na przekierowanie po sukcesie
 - `getRecipeNameFromDetailsPage()` - Pobierz nazwę przepisu ze strony szczegółów (po utworzeniu)
 - `createRecipe(recipe: RecipeData)` - Kompleksowa metoda (Arrange + Act)
@@ -186,11 +198,13 @@ new RecipeCreatePage(page: Page)
 ### IngredientRow
 
 #### Konstruktor
+
 ```typescript
 new IngredientRow(page: Page, index: number)
 ```
 
 #### Metody
+
 - `fill(data: IngredientRowData)` - Wypełnij cały wiersz
 - `fillName(name: string)` - Wypełnij nazwę
 - `fillQuantity(quantity: string)` - Wypełnij ilość
@@ -204,6 +218,7 @@ new IngredientRow(page: Page, index: number)
 ## Typy danych
 
 ### RecipeData
+
 ```typescript
 interface RecipeData {
   name: string;
@@ -213,6 +228,7 @@ interface RecipeData {
 ```
 
 ### IngredientData
+
 ```typescript
 interface IngredientData {
   name: string;
@@ -222,6 +238,7 @@ interface IngredientData {
 ```
 
 ### IngredientRowData
+
 ```typescript
 interface IngredientRowData {
   name: string;
@@ -233,16 +250,18 @@ interface IngredientRowData {
 ## Best Practices
 
 ### 1. Używaj data-test-id
+
 ```typescript
 // ✅ Dobre
-page.getByTestId("submit-recipe-button")
+page.getByTestId("submit-recipe-button");
 
 // ❌ Złe
-page.locator("button[type='submit']")
-page.getByText("Zapisz przepis")
+page.locator("button[type='submit']");
+page.getByText("Zapisz przepis");
 ```
 
 ### 2. Enkapsuluj logikę w Page Objects
+
 ```typescript
 // ✅ Dobre
 await recipeCreatePage.fillRecipeForm(testRecipe);
@@ -254,6 +273,7 @@ await page.getByTestId("recipe-instructions-textarea").fill(recipe.instructions)
 ```
 
 ### 3. Używaj wzorca Arrange-Act-Assert
+
 ```typescript
 test("example", async ({ page }) => {
   // Arrange - przygotuj dane i obiekty
@@ -277,22 +297,24 @@ test("example", async ({ page }) => {
 ```
 
 ### 4. Używaj TypeScript dla type safety
+
 ```typescript
 // ✅ Dobre - TypeScript sprawdzi poprawność
 const recipe: RecipeData = {
   name: "Test",
   instructions: "Test instructions",
-  ingredients: [{ name: "test" }]
+  ingredients: [{ name: "test" }],
 };
 
 // ❌ Złe - brak sprawdzania typów
 const recipe = {
   nazwa: "Test", // błąd - powinno być 'name'
-  skladniki: []   // błąd - powinno być 'ingredients'
+  skladniki: [], // błąd - powinno być 'ingredients'
 };
 ```
 
 ### 5. Używaj metod pomocniczych dla złożonych operacji
+
 ```typescript
 // ✅ Dobre - jedna metoda
 await recipeCreatePage.createRecipe(testRecipe);
@@ -310,6 +332,7 @@ await recipeCreatePage.waitForSuccessRedirect();
 Więcej przykładów znajdziesz w pliku `e2e/recipe-create.spec.ts`.
 
 ### Test tworzenia przepisu
+
 ```typescript
 test("should create recipe with ingredients", async ({ page }) => {
   const recipesListPage = new RecipesListPage(page);
@@ -340,6 +363,7 @@ test("should create recipe with ingredients", async ({ page }) => {
 ```
 
 ### Test walidacji
+
 ```typescript
 test("should validate required fields", async ({ page }) => {
   const recipeCreatePage = new RecipeCreatePage(page);
@@ -353,6 +377,7 @@ test("should validate required fields", async ({ page }) => {
 ```
 
 ### Test dynamicznego dodawania składników
+
 ```typescript
 test("should add and remove ingredients", async ({ page }) => {
   const recipeCreatePage = new RecipeCreatePage(page);
@@ -385,6 +410,7 @@ Aby dodać nowy Page Object:
 5. Eksportuj klasę w `index.ts`
 
 Przykład:
+
 ```typescript
 // e2e/page-objects/RecipeDetailsPage.ts
 export class RecipeDetailsPage {

@@ -13,12 +13,14 @@ Na podstawie przeanalizowanej struktury projektu ShopMate, zidentyfikowano eleme
 ### 1. Calendar Utils (`src/lib/utils/calendar.ts`)
 
 **Funkcje do testowania:**
+
 - `groupCellsByDay(cells: CalendarCellViewModel[])`
 - `truncateText(text: string, maxLength: number)`
 - `getDayName(dayOfWeek: number)`
 - `getMealTypeLabel(mealType: MealType)`
 
 **Dlaczego:**
+
 - ✅ Pure functions - łatwe do testowania
 - ✅ Logika biznesowa (grupowanie, formatowanie)
 - ✅ Brak zależności zewnętrznych
@@ -56,12 +58,14 @@ describe('truncateText', () => {
 ### 2. Date Utils (`src/lib/utils/date.ts`)
 
 **Funkcje do testowania:**
+
 - `getCurrentWeekStart(): string`
 - `getMealTypeLabel(mealType: MealType): string`
 - `getDayName(dayOfWeek: number): string`
 - `formatDate(date: Date): string`
 
 **Dlaczego:**
+
 - ✅ Pure functions
 - ✅ Logika dat jest podatna na błędy
 - ✅ Używane w wielu miejscach (calendar, wizard)
@@ -72,10 +76,11 @@ describe('truncateText', () => {
 ### 3. Wizard Reducer (`ShoppingListWizard.tsx`)
 
 ```typescript
-function wizardReducer(state: WizardState, action: WizardAction): WizardState
+function wizardReducer(state: WizardState, action: WizardAction): WizardState;
 ```
 
 **Dlaczego:**
+
 - ✅ Pure function - deterministyczna
 - ✅ Złożona logika state management
 - ✅ Wiele akcji do przetestowania (TOGGLE_MEAL, ADD_ITEM, UPDATE_ITEM)
@@ -84,31 +89,31 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState
 **Przykładowe testy:**
 
 ```typescript
-describe('wizardReducer', () => {
-  describe('TOGGLE_MEAL', () => {
-    it('should add meal to empty selectedMeals', () => {
+describe("wizardReducer", () => {
+  describe("TOGGLE_MEAL", () => {
+    it("should add meal to empty selectedMeals", () => {
       const state = { ...initialState, selectedMeals: [] };
       const action = {
-        type: 'TOGGLE_MEAL',
-        payload: { dayOfWeek: 1, mealType: 'breakfast' }
+        type: "TOGGLE_MEAL",
+        payload: { dayOfWeek: 1, mealType: "breakfast" },
       };
       const newState = wizardReducer(state, action);
 
       expect(newState.selectedMeals).toHaveLength(1);
       expect(newState.selectedMeals[0]).toEqual({
         day_of_week: 1,
-        meal_types: ['breakfast']
+        meal_types: ["breakfast"],
       });
     });
 
-    it('should remove meal type when toggling selected meal', () => {
+    it("should remove meal type when toggling selected meal", () => {
       const state = {
         ...initialState,
-        selectedMeals: [{ day_of_week: 1, meal_types: ['breakfast'] }]
+        selectedMeals: [{ day_of_week: 1, meal_types: ["breakfast"] }],
       };
       const action = {
-        type: 'TOGGLE_MEAL',
-        payload: { dayOfWeek: 1, mealType: 'breakfast' }
+        type: "TOGGLE_MEAL",
+        payload: { dayOfWeek: 1, mealType: "breakfast" },
       };
       const newState = wizardReducer(state, action);
 
@@ -116,17 +121,15 @@ describe('wizardReducer', () => {
     });
   });
 
-  describe('UPDATE_ITEM', () => {
-    it('should update item at specific index', () => {
+  describe("UPDATE_ITEM", () => {
+    it("should update item at specific index", () => {
       const state = {
         ...initialState,
-        modifiedItems: [
-          { ingredient_name: 'Mleko', quantity: 1, unit: 'l', category: 'Nabiał' }
-        ]
+        modifiedItems: [{ ingredient_name: "Mleko", quantity: 1, unit: "l", category: "Nabiał" }],
       };
       const action = {
-        type: 'UPDATE_ITEM',
-        payload: { index: 0, field: 'quantity', value: 2 }
+        type: "UPDATE_ITEM",
+        payload: { index: 0, field: "quantity", value: 2 },
       };
       const newState = wizardReducer(state, action);
 
@@ -151,6 +154,7 @@ export const RecipeSchema = z.object({
 ```
 
 **Dlaczego:**
+
 - ✅ Krytyczne dla bezpieczeństwa danych
 - ✅ Łatwe do testowania (input → validation result)
 - ✅ Wiele edge cases (granice, trim, optional fields)
@@ -159,43 +163,43 @@ export const RecipeSchema = z.object({
 **Przykładowe testy:**
 
 ```typescript
-describe('RecipeSchema', () => {
-  it('should accept valid recipe', () => {
+describe("RecipeSchema", () => {
+  it("should accept valid recipe", () => {
     const valid = {
-      name: 'Spaghetti Bolognese',
-      instructions: 'Cook pasta. Add sauce. Enjoy your meal!',
-      ingredients: [{ name: 'Pasta', quantity: 500, unit: 'g', sort_order: 0 }]
+      name: "Spaghetti Bolognese",
+      instructions: "Cook pasta. Add sauce. Enjoy your meal!",
+      ingredients: [{ name: "Pasta", quantity: 500, unit: "g", sort_order: 0 }],
     };
 
     expect(() => RecipeSchema.parse(valid)).not.toThrow();
   });
 
-  it('should reject name too short', () => {
+  it("should reject name too short", () => {
     const invalid = {
-      name: 'Ab',
-      instructions: 'Valid instructions here',
-      ingredients: [{ name: 'Pasta', quantity: null, unit: null, sort_order: 0 }]
+      name: "Ab",
+      instructions: "Valid instructions here",
+      ingredients: [{ name: "Pasta", quantity: null, unit: null, sort_order: 0 }],
     };
 
     expect(() => RecipeSchema.parse(invalid)).toThrow();
   });
 
-  it('should trim whitespace from name', () => {
+  it("should trim whitespace from name", () => {
     const input = {
-      name: '  Pasta  ',
-      instructions: 'Cook it well',
-      ingredients: [{ name: 'Pasta', quantity: null, unit: null, sort_order: 0 }]
+      name: "  Pasta  ",
+      instructions: "Cook it well",
+      ingredients: [{ name: "Pasta", quantity: null, unit: null, sort_order: 0 }],
     };
 
     const result = RecipeSchema.parse(input);
-    expect(result.name).toBe('Pasta');
+    expect(result.name).toBe("Pasta");
   });
 
-  it('should require at least 1 ingredient', () => {
+  it("should require at least 1 ingredient", () => {
     const invalid = {
-      name: 'Recipe',
-      instructions: 'Instructions',
-      ingredients: []
+      name: "Recipe",
+      instructions: "Instructions",
+      ingredients: [],
     };
 
     expect(() => RecipeSchema.parse(invalid)).toThrow();
@@ -208,6 +212,7 @@ describe('RecipeSchema', () => {
 ### 5. Shopping List Schema (`src/lib/validation/shopping-list.schema.ts`)
 
 **Dlaczego:**
+
 - ✅ Walidacja kategorii (CATEGORY_ORDER)
 - ✅ Agregacja składników
 - ✅ Opcjonalne pola (quantity, unit)
@@ -219,6 +224,7 @@ describe('RecipeSchema', () => {
 ### 6. useCalendar Hook (`src/components/hooks/useCalendar.ts`)
 
 **Dlaczego:**
+
 - ✅ Złożona logika state management (modals, selections)
 - ✅ Można testować bez renderowania całego komponentu
 - ✅ Wiele edge cases (empty state, loading, error)
@@ -226,28 +232,28 @@ describe('RecipeSchema', () => {
 **Przykładowe testy:**
 
 ```typescript
-import { renderHook, act } from '@testing-library/react';
-import { useCalendar } from './useCalendar';
+import { renderHook, act } from "@testing-library/react";
+import { useCalendar } from "./useCalendar";
 
-describe('useCalendar', () => {
-  it('should initialize with current week', () => {
+describe("useCalendar", () => {
+  it("should initialize with current week", () => {
     const { result } = renderHook(() => useCalendar());
 
     expect(result.current.weekStartDate).toBeTruthy();
     expect(result.current.assignments).toEqual([]);
   });
 
-  it('should open recipe picker when assigning recipe', () => {
+  it("should open recipe picker when assigning recipe", () => {
     const { result } = renderHook(() => useCalendar());
 
     act(() => {
-      result.current.handleAssignRecipe(1, 'breakfast');
+      result.current.handleAssignRecipe(1, "breakfast");
     });
 
     expect(result.current.recipePickerState.isOpen).toBe(true);
     expect(result.current.recipePickerState.targetCell).toEqual({
       dayOfWeek: 1,
-      mealType: 'breakfast'
+      mealType: "breakfast",
     });
   });
 });
@@ -260,6 +266,7 @@ describe('useCalendar', () => {
 ### 7. MealCell Component (`src/components/MealCell.tsx`)
 
 **Dlaczego:**
+
 - ✅ Komponent prezentacyjny (props → UI)
 - ✅ Dwa stany: empty vs assigned
 - ✅ Event handlers (onClick)
@@ -331,6 +338,7 @@ describe('MealCell', () => {
 ### 8. ShoppingListPreview Component (`wizard/ShoppingListPreview.tsx`)
 
 **Dlaczego:**
+
 - ✅ Logika grupowania po kategoriach (useMemo)
 - ✅ Funkcja `getGlobalIndex()` - krytyczna dla edycji
 - ✅ Renderowanie warunkowe (kategorie bez itemów)
@@ -377,6 +385,7 @@ describe('ShoppingListPreview', () => {
 ### 9. API Service Functions (`src/lib/api/recipes.ts`)
 
 **Dlaczego:**
+
 - ✅ Można testować z mock fetch
 - ✅ Error handling (network errors, 404, 500)
 - ✅ Response parsing
@@ -384,29 +393,29 @@ describe('ShoppingListPreview', () => {
 **Przykładowe testy:**
 
 ```typescript
-import { vi } from 'vitest';
-import { fetchRecipe } from './recipes';
+import { vi } from "vitest";
+import { fetchRecipe } from "./recipes";
 
-describe('fetchRecipe', () => {
-  it('should fetch recipe by id', async () => {
+describe("fetchRecipe", () => {
+  it("should fetch recipe by id", async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ id: '123', name: 'Pasta' })
+      json: async () => ({ id: "123", name: "Pasta" }),
     });
 
-    const result = await fetchRecipe('123');
+    const result = await fetchRecipe("123");
 
-    expect(fetch).toHaveBeenCalledWith('/api/recipes/123');
-    expect(result).toEqual({ id: '123', name: 'Pasta' });
+    expect(fetch).toHaveBeenCalledWith("/api/recipes/123");
+    expect(result).toEqual({ id: "123", name: "Pasta" });
   });
 
-  it('should throw error when recipe not found', async () => {
+  it("should throw error when recipe not found", async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
-      status: 404
+      status: 404,
     });
 
-    await expect(fetchRecipe('999')).rejects.toThrow();
+    await expect(fetchRecipe("999")).rejects.toThrow();
   });
 });
 ```
@@ -425,45 +434,50 @@ describe('fetchRecipe', () => {
 
 ## 📊 Podsumowanie priorytetów:
 
-| Priorytet | Element | Ilość testów | Effort | Value |
-|-----------|---------|--------------|--------|-------|
-| 🥇 **1** | Calendar utils | ~10 | Low | High |
-| 🥇 **1** | Date utils | ~8 | Low | High |
-| 🥇 **1** | wizardReducer | ~15 | Medium | High |
-| 🥈 **2** | RecipeSchema | ~12 | Low | High |
-| 🥈 **2** | ShoppingListSchema | ~10 | Low | High |
-| 🥉 **3** | useCalendar hook | ~8 | Medium | Medium |
-| 🥉 **3** | MealCell | ~10 | Medium | Medium |
-| 🥉 **3** | ShoppingListPreview | ~8 | Medium | Medium |
+| Priorytet | Element             | Ilość testów | Effort | Value  |
+| --------- | ------------------- | ------------ | ------ | ------ |
+| 🥇 **1**  | Calendar utils      | ~10          | Low    | High   |
+| 🥇 **1**  | Date utils          | ~8           | Low    | High   |
+| 🥇 **1**  | wizardReducer       | ~15          | Medium | High   |
+| 🥈 **2**  | RecipeSchema        | ~12          | Low    | High   |
+| 🥈 **2**  | ShoppingListSchema  | ~10          | Low    | High   |
+| 🥉 **3**  | useCalendar hook    | ~8           | Medium | Medium |
+| 🥉 **3**  | MealCell            | ~10          | Medium | Medium |
+| 🥉 **3**  | ShoppingListPreview | ~8           | Medium | Medium |
 
 ---
 
 ## 🚀 Zalecana kolejność implementacji:
 
 ### Faza 1: Utils (łatwy start, wysokie pokrycie)
+
 ```
 src/lib/utils/__tests__/calendar.test.ts
 src/lib/utils/__tests__/date.test.ts
 ```
 
 ### Faza 2: Validation (krytyczne dla bezpieczeństwa)
+
 ```
 src/lib/validation/__tests__/recipe.schema.test.ts
 src/lib/validation/__tests__/shopping-list.schema.test.ts
 ```
 
 ### Faza 3: Reducers (złożona logika)
+
 ```
 src/components/wizard/__tests__/wizardReducer.test.ts
 ```
 
 ### Faza 4: Components (prezentacyjne)
+
 ```
 src/components/__tests__/MealCell.test.tsx
 src/components/wizard/__tests__/ShoppingListPreview.test.tsx
 ```
 
 ### Faza 5: Hooks (zaawansowane)
+
 ```
 src/components/hooks/__tests__/useCalendar.test.ts
 ```

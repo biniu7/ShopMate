@@ -145,4 +145,3 @@ export async function deleteRecipe(recipeId: string): Promise<{ success: boolean
 
   return response.json();
 }
-

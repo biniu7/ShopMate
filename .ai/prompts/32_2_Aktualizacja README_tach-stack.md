@@ -16,6 +16,7 @@ Oto aktualny plik tech-stack.md, który należy zaktualizować:
 </tech_stack>
 
 Przeanalizuj plan testów i wyodrębnij następujące informacje:
+
 1. Narzędzia i frameworki używane do testów jednostkowych
 2. Narzędzia i frameworki używane do testów e2e
 3. Sposób uruchamiania testów jednostkowych
@@ -24,6 +25,7 @@ Przeanalizuj plan testów i wyodrębnij następujące informacje:
 6. Dodatkowe istotne informacje o strategii testowania
 
 Dla pliku README.md:
+
 - Dodaj lub zaktualizuj sekcję dotyczącą testowania
 - Uwzględnij informacje o tym, jak uruchomić testy jednostkowe
 - Uwzględnij informacje o tym, jak uruchomić testy e2e
@@ -31,6 +33,7 @@ Dla pliku README.md:
 - Zachowaj istniejącą strukturę i styl dokumentu
 
 Dla pliku tech-stack.md:
+
 - Dodaj lub zaktualizuj sekcję o narzędziach testowych
 - Wymień frameworki i biblioteki używane do testów jednostkowych
 - Wymień frameworki i biblioteki używane do testów e2e
@@ -50,6 +53,7 @@ Tutaj przeanalizuj:
 Następnie przedstaw zaktualizowane wersje obu plików. Umieść zaktualizowany README.md w tagach <updated_readme> a zaktualizowany tech-stack.md w tagach <updated_tech_stack>.
 
 WAŻNE:
+
 - Wszystkie treści generuj PO POLSKU
 - Zachowaj formatowanie markdown
 - Nie usuwaj istniejących sekcji, tylko je uzupełnij lub zaktualizuj

@@ -17,11 +17,13 @@ OpenRouterService został pomyślnie zintegrowany z istniejącym workflow genero
 ### `src/lib/services/ai-categorization.service.ts`
 
 **Przed zmianą:**
+
 - Używał bezpośrednio `openai` package
 - Miał własny mechanizm retry (3 próby)
 - Wymagał `OPENAI_API_KEY`
 
 **Po zmianie:**
+
 - Używa `OpenRouterService`
 - Wykorzystuje wbudowany retry w OpenRouterService (2 próby)
 - Wymagacze `OPENROUTER_API_KEY`
@@ -30,25 +32,28 @@ OpenRouterService został pomyślnie zintegrowany z istniejącym workflow genero
 ### Szczegóły zmian:
 
 #### 1. Import zmieniony (linia 6)
+
 ```typescript
 // Przed:
 import OpenAI from "openai";
 
 // Po:
-import { OpenRouterService } from './openrouter';
+import { OpenRouterService } from "./openrouter";
 ```
 
 #### 2. Usunięto funkcję `getOpenAIClient()`
+
 - Nie jest już potrzebna
 - OpenRouterService zarządza klientem HTTP wewnętrznie
 
 #### 3. Zmiana funkcji `callOpenAI()` → `callOpenRouter()` (linia 36-73)
+
 ```typescript
 // Przed:
 const callOpenAI = async (ingredients: string[]): Promise<Map<string, IngredientCategory>> => {
   const openai = getOpenAIClient();
   // ... bezpośrednie wywołanie OpenAI API
-}
+};
 
 // Po:
 const callOpenRouter = async (ingredients: string[]): Promise<Map<string, IngredientCategory>> => {
@@ -57,7 +62,7 @@ const callOpenRouter = async (ingredients: string[]): Promise<Map<string, Ingred
   // Przygotowanie danych (index jako ID)
   const ingredientsWithIds = ingredients.map((name, index) => ({
     id: String(index),
-    name
+    name,
   }));
 
   // Wywołanie serwisu
@@ -65,7 +70,7 @@ const callOpenRouter = async (ingredients: string[]): Promise<Map<string, Ingred
 
   // Sprawdzenie rezultatu
   if (!result.success) {
-    throw new Error(result.error?.message || 'Categorization failed');
+    throw new Error(result.error?.message || "Categorization failed");
   }
 
   // Mapowanie z powrotem na Map
@@ -84,6 +89,7 @@ const callOpenRouter = async (ingredients: string[]): Promise<Map<string, Ingred
 ```
 
 #### 4. Uproszczenie `categorizeIngredientsWithRetry()` (linia 92-145)
+
 ```typescript
 // Przed:
 // - Pętla for z 3 próbami
@@ -123,17 +129,20 @@ try {
 ### API pozostało bez zmian:
 
 ✅ **Funkcja:** `categorizeIngredientsWithRetry(ingredients: string[])`
+
 - Sygnatura niezmieniona
 - Zwracany typ niezmieniony (`CategorizationResult`)
 - Logika fallback do "Inne" zachowana
 
 ✅ **Używane w:**
+
 - `src/lib/services/shopping-list-preview.service.ts:351`
   ```typescript
   const categorizationResult = await categorizeIngredientsWithRetry(ingredientNames);
   ```
 
 ✅ **Workflow:**
+
 1. `POST /api/shopping-lists/preview`
 2. → `generateShoppingListPreview()`
 3. → `categorizeIngredientsWithRetry()`
@@ -143,40 +152,45 @@ try {
 
 ## 📊 Porównanie: Przed vs Po
 
-| Aspekt | Przed (OpenAI direct) | Po (OpenRouterService) |
-|--------|----------------------|------------------------|
-| **API Provider** | OpenAI bezpośrednio | OpenRouter (proxy) |
-| **Model** | gpt-4o-mini | gpt-4o-mini (przez OpenRouter) |
-| **Klucz API** | `OPENAI_API_KEY` | `OPENROUTER_API_KEY` |
-| **Retry** | 3 próby (ręcznie) | 2 próby (wbudowane) |
-| **Exponential backoff** | 1s, 2s, 4s | 1s, 2s |
-| **Timeout** | 10s | 10s |
-| **Fallback** | "Inne" | "Inne" (zachowane) |
-| **Error handling** | Ręczny try-catch | OpenRouterError + try-catch |
-| **LOC** | ~220 linii | ~145 linii |
+| Aspekt                  | Przed (OpenAI direct) | Po (OpenRouterService)         |
+| ----------------------- | --------------------- | ------------------------------ |
+| **API Provider**        | OpenAI bezpośrednio   | OpenRouter (proxy)             |
+| **Model**               | gpt-4o-mini           | gpt-4o-mini (przez OpenRouter) |
+| **Klucz API**           | `OPENAI_API_KEY`      | `OPENROUTER_API_KEY`           |
+| **Retry**               | 3 próby (ręcznie)     | 2 próby (wbudowane)            |
+| **Exponential backoff** | 1s, 2s, 4s            | 1s, 2s                         |
+| **Timeout**             | 10s                   | 10s                            |
+| **Fallback**            | "Inne"                | "Inne" (zachowane)             |
+| **Error handling**      | Ręczny try-catch      | OpenRouterError + try-catch    |
+| **LOC**                 | ~220 linii            | ~145 linii                     |
 
 ---
 
 ## ✅ Korzyści z integracji
 
 ### 1. **Zunifikowana obsługa AI**
+
 - Cały kod AI przechodzi przez jeden serwis (OpenRouterService)
 - Łatwiejsze zarządzanie konfiguracją
 - Spójne logowanie i error handling
 
 ### 2. **Lepsze typowanie**
+
 - OpenRouterService ma pełne typowanie TypeScript
 - Mniej błędów w czasie kompilacji
 
 ### 3. **Mniejsza ilość kodu**
+
 - Usunięto ~75 linii kodu (220 → 145)
 - Prosta implementacja wrapper
 
 ### 4. **Elastyczność**
+
 - Możliwość łatwej zmiany modelu w jednym miejscu
 - Łatwe dodanie nowych funkcji AI
 
 ### 5. **Bezpieczeństwo**
+
 - Sanityzacja inputów wbudowana w OpenRouterService
 - Walidacja kategorii zachowana
 
@@ -256,11 +270,13 @@ Response: [{ingredient_name: 'mleko', category: 'Nabiał'}, ...]
 ### Zmienne środowiskowe:
 
 **Stare (można usunąć):**
+
 ```env
 # OPENAI_API_KEY=sk-...  # Nie jest już używany
 ```
 
 **Nowe (wymagane):**
+
 ```env
 OPENROUTER_API_KEY=sk-or-v1-...
 ```
@@ -291,6 +307,7 @@ grep OPENROUTER_API_KEY .env.local
 ### Instrukcje Vercel:
 
 1. **Dodaj klucz:**
+
    ```
    Settings → Environment Variables
    Name: OPENROUTER_API_KEY

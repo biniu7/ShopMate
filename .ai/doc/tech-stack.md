@@ -847,6 +847,7 @@ Testing i Quality Assurance:
 **Vitest** - Framework do testów jednostkowych i integracyjnych
 
 **Zalety:**
+
 - **Natywna kompatybilność z Vite/Astro:** Zero konfiguracji, działa out-of-the-box
 - **Szybkość wykonania:** Wykorzystuje Vite's HMR = błyskawiczne re-run testów
 - **API kompatybilne z Jest:** Łatwa migracja wiedzy, podobne API (describe, it, expect)
@@ -855,11 +856,13 @@ Testing i Quality Assurance:
 - **Coverage reporting:** Wbudowane wsparcie dla code coverage (c8/istanbul)
 
 **Obszary testowania:**
+
 - Schematy walidacji Zod (`src/lib/validation/*.schema.ts`)
 - Funkcje użytkowe (`src/lib/utils/*.ts`) - formatowanie dat, agregacja składników
 - Serwisy logiczne (`src/lib/services/*.ts`) - z mockowaniem zewnętrznych API
 
 **Uruchomienie:**
+
 ```bash
 npm run test              # Uruchom wszystkie testy
 npm run test:watch        # Tryb watch (development)
@@ -873,6 +876,7 @@ npm run test:coverage     # Raport pokrycia kodu
 **React Testing Library** - Testowanie komponentów React
 
 **Zalety:**
+
 - **User-centric approach:** Testy skupione na tym, jak użytkownik widzi komponenty
 - **Accessible by default:** Zachęca do pisania dostępnych komponentów (WCAG AA target)
 - **Integration z Vitest:** Bezproblemowa współpraca z Vitest
@@ -880,12 +884,14 @@ npm run test:coverage     # Raport pokrycia kodu
 - **Comprehensive utilities:** `screen`, `userEvent`, `waitFor` - wszystko czego potrzeba
 
 **Obszary testowania:**
+
 - Komponenty React (`src/components/**/*.tsx`)
 - Formularze z react-hook-form
 - Komponenty używające TanStack Query (z mockowaniem)
 - Interaktywne "wyspy" w architekturze Astro
 
 **Przykład testu:**
+
 ```typescript
 import { render, screen } from '@testing-library/react'
 import { RecipeCard } from './RecipeCard'
@@ -904,6 +910,7 @@ test('displays recipe name and ingredients count', () => {
 **Playwright** - Testy End-to-End
 
 **Zalety:**
+
 - **Multi-browser support:** Chromium, Firefox, WebKit (Safari) = pełne pokrycie
 - **Auto-wait:** Automatyczne czekanie na elementy = mniej flaky tests
 - **Test isolation:** Każdy test w czystym kontekście przeglądarki
@@ -914,50 +921,53 @@ test('displays recipe name and ingredients count', () => {
 
 **Dlaczego Playwright, a nie Cypress?**
 
-| Aspekt                | Playwright                                   | Cypress                             | Winner     |
-| --------------------- | -------------------------------------------- | ----------------------------------- | ---------- |
-| **Multi-browser**     | Chromium, Firefox, WebKit                    | Chromium, Firefox (limited WebKit)  | Playwright |
-| **Speed**             | Szybszy (parallel execution out-of-the-box)  | Wolniejszy (serial by default)      | Playwright |
-| **Network mocking**   | Native (route interception)                  | Native (cy.intercept)               | Tie        |
-| **Learning curve**    | Medium (Node.js API)                         | Easier (custom API)                 | Cypress    |
-| **Tab/window support** | Excellent (contexts)                        | Limited (single tab)                | Playwright |
-| **Maturity**          | Newer (2020), but mature                     | Older (2015), very mature           | Cypress    |
-| **Modern apps**       | Excellent dla Astro/React                    | Good                                | Playwright |
+| Aspekt                 | Playwright                                  | Cypress                            | Winner     |
+| ---------------------- | ------------------------------------------- | ---------------------------------- | ---------- |
+| **Multi-browser**      | Chromium, Firefox, WebKit                   | Chromium, Firefox (limited WebKit) | Playwright |
+| **Speed**              | Szybszy (parallel execution out-of-the-box) | Wolniejszy (serial by default)     | Playwright |
+| **Network mocking**    | Native (route interception)                 | Native (cy.intercept)              | Tie        |
+| **Learning curve**     | Medium (Node.js API)                        | Easier (custom API)                | Cypress    |
+| **Tab/window support** | Excellent (contexts)                        | Limited (single tab)               | Playwright |
+| **Maturity**           | Newer (2020), but mature                    | Older (2015), very mature          | Cypress    |
+| **Modern apps**        | Excellent dla Astro/React                   | Good                               | Playwright |
 
 **Obszary testowania - Ścieżki krytyczne:**
+
 1. **Auth flow:** Rejestracja → Email verification → Login → Password reset
 2. **Recipe management:** Create → Edit → Delete (z dialogiem potwierdzenia)
 3. **Calendar:** Assign recipe → Navigate weeks → Optimistic updates + rollback
 4. **Shopping lists:** Generate z kalendarza → Edit preview → Save → Check items → Export PDF/TXT
 
 **Przykład testu E2E:**
-```typescript
-import { test, expect } from '@playwright/test'
 
-test('user can create recipe and add to calendar', async ({ page }) => {
+```typescript
+import { test, expect } from "@playwright/test";
+
+test("user can create recipe and add to calendar", async ({ page }) => {
   // Login
-  await page.goto('/login')
-  await page.fill('[name="email"]', 'test@example.com')
-  await page.fill('[name="password"]', 'password123')
-  await page.click('button[type="submit"]')
+  await page.goto("/login");
+  await page.fill('[name="email"]', "test@example.com");
+  await page.fill('[name="password"]', "password123");
+  await page.click('button[type="submit"]');
 
   // Create recipe
-  await page.goto('/recipes/new')
-  await page.fill('[name="name"]', 'Spaghetti Carbonara')
-  await page.fill('[name="ingredients[0].name"]', 'Makaron')
-  await page.click('button:has-text("Zapisz")')
+  await page.goto("/recipes/new");
+  await page.fill('[name="name"]', "Spaghetti Carbonara");
+  await page.fill('[name="ingredients[0].name"]', "Makaron");
+  await page.click('button:has-text("Zapisz")');
 
   // Add to calendar
-  await page.goto('/calendar')
-  await page.click('[data-day="monday"][data-meal="dinner"]')
-  await page.click('text=Spaghetti Carbonara')
+  await page.goto("/calendar");
+  await page.click('[data-day="monday"][data-meal="dinner"]');
+  await page.click("text=Spaghetti Carbonara");
 
   // Verify
-  await expect(page.locator('[data-day="monday"][data-meal="dinner"]')).toContainText('Spaghetti')
-})
+  await expect(page.locator('[data-day="monday"][data-meal="dinner"]')).toContainText("Spaghetti");
+});
 ```
 
 **Uruchomienie:**
+
 ```bash
 npx playwright test                # Wszystkie testy E2E
 npx playwright test --ui           # UI mode (interactive)
@@ -1004,6 +1014,7 @@ npx playwright codegen             # Generowanie testów przez nagrywanie
    - Edge cases: Empty states, loading states
 
 **Kryteria akceptacji:**
+
 - ✅ Code coverage: min. 80% dla `src/lib`, min. 60% dla components
 - ✅ Wszystkie testy przechodzą (CI/CD gate)
 - ✅ E2E testy dla critical paths (4 główne flows)
@@ -1011,12 +1022,14 @@ npx playwright codegen             # Generowanie testów przez nagrywanie
 - ✅ Accessibility tests (basic keyboard navigation)
 
 **Test data management:**
+
 - **Fixtures:** Reusable test data w `tests/fixtures/`
 - **Factory functions:** Generowanie testowych obiektów (recipes, users)
 - **Database seeding:** Skrypty do seedowania testowej bazy Supabase
 - **Test isolation:** Każdy test czyści po sobie (transactions lub wipeout)
 
 **CI/CD Integration (GitHub Actions):**
+
 ```yaml
 name: Tests
 on: [push, pull_request]
@@ -1028,7 +1041,7 @@ jobs:
       - uses: actions/checkout@v3
       - run: npm ci
       - run: npm run test:coverage
-      - uses: codecov/codecov-action@v3  # Upload coverage
+      - uses: codecov/codecov-action@v3 # Upload coverage
 
   e2e-tests:
     runs-on: ubuntu-latest
@@ -1037,11 +1050,12 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps
       - run: npx playwright test
-      - uses: actions/upload-artifact@v3  # Upload test results
+      - uses: actions/upload-artifact@v3 # Upload test results
         if: always()
 ```
 
 **Koszt testowania:**
+
 - **Initial setup:** 2-3 dni (Vitest + Playwright config, pierwsze testy)
 - **Ongoing:** ~30% czasu developmentu (pisanie testów równolegle z features)
 - **Maintenance:** Minimal (testy muszą być aktualizowane przy refactorze)

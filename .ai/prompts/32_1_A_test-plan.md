@@ -15,6 +15,7 @@ Oto stos technologiczny (tech stack) używany w tym projekcie:
 Przed napisaniem planu testów, przeanalizuj dokładnie dostarczone informacje. Użyj tagów <scratchpad> do przeprowadzenia analizy:
 
 W swoim scratchpadzie:
+
 1. Zidentyfikuj kluczowe komponenty i moduły w bazie kodu
 2. Określ główne funkcjonalności aplikacji
 3. Rozpoznaj wzorce architektoniczne i strukturę projektu
@@ -37,6 +38,7 @@ Twój plan testów powinien zawierać następujące sekcje:
 11. **Zarządzanie ryzykiem** - zidentyfikowane ryzyka i strategie mitygacji
 
 Upewnij się, że:
+
 - Plan jest szczegółowy i praktyczny, nie ogólnikowy
 - Rekomendacje narzędzi są konkretne i odpowiednie dla podanego stosu technologicznego
 - Priorytetyzacja odzwierciedla rzeczywistą strukturę i złożoność kodu

@@ -43,7 +43,12 @@ export function RecipeEditForm({ recipe, form, onSubmit, onCancel, isSubmitting,
   } = form;
 
   return (
-    <form onSubmit={onSubmit} className="recipe-form bg-white rounded-lg shadow-sm p-6 sm:p-8" noValidate aria-label="Formularz edycji przepisu">
+    <form
+      onSubmit={onSubmit}
+      className="recipe-form bg-white rounded-lg shadow-sm p-6 sm:p-8"
+      noValidate
+      aria-label="Formularz edycji przepisu"
+    >
       {/* Header with breadcrumbs */}
       <FormHeader mode="edit" recipeName={recipe.name} />
 
@@ -62,7 +67,9 @@ export function RecipeEditForm({ recipe, form, onSubmit, onCancel, isSubmitting,
         <Controller
           name="name"
           control={control}
-          render={({ field }) => <NameInput value={field.value} onChange={field.onChange} error={errors.name?.message} />}
+          render={({ field }) => (
+            <NameInput value={field.value} onChange={field.onChange} error={errors.name?.message} />
+          )}
         />
 
         {/* Instructions Textarea */}

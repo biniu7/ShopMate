@@ -25,13 +25,13 @@ Analiza wykazała 5 plików o największej liczbie linii kodu w folderze `src/co
 
 ### 📊 Zestawienie
 
-| # | Plik | LOC | Złożoność | Priorytet refaktoryzacji |
-|---|------|-----|-----------|--------------------------|
-| 1 | `src/components/wizard/ShoppingListWizard.tsx` | 424 | ⚠️ WYSOKA | 🔴 CRITICAL |
-| 2 | `src/components/recipes/RecipeEditView.tsx` | 304 | ⚠️ ŚREDNIA-WYSOKA | 🟡 HIGH |
-| 3 | `src/components/hooks/useCalendar.ts` | 291 | ⚠️ WYSOKA | 🔴 CRITICAL |
-| 4 | `src/components/wizard/Step2a_CalendarSelection.tsx` | 240 | ⚠️ ŚREDNIA | 🟡 HIGH |
-| 5 | `src/components/auth/ResetPasswordView.tsx` | 238 | ⚠️ ŚREDNIA | 🟢 MEDIUM |
+| #   | Plik                                                 | LOC | Złożoność         | Priorytet refaktoryzacji |
+| --- | ---------------------------------------------------- | --- | ----------------- | ------------------------ |
+| 1   | `src/components/wizard/ShoppingListWizard.tsx`       | 424 | ⚠️ WYSOKA         | 🔴 CRITICAL              |
+| 2   | `src/components/recipes/RecipeEditView.tsx`          | 304 | ⚠️ ŚREDNIA-WYSOKA | 🟡 HIGH                  |
+| 3   | `src/components/hooks/useCalendar.ts`                | 291 | ⚠️ WYSOKA         | 🔴 CRITICAL              |
+| 4   | `src/components/wizard/Step2a_CalendarSelection.tsx` | 240 | ⚠️ ŚREDNIA        | 🟡 HIGH                  |
+| 5   | `src/components/auth/ResetPasswordView.tsx`          | 238 | ⚠️ ŚREDNIA        | 🟢 MEDIUM                |
 
 ---
 
@@ -52,43 +52,50 @@ Analiza wykazała 5 plików o największej liczbie linii kodu w folderze `src/co
 #### Rekomendowane wzorce refaktoryzacji:
 
 **A) State Machine Pattern**
+
 ```typescript
 // src/lib/state-machines/shopping-list-wizard.machine.ts
-import { createMachine } from 'xstate';
+import { createMachine } from "xstate";
 
 const wizardMachine = createMachine({
-  initial: 'modeSelection',
+  initial: "modeSelection",
   states: {
-    modeSelection: { on: { SELECT_MODE: 'selection' } },
-    selection: { on: { NEXT: 'generation', BACK: 'modeSelection' } },
-    generation: { on: { SUCCESS: 'preview', ERROR: 'selection' } },
-    preview: { on: { SAVE: 'saving', BACK: 'selection' } }
-  }
+    modeSelection: { on: { SELECT_MODE: "selection" } },
+    selection: { on: { NEXT: "generation", BACK: "modeSelection" } },
+    generation: { on: { SUCCESS: "preview", ERROR: "selection" } },
+    preview: { on: { SAVE: "saving", BACK: "selection" } },
+  },
 });
 ```
 
 **Dlaczego:** Wizard jest typowym use case dla state machine. XState oferuje:
+
 - Wizualizację stanów (type safety, niemożliwość invalid states)
 - Łatwiejsze testowanie transitions
 - Better developer experience
 
 **B) Extract Custom Hook**
+
 ```typescript
 // src/components/hooks/useShoppingListWizard.ts
 export function useShoppingListWizard() {
   const [state, dispatch] = useReducer(wizardReducer, initialState);
 
-  const actions = useMemo(() => ({
-    goToStep: (step) => dispatch({ type: "GO_TO_STEP", payload: step }),
-    selectMode: (mode) => dispatch({ type: "SET_MODE", payload: mode }),
-    // ...pozostałe actions
-  }), []);
+  const actions = useMemo(
+    () => ({
+      goToStep: (step) => dispatch({ type: "GO_TO_STEP", payload: step }),
+      selectMode: (mode) => dispatch({ type: "SET_MODE", payload: mode }),
+      // ...pozostałe actions
+    }),
+    []
+  );
 
   return { state, actions };
 }
 ```
 
 **C) Extract Reducer + API Services**
+
 ```typescript
 // src/lib/reducers/wizard.reducer.ts
 export { wizardReducer, initialState };
@@ -102,7 +109,7 @@ export const shoppingListsApi = {
       body: JSON.stringify(request),
     });
     return response.json();
-  }
+  },
 };
 ```
 
@@ -124,6 +131,7 @@ export const shoppingListsApi = {
 #### Rekomendowane wzorce refaktoryzacji:
 
 **A) Custom Hook Extraction - Compound Pattern**
+
 ```typescript
 // src/components/hooks/useRecipeEdit.ts
 export function useRecipeEdit(recipeId: string) {
@@ -151,11 +159,13 @@ export function useRecipeQuery(recipeId: string) {
 ```
 
 **Dlaczego:**
+
 - **Composition over Inheritance** - małe, reusable hooks
 - **DRY** - `useRecipeQuery` może być reused w RecipeDetailsView
 - **Testability** - hooks łatwiejsze do unit testowania
 
 **B) Container/Presentational Pattern**
+
 ```typescript
 // src/components/recipes/RecipeEditContainer.tsx (logic)
 export function RecipeEditContainer({ recipeId }) {
@@ -175,6 +185,7 @@ export function RecipeEditForm({ recipe, form, mutation }) {
 ```
 
 **C) React Suspense + Error Boundary**
+
 ```typescript
 export function RecipeEditView({ recipeId }) {
   return (
@@ -205,17 +216,13 @@ export function RecipeEditView({ recipeId }) {
 #### Rekomendowane wzorce refaktoryzacji:
 
 **A) Hook Composition - Extract Smaller Hooks**
+
 ```typescript
 // src/components/hooks/calendar/useCalendarState.ts
 export function useCalendarState(initialWeek?: string) {
-  const [weekStartDate, setWeekStartDate] = useState(
-    initialWeek || getCurrentWeekStart()
-  );
+  const [weekStartDate, setWeekStartDate] = useState(initialWeek || getCurrentWeekStart());
   const weekEndDate = useMemo(() => getWeekEndDate(weekStartDate), [weekStartDate]);
-  const dateRange = useMemo(
-    () => formatDateRange(weekStartDate, weekEndDate),
-    [weekStartDate, weekEndDate]
-  );
+  const dateRange = useMemo(() => formatDateRange(weekStartDate, weekEndDate), [weekStartDate, weekEndDate]);
 
   return { weekStartDate, weekEndDate, dateRange, setWeekStartDate };
 }
@@ -243,15 +250,22 @@ export function useCalendarModals() {
 
 // src/components/hooks/calendar/useWeekUrlSync.ts
 export function useWeekUrlSync(weekStartDate, setWeekStartDate) {
-  useEffect(() => { /* sync from URL */ }, []);
-  useEffect(() => { /* handle popstate */ }, []);
+  useEffect(() => {
+    /* sync from URL */
+  }, []);
+  useEffect(() => {
+    /* handle popstate */
+  }, []);
 
-  const handleWeekChange = useCallback((newWeekStart) => {
-    setWeekStartDate(newWeekStart);
-    const url = new URL(window.location.href);
-    url.searchParams.set("week", newWeekStart);
-    window.history.pushState({}, "", url.toString());
-  }, [setWeekStartDate]);
+  const handleWeekChange = useCallback(
+    (newWeekStart) => {
+      setWeekStartDate(newWeekStart);
+      const url = new URL(window.location.href);
+      url.searchParams.set("week", newWeekStart);
+      window.history.pushState({}, "", url.toString());
+    },
+    [setWeekStartDate]
+  );
 
   return { handleWeekChange };
 }
@@ -269,13 +283,10 @@ export function useCalendar(initialWeekStart?: string) {
 ```
 
 **B) Extract Optimistic Update Logic**
+
 ```typescript
 // src/lib/mutations/optimistic-updates.ts
-export function createOptimisticUpdateConfig(
-  queryClient: QueryClient,
-  queryKey: any[],
-  action: 'create' | 'delete'
-) {
+export function createOptimisticUpdateConfig(queryClient: QueryClient, queryKey: any[], action: "create" | "delete") {
   return {
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey });
@@ -296,6 +307,7 @@ export function createOptimisticUpdateConfig(
 ```
 
 **C) Optional: Context API for Global Calendar State**
+
 ```typescript
 // src/contexts/CalendarContext.tsx
 export const CalendarContext = createContext<CalendarContextValue | null>(null);
@@ -330,6 +342,7 @@ export function useCalendarContext() {
 #### Rekomendowane wzorce refaktoryzacji:
 
 **A) Migrate to TanStack Query**
+
 ```typescript
 // src/components/hooks/useCurrentWeekCalendar.ts
 export function useCurrentWeekCalendar() {
@@ -350,12 +363,14 @@ export default function Step2a_CalendarSelection({ ... }) {
 ```
 
 **Dlaczego:**
+
 - **Consistency** - zgodne z resztą projektu (RecipeEditView, useCalendar)
 - **Caching** - automatyczne cachowanie, refetch on window focus
 - **DevTools** - TanStack Query DevTools
 - **DRY** - query reusable
 
 **B) Extract Selection Logic to Custom Hook**
+
 ```typescript
 // src/components/hooks/useCalendarMealSelection.ts
 export function useCalendarMealSelection(
@@ -368,13 +383,19 @@ export function useCalendarMealSelection(
     [selectedMeals]
   );
 
-  const getEmptyMealsCount = useCallback((calendar) => {
-    // logic
-  }, [selectedMeals]);
+  const getEmptyMealsCount = useCallback(
+    (calendar) => {
+      // logic
+    },
+    [selectedMeals]
+  );
 
-  const selectAll = useCallback((calendar) => {
-    // logic
-  }, [onSelectAllMeals]);
+  const selectAll = useCallback(
+    (calendar) => {
+      // logic
+    },
+    [onSelectAllMeals]
+  );
 
   const clearSelection = useCallback(() => {
     onSelectAllMeals([]);
@@ -385,9 +406,10 @@ export function useCalendarMealSelection(
 ```
 
 **C) Remove Duplication**
+
 ```typescript
 // Zamiast duplicated getCurrentWeekStart(), użyj:
-import { getCurrentWeekStart } from '@/lib/utils/date';
+import { getCurrentWeekStart } from "@/lib/utils/date";
 ```
 
 **Szacowany effort:** 3-4 godziny
@@ -409,6 +431,7 @@ import { getCurrentWeekStart } from '@/lib/utils/date';
 #### Rekomendowane wzorce refaktoryzacji:
 
 **A) Split into Separate Components (SRP)**
+
 ```typescript
 // src/components/auth/ResetPasswordRequest.tsx
 export function ResetPasswordRequest() {
@@ -439,6 +462,7 @@ export function UpdatePassword() {
 ```
 
 **B) Migrate to react-hook-form**
+
 ```typescript
 const {
   register,
@@ -454,11 +478,13 @@ const {
 ```
 
 **Dlaczego:**
+
 - **Consistency** - tech-stack.md definiuje react-hook-form jako standard
 - **Less boilerplate** - automatic error handling, validation
 - **Better UX** - instant validation, accessibility
 
 **C) Extract API Calls to Service Layer**
+
 ```typescript
 // src/lib/api/auth.ts
 export const authApi = {
@@ -501,17 +527,20 @@ export function useResetPasswordRequestMutation() {
 ### ✅ Zasady z tech-stack.md
 
 **React Patterns:**
+
 - Functional components + hooks
 - Custom hooks w `src/components/hooks`
 - React.memo(), React.lazy(), Suspense
 - useCallback, useMemo, useOptimistic
 
 **Architecture:**
+
 - Clean layers (entities, use cases, interfaces, frameworks)
 - Dependencies point inward
 - Ports & adapters pattern
 
 **API Integration:**
+
 - Dedykowane serwisy w `src/lib/services`
 - TanStack Query dla data fetching
 - Optimistic updates where applicable
@@ -520,16 +549,16 @@ export function useResetPasswordRequestMutation() {
 
 ### 🔧 Rekomendowane techniki
 
-| Wzorzec | Zastosowanie | Przykład z analizy | Priorytet |
-|---------|--------------|-------------------|-----------|
-| **Custom Hook Extraction** | Separacja logiki od UI | `useCalendar` → split into `useCalendarState`, `useCalendarQueries`, `useCalendarModals` | 🔴 HIGH |
-| **Container/Presentational** | Separacja concerns | `RecipeEditView` → `RecipeEditContainer` + `RecipeEditForm` | 🟡 MEDIUM |
-| **State Machine** | Complex workflows | `ShoppingListWizard` → XState machine | 🟢 LOW |
-| **Service Layer** | API abstrakcja | Extract fetch calls do `src/lib/api/` | 🔴 HIGH |
-| **Composition over Inheritance** | Reusability | Small hooks composed into larger ones | 🔴 HIGH |
-| **Error Boundary** | Error handling | Declarative zamiast if/else | 🟡 MEDIUM |
-| **Suspense Pattern** | Loading states | React 18/19 pattern | 🟡 MEDIUM |
-| **DRY Utils** | Remove duplication | `getCurrentWeekStart()` → shared util | 🔴 HIGH |
+| Wzorzec                          | Zastosowanie           | Przykład z analizy                                                                       | Priorytet |
+| -------------------------------- | ---------------------- | ---------------------------------------------------------------------------------------- | --------- |
+| **Custom Hook Extraction**       | Separacja logiki od UI | `useCalendar` → split into `useCalendarState`, `useCalendarQueries`, `useCalendarModals` | 🔴 HIGH   |
+| **Container/Presentational**     | Separacja concerns     | `RecipeEditView` → `RecipeEditContainer` + `RecipeEditForm`                              | 🟡 MEDIUM |
+| **State Machine**                | Complex workflows      | `ShoppingListWizard` → XState machine                                                    | 🟢 LOW    |
+| **Service Layer**                | API abstrakcja         | Extract fetch calls do `src/lib/api/`                                                    | 🔴 HIGH   |
+| **Composition over Inheritance** | Reusability            | Small hooks composed into larger ones                                                    | 🔴 HIGH   |
+| **Error Boundary**               | Error handling         | Declarative zamiast if/else                                                              | 🟡 MEDIUM |
+| **Suspense Pattern**             | Loading states         | React 18/19 pattern                                                                      | 🟡 MEDIUM |
+| **DRY Utils**                    | Remove duplication     | `getCurrentWeekStart()` → shared util                                                    | 🔴 HIGH   |
 
 ---
 
@@ -538,10 +567,12 @@ export function useResetPasswordRequestMutation() {
 ### 🔴 CRITICAL: getCurrentWeekStart()
 
 **Lokalizacje:**
+
 - `src/components/wizard/ShoppingListWizard.tsx:412-424` (13 linii)
 - `src/components/wizard/Step2a_CalendarSelection.tsx:228-240` (13 linii)
 
 **Rozwiązanie:**
+
 ```typescript
 // src/lib/utils/date.ts
 export function getCurrentWeekStart(): string {
@@ -570,10 +601,12 @@ export function getCurrentWeekStart(): string {
 ### 🟡 Form handling patterns
 
 **Problem:**
+
 - `RecipeEditView.tsx` używa react-hook-form + zodResolver ✅
 - `ResetPasswordView.tsx` używa manual useState + manual validation ❌
 
 **Zgodność z tech-stack.md (linie 420-426):**
+
 > React: Functional components + hooks, custom hooks in `src/components/hooks`, `React.memo()`, `React.lazy()`, `Suspense`, `useCallback`, `useMemo`, `useId()`, `useOptimistic`, `useTransition`
 
 **Rozwiązanie:**
@@ -584,11 +617,13 @@ Migracja `ResetPasswordView.tsx` do react-hook-form
 ### 🟡 Data fetching patterns
 
 **Problem:**
+
 - `useCalendar.ts` używa TanStack Query ✅
 - `RecipeEditView.tsx` używa TanStack Query ✅
 - `Step2a_CalendarSelection.tsx` używa manual useState + useEffect ❌
 
 **Zgodność z tech-stack.md (linie 150-165):**
+
 > AI Integration: Implementation: `src/lib/services/ai-categorization.service.ts` - `categorizeIngredientsWithRetry()` with exponential backoff. [...] API Usage: Call from `src/pages/api/shopping-lists/generate.ts`
 
 (Implikuje pattern: TanStack Query dla client-side, dedicated services dla API calls)
@@ -670,14 +705,14 @@ Migracja `Step2a_CalendarSelection.tsx` do TanStack Query
 
 ## Metryki przed refaktoryzacją
 
-| Metryka | Wartość aktualna | Cel po refaktoryzacji |
-|---------|------------------|----------------------|
-| **Największy plik** | 424 LOC | < 200 LOC |
-| **Średnia LOC/plik (TOP 5)** | 299 LOC | < 150 LOC |
-| **Duplikacje** | 2 (getCurrentWeekStart) | 0 |
-| **God components** | 2 (ShoppingListWizard, useCalendar) | 0 |
-| **Inconsistent patterns** | 2 (Step2a data fetching, ResetPasswordView forms) | 0 |
-| **Test coverage** | TBD | > 80% |
+| Metryka                      | Wartość aktualna                                  | Cel po refaktoryzacji |
+| ---------------------------- | ------------------------------------------------- | --------------------- |
+| **Największy plik**          | 424 LOC                                           | < 200 LOC             |
+| **Średnia LOC/plik (TOP 5)** | 299 LOC                                           | < 150 LOC             |
+| **Duplikacje**               | 2 (getCurrentWeekStart)                           | 0                     |
+| **God components**           | 2 (ShoppingListWizard, useCalendar)               | 0                     |
+| **Inconsistent patterns**    | 2 (Step2a data fetching, ResetPasswordView forms) | 0                     |
+| **Test coverage**            | TBD                                               | > 80%                 |
 
 ---
 
@@ -686,6 +721,7 @@ Migracja `Step2a_CalendarSelection.tsx` do TanStack Query
 ### Ryzyko 1: Breaking changes podczas refaktoryzacji
 
 **Mitygacja:**
+
 - Comprehensive testing przed i po refactorze
 - Feature flags dla major changes
 - Incremental refactoring (małe PR-y)
@@ -693,6 +729,7 @@ Migracja `Step2a_CalendarSelection.tsx` do TanStack Query
 ### Ryzyko 2: Regression bugs
 
 **Mitygacja:**
+
 - E2E testy Playwright dla critical paths (tech-stack.md linie 904-970)
 - Unit testy dla extracted hooks
 - Manual QA przed merge
@@ -700,6 +737,7 @@ Migracja `Step2a_CalendarSelection.tsx` do TanStack Query
 ### Ryzyko 3: Team velocity impact
 
 **Mitygacja:**
+
 - Refactoring w dedykowanym branchu `3_4_Refaktoryzacja_projektu_AI`
 - Code review z całym zespołem
 - Documentation updates
@@ -739,6 +777,7 @@ Migracja `Step2a_CalendarSelection.tsx` do TanStack Query
 ---
 
 **Następne kroki:**
+
 1. Review tego dokumentu z zespołem
 2. Wybór plików do refaktoryzacji w pierwszej iteracji
 3. Stworzenie task breakdown w todo list

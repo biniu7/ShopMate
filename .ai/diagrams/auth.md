@@ -2,6 +2,7 @@
 
 **Data utworzenia:** 2025-01-25
 **Źródła:**
+
 - `.ai/doc/4_prd.md` (PRD - Product Requirements Document)
 - `.ai/doc/31_1_auth-spec.md` (Specyfikacja architektury autentykacji)
 
@@ -23,13 +24,13 @@ Diagram przedstawia szczegółowe przepływy autentykacji w aplikacji ShopMate M
 
 ## Aktorzy
 
-| Aktor | Opis |
-|-------|------|
-| **Przeglądarka** | Interfejs użytkownika (React komponenty w Astro) |
-| **Middleware** | Astro middleware - server-side sprawdzanie sesji przed renderowaniem stron |
-| **Astro Frontend** | Strony Astro (SSR) + komponenty React |
-| **Supabase Auth** | Zewnętrzna usługa autentykacji - zarządza użytkownikami, sesjami, JWT tokens |
-| **PostgreSQL** | Baza danych Supabase - przechowuje dane użytkowników (auth.users) i aplikacji |
+| Aktor              | Opis                                                                          |
+| ------------------ | ----------------------------------------------------------------------------- |
+| **Przeglądarka**   | Interfejs użytkownika (React komponenty w Astro)                              |
+| **Middleware**     | Astro middleware - server-side sprawdzanie sesji przed renderowaniem stron    |
+| **Astro Frontend** | Strony Astro (SSR) + komponenty React                                         |
+| **Supabase Auth**  | Zewnętrzna usługa autentykacji - zarządza użytkownikami, sesjami, JWT tokens  |
+| **PostgreSQL**     | Baza danych Supabase - przechowuje dane użytkowników (auth.users) i aplikacji |
 
 ---
 
@@ -297,10 +298,12 @@ sequenceDiagram
 ### 1. Zarządzanie sesją
 
 **JWT Tokens:**
+
 - **Access token:** krótkoterminowy (~1h), przechowywany w httpOnly cookie
 - **Refresh token:** długoterminowy (~30 dni), przechowywany w httpOnly cookie
 
 **Automatyczne odświeżanie:**
+
 - Supabase automatycznie odświeża access token gdy wygasa
 - Jeśli refresh token wygasł → użytkownik musi się zalogować ponownie
 
@@ -313,6 +316,7 @@ sequenceDiagram
 ### 3. Row Level Security (RLS)
 
 **Zasada działania:**
+
 ```sql
 -- Przykład RLS policy dla recipes
 CREATE POLICY "Users can view own recipes"
@@ -329,18 +333,21 @@ CREATE POLICY "Users can view own recipes"
 ### 4. Middleware - ochrona tras
 
 **Chronione trasy:**
+
 - `/dashboard`
 - `/recipes`
 - `/calendar`
 - `/shopping-lists`
 
 **Publiczne trasy:**
+
 - `/` (landing page)
 - `/login`
 - `/register`
 - `/reset-password`
 
 **Flow ochrony:**
+
 1. Request do chronionej trasy
 2. Middleware sprawdza sesję (getSession())
 3. Brak sesji → redirect do `/login?redirect=/original-path`
@@ -351,19 +358,23 @@ CREATE POLICY "Users can view own recipes"
 ## Scenariusze brzegowe (Edge Cases)
 
 ### Rejestracja:
+
 - ✅ Email już istnieje → Toast: "Konto z tym adresem email już istnieje"
 - ✅ Słabe hasło → Walidacja Zod: inline errors
 - ✅ Network error → Toast: "Brak połączenia. Sprawdź internet..."
 
 ### Logowanie:
+
 - ✅ Nieprawidłowe credentials → Toast: "Nieprawidłowy email lub hasło" (ten sam komunikat dla obu przypadków - security)
 - ✅ Użytkownik już zalogowany → Middleware redirect do /dashboard
 
 ### Reset hasła:
+
 - ✅ Email nie istnieje → Supabase wysyła komunikat sukcesu (security: nie ujawniamy czy email istnieje)
 - ✅ Link wygasł (>24h) → Toast: "Link resetujący wygasł. Poproś o nowy."
 
 ### Token refresh:
+
 - ✅ Access token wygasł → Auto-refresh z refresh token
 - ✅ Refresh token wygasł → Redirect do /login
 
@@ -372,25 +383,24 @@ CREATE POLICY "Users can view own recipes"
 ## Walidacja (Zod schemas)
 
 **Email schema:**
+
 ```typescript
-const emailSchema = z
-  .string()
-  .trim()
-  .toLowerCase()
-  .email('Nieprawidłowy format adresu email');
+const emailSchema = z.string().trim().toLowerCase().email("Nieprawidłowy format adresu email");
 ```
 
 **Password schema:**
+
 ```typescript
 const passwordSchema = z
   .string()
-  .min(8, 'Hasło musi mieć minimum 8 znaków')
-  .max(100, 'Hasło może mieć maksimum 100 znaków')
-  .regex(/[A-Z]/, 'Hasło musi zawierać minimum 1 wielką literę')
-  .regex(/[0-9]/, 'Hasło musi zawierać minimum 1 cyfrę');
+  .min(8, "Hasło musi mieć minimum 8 znaków")
+  .max(100, "Hasło może mieć maksimum 100 znaków")
+  .regex(/[A-Z]/, "Hasło musi zawierać minimum 1 wielką literę")
+  .regex(/[0-9]/, "Hasło musi zawierać minimum 1 cyfrę");
 ```
 
 **Register schema:**
+
 ```typescript
 export const registerSchema = z
   .object({
@@ -399,8 +409,8 @@ export const registerSchema = z
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Hasła nie są identyczne',
-    path: ['confirmPassword'],
+    message: "Hasła nie są identyczne",
+    path: ["confirmPassword"],
   });
 ```
 
@@ -408,35 +418,35 @@ export const registerSchema = z
 
 ## Komunikaty błędów (język polski)
 
-| Błąd | Komunikat |
-|------|-----------|
-| `invalid_credentials` | "Nieprawidłowy email lub hasło" |
-| `email_exists` | "Konto z tym adresem email już istnieje" |
-| `weak_password` | "Hasło jest zbyt słabe" |
-| `invalid_email` | "Nieprawidłowy adres email" |
-| `user_not_found` | "Nie znaleziono użytkownika o tym adresie email" |
-| `token_expired` | "Link resetujący wygasł. Poproś o nowy." |
-| Network error | "Brak połączenia. Sprawdź internet i spróbuj ponownie." |
-| Other errors | "Coś poszło nie tak. Spróbuj ponownie za chwilę." |
+| Błąd                  | Komunikat                                               |
+| --------------------- | ------------------------------------------------------- |
+| `invalid_credentials` | "Nieprawidłowy email lub hasło"                         |
+| `email_exists`        | "Konto z tym adresem email już istnieje"                |
+| `weak_password`       | "Hasło jest zbyt słabe"                                 |
+| `invalid_email`       | "Nieprawidłowy adres email"                             |
+| `user_not_found`      | "Nie znaleziono użytkownika o tym adresie email"        |
+| `token_expired`       | "Link resetujący wygasł. Poproś o nowy."                |
+| Network error         | "Brak połączenia. Sprawdź internet i spróbuj ponownie." |
+| Other errors          | "Coś poszło nie tak. Spróbuj ponownie za chwilę."       |
 
 ---
 
 ## Zgodność z wymaganiami
 
-| Wymaganie | Status | Diagram |
-|-----------|--------|---------|
-| **US-001** Rejestracja użytkownika | ✅ Covered | Przepływ 1 |
-| **US-002** Logowanie użytkownika | ✅ Covered | Przepływ 2 |
-| **US-003** Reset hasła | ✅ Covered | Przepływ 4 (część 1 i 2) |
-| **US-004** Wylogowanie | ✅ Covered | Przepływ 5 |
-| **US-005** Ochrona tras | ✅ Covered | Przepływ 3 |
-| **FR-012** Rejestracja (walidacja, Supabase) | ✅ Covered | Przepływ 1 |
-| **FR-013** Logowanie (przekierowania) | ✅ Covered | Przepływ 2 |
-| **FR-014** Reset hasła (email + link) | ✅ Covered | Przepływ 4 |
-| **FR-015** Wylogowanie (cookies) | ✅ Covered | Przepływ 5 |
-| **FR-016** Middleware (route guards) | ✅ Covered | Przepływ 3 |
-| Token refresh | ✅ Covered | Przepływ 6 |
-| Row Level Security | ✅ Covered | Przepływ 7 |
+| Wymaganie                                    | Status     | Diagram                  |
+| -------------------------------------------- | ---------- | ------------------------ |
+| **US-001** Rejestracja użytkownika           | ✅ Covered | Przepływ 1               |
+| **US-002** Logowanie użytkownika             | ✅ Covered | Przepływ 2               |
+| **US-003** Reset hasła                       | ✅ Covered | Przepływ 4 (część 1 i 2) |
+| **US-004** Wylogowanie                       | ✅ Covered | Przepływ 5               |
+| **US-005** Ochrona tras                      | ✅ Covered | Przepływ 3               |
+| **FR-012** Rejestracja (walidacja, Supabase) | ✅ Covered | Przepływ 1               |
+| **FR-013** Logowanie (przekierowania)        | ✅ Covered | Przepływ 2               |
+| **FR-014** Reset hasła (email + link)        | ✅ Covered | Przepływ 4               |
+| **FR-015** Wylogowanie (cookies)             | ✅ Covered | Przepływ 5               |
+| **FR-016** Middleware (route guards)         | ✅ Covered | Przepływ 3               |
+| Token refresh                                | ✅ Covered | Przepływ 6               |
+| Row Level Security                           | ✅ Covered | Przepływ 7               |
 
 ---
 
@@ -475,6 +485,7 @@ export const registerSchema = z
 ---
 
 **Dokument utworzony automatycznie na podstawie:**
+
 - `.ai/doc/4_prd.md` - Product Requirements Document
 - `.ai/doc/31_1_auth-spec.md` - Specyfikacja architektury autentykacji
 - `.ai/prompts/31_4_mermaid-diagram-auth.mdc` - Reguły tworzenia diagramów

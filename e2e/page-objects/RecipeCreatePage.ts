@@ -207,7 +207,7 @@ export class RecipeCreatePage {
     await this.page.waitForURL(/\/recipes\/[a-f0-9-]+$/, { timeout: 15000 });
     // Wait for recipe details to load (not just URL)
     // Wait for the skeleton to disappear and actual content to load
-    await this.page.waitForSelector('.recipe-details-content h1', { state: 'visible', timeout: 15000 });
+    await this.page.waitForSelector(".recipe-details-content h1", { state: "visible", timeout: 15000 });
   }
 
   /**

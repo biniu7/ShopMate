@@ -29,18 +29,18 @@ export default defineConfig({
   projects: [
     // Setup project - uruchamia się przed wszystkimi testami
     {
-      name: 'setup',
+      name: "setup",
       testMatch: /.*\.setup\.ts/,
     },
 
     // Główne testy - zależą od setup
     {
-      name: 'chromium',
+      name: "chromium",
       use: {
-        ...devices['Desktop Chrome'],
+        ...devices["Desktop Chrome"],
         storageState: STORAGE_STATE, // używa sesji z setup
       },
-      dependencies: ['setup'], // czeka na zakończenie setup
+      dependencies: ["setup"], // czeka na zakończenie setup
     },
   ],
 });
@@ -51,21 +51,21 @@ export default defineConfig({
 #### 1. Setup Project (`e2e/auth.setup.ts`)
 
 ```typescript
-import { test as setup } from '@playwright/test';
+import { test as setup } from "@playwright/test";
 
-const STORAGE_STATE = 'playwright/.auth/user.json';
+const STORAGE_STATE = "playwright/.auth/user.json";
 
-setup('authenticate', async ({ page }) => {
+setup("authenticate", async ({ page }) => {
   // 1. Nawigacja do strony logowania
-  await page.goto('/login');
+  await page.goto("/login");
 
   // 2. Logowanie użytkownika testowego
-  await page.getByLabel('Email').fill(process.env.E2E_USERNAME!);
-  await page.getByLabel('Hasło').fill(process.env.E2E_PASSWORD!);
-  await page.getByRole('button', { name: 'Zaloguj' }).click();
+  await page.getByLabel("Email").fill(process.env.E2E_USERNAME!);
+  await page.getByLabel("Hasło").fill(process.env.E2E_PASSWORD!);
+  await page.getByRole("button", { name: "Zaloguj" }).click();
 
   // 3. Czekaj na przekierowanie
-  await page.waitForURL('/recipes');
+  await page.waitForURL("/recipes");
 
   // 4. Zapisz stan sesji
   await page.context().storageState({ path: STORAGE_STATE });
@@ -73,6 +73,7 @@ setup('authenticate', async ({ page }) => {
 ```
 
 **Co się dzieje:**
+
 1. Playwright uruchamia projekt `setup` jako pierwszy
 2. Test `authenticate` loguje użytkownika
 3. Stan sesji (cookies, local storage) zapisuje się do `playwright/.auth/user.json`
@@ -81,12 +82,12 @@ setup('authenticate', async ({ page }) => {
 #### 2. Main Tests (`e2e/*.spec.ts`)
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
 // Test automatycznie używa storageState z setup
-test('create recipe', async ({ page }) => {
+test("create recipe", async ({ page }) => {
   // Użytkownik jest już zalogowany!
-  await page.goto('/recipes');
+  await page.goto("/recipes");
   // ... reszta testu
 });
 ```
@@ -99,12 +100,12 @@ Jeśli potrzebujesz cleanup po wszystkich testach:
 
 ```typescript
 // e2e/auth.teardown.ts
-import { test as teardown } from '@playwright/test';
+import { test as teardown } from "@playwright/test";
 
-teardown('cleanup', async ({ page }) => {
+teardown("cleanup", async ({ page }) => {
   // Wyloguj użytkownika
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Wyloguj' }).click();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Wyloguj" }).click();
 
   // Opcjonalnie: wyczyść dane testowe z bazy
   // await cleanupTestData();
@@ -118,18 +119,18 @@ teardown('cleanup', async ({ page }) => {
 export default defineConfig({
   projects: [
     {
-      name: 'setup',
+      name: "setup",
       testMatch: /.*\.setup\.ts/,
-      teardown: 'cleanup', // dodaj teardown
+      teardown: "cleanup", // dodaj teardown
     },
     {
-      name: 'cleanup',
+      name: "cleanup",
       testMatch: /.*\.teardown\.ts/,
     },
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-      dependencies: ['setup'],
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+      dependencies: ["setup"],
     },
   ],
 });
@@ -141,16 +142,16 @@ export default defineConfig({
 
 ```typescript
 // e2e/db.setup.ts
-import { test as setup } from '@playwright/test';
+import { test as setup } from "@playwright/test";
 
-setup('prepare database', async ({ }) => {
-  console.log('Preparing test database...');
+setup("prepare database", async ({}) => {
+  console.log("Preparing test database...");
 
   // 1. Połącz się z bazą danych
   // 2. Usuń stare dane testowe
   // 3. Wstaw początkowe dane (seed)
 
-  console.log('Database ready!');
+  console.log("Database ready!");
 });
 ```
 
@@ -158,12 +159,12 @@ setup('prepare database', async ({ }) => {
 
 ```typescript
 // e2e/api.setup.ts
-import { test as setup } from '@playwright/test';
+import { test as setup } from "@playwright/test";
 
-setup('prepare API', async ({ request }) => {
+setup("prepare API", async ({ request }) => {
   // Użyj Playwright API testing
-  const response = await request.post('/api/test-setup', {
-    data: { action: 'prepare' }
+  const response = await request.post("/api/test-setup", {
+    data: { action: "prepare" },
   });
 
   expect(response.ok()).toBeTruthy();
@@ -175,11 +176,13 @@ setup('prepare API', async ({ request }) => {
 ### Kiedy używać tego podejścia?
 
 Użyj gdy:
+
 - Nie potrzebujesz Playwright fixtures
 - Wykonujesz proste operacje (np. uruchamianie serwera)
 - Nie potrzebujesz trace'ów ani reportów z setup
 
 ⚠️ **Ograniczenia:**
+
 - Brak dostępu do fixtures (`page`, `browser`, itp.)
 - Brak trace'ów i screenshotów w setup
 - Setup nie pojawia się w HTML report
@@ -191,29 +194,29 @@ Użyj gdy:
 
 ```typescript
 // global-setup.ts
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium, FullConfig } from "@playwright/test";
 
 async function globalSetup(config: FullConfig) {
-  console.log('Global setup starting...');
+  console.log("Global setup starting...");
 
   // Uruchom przeglądarkę ręcznie
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
   // Wykonaj setup
-  await page.goto('http://localhost:3000/login');
+  await page.goto("http://localhost:3000/login");
   await page.fill('[name="email"]', process.env.E2E_USERNAME!);
   await page.fill('[name="password"]', process.env.E2E_PASSWORD!);
   await page.click('button[type="submit"]');
 
   // Zapisz stan
   await page.context().storageState({
-    path: 'playwright/.auth/user.json'
+    path: "playwright/.auth/user.json",
   });
 
   await browser.close();
 
-  console.log('Global setup complete!');
+  console.log("Global setup complete!");
 }
 
 export default globalSetup;
@@ -221,15 +224,15 @@ export default globalSetup;
 
 ```typescript
 // global-teardown.ts
-import { FullConfig } from '@playwright/test';
+import { FullConfig } from "@playwright/test";
 
 async function globalTeardown(config: FullConfig) {
-  console.log('Global teardown starting...');
+  console.log("Global teardown starting...");
 
   // Cleanup
   // fs.unlinkSync('playwright/.auth/user.json');
 
-  console.log('Global teardown complete!');
+  console.log("Global teardown complete!");
 }
 
 export default globalTeardown;
@@ -240,8 +243,8 @@ export default globalTeardown;
 ```typescript
 // playwright.config.ts
 export default defineConfig({
-  globalSetup: require.resolve('./global-setup'),
-  globalTeardown: require.resolve('./global-teardown'),
+  globalSetup: require.resolve("./global-setup"),
+  globalTeardown: require.resolve("./global-teardown"),
 
   // ... reszta konfiguracji
 });
@@ -252,13 +255,13 @@ export default defineConfig({
 ```typescript
 // global-setup.ts
 async function globalSetup(config: FullConfig) {
-  console.log('Setup...');
+  console.log("Setup...");
 
   // Setup code here
 
   // Return teardown function
   return async () => {
-    console.log('Teardown...');
+    console.log("Teardown...");
     // Teardown code here
   };
 }
@@ -268,15 +271,15 @@ export default globalSetup;
 
 ## Porównanie Podejść
 
-| Funkcja | Project Dependencies | globalSetup/Teardown |
-|---------|---------------------|---------------------|
-| HTML Report | ✅ Tak | ❌ Nie |
-| Trace Recording | ✅ Tak | ❌ Nie |
-| Playwright Fixtures | ✅ Tak | ❌ Nie |
-| Screenshots | ✅ Tak | ❌ Nie |
-| Debugowanie | ✅ Łatwe | ⚠️ Trudniejsze |
-| Parallelizacja | ✅ Tak | ⚠️ Ograniczona |
-| Prostota | ⚠️ Średnia | ✅ Prosta |
+| Funkcja             | Project Dependencies | globalSetup/Teardown |
+| ------------------- | -------------------- | -------------------- |
+| HTML Report         | ✅ Tak               | ❌ Nie               |
+| Trace Recording     | ✅ Tak               | ❌ Nie               |
+| Playwright Fixtures | ✅ Tak               | ❌ Nie               |
+| Screenshots         | ✅ Tak               | ❌ Nie               |
+| Debugowanie         | ✅ Łatwe             | ⚠️ Trudniejsze       |
+| Parallelizacja      | ✅ Tak               | ⚠️ Ograniczona       |
+| Prostota            | ⚠️ Średnia           | ✅ Prosta            |
 
 ## Best Practices
 
@@ -285,9 +288,9 @@ export default globalSetup;
 ```typescript
 // ✅ Zalecane
 projects: [
-  { name: 'setup', testMatch: /.*\.setup\.ts/ },
-  { name: 'chromium', dependencies: ['setup'] },
-]
+  { name: "setup", testMatch: /.*\.setup\.ts/ },
+  { name: "chromium", dependencies: ["setup"] },
+];
 ```
 
 ### 2. Oddziel różne typy setup
@@ -298,13 +301,13 @@ projects: [
 // e2e/api.setup.ts - API
 
 projects: [
-  { name: 'auth-setup', testMatch: /auth\.setup\.ts/ },
-  { name: 'db-setup', testMatch: /db\.setup\.ts/ },
+  { name: "auth-setup", testMatch: /auth\.setup\.ts/ },
+  { name: "db-setup", testMatch: /db\.setup\.ts/ },
   {
-    name: 'chromium',
-    dependencies: ['auth-setup', 'db-setup']
+    name: "chromium",
+    dependencies: ["auth-setup", "db-setup"],
   },
-]
+];
 ```
 
 ### 3. Używaj zmiennych środowiskowych
@@ -314,7 +317,7 @@ projects: [
 const username = process.env.E2E_USERNAME;
 
 // ❌ Źle - hardcoded credentials
-const username = 'test@example.com';
+const username = "test@example.com";
 ```
 
 ### 4. Zapisuj storage state
@@ -322,12 +325,12 @@ const username = 'test@example.com';
 ```typescript
 // ✅ Dobrze - zapisz sesję
 await page.context().storageState({
-  path: 'playwright/.auth/user.json'
+  path: "playwright/.auth/user.json",
 });
 
 // ❌ Źle - logowanie w każdym teście
-test('my test', async ({ page }) => {
-  await page.goto('/login');
+test("my test", async ({ page }) => {
+  await page.goto("/login");
   await login();
   // ...
 });
@@ -336,17 +339,17 @@ test('my test', async ({ page }) => {
 ### 5. Obsługuj błędy w setup
 
 ```typescript
-setup('authenticate', async ({ page }) => {
+setup("authenticate", async ({ page }) => {
   try {
-    await page.goto('/login');
+    await page.goto("/login");
     await page.fill('[name="email"]', process.env.E2E_USERNAME!);
     await page.fill('[name="password"]', process.env.E2E_PASSWORD!);
     await page.click('button[type="submit"]');
 
     // Sprawdź czy logowanie się powiodło
-    await expect(page).toHaveURL('/recipes', { timeout: 10000 });
+    await expect(page).toHaveURL("/recipes", { timeout: 10000 });
   } catch (error) {
-    console.error('Setup failed:', error);
+    console.error("Setup failed:", error);
     throw error; // Setup musi się powieść, inaczej testy nie mają sensu
   }
 });
@@ -355,10 +358,10 @@ setup('authenticate', async ({ page }) => {
 ### 6. Cleanup w teardown
 
 ```typescript
-teardown('cleanup', async ({ page }) => {
+teardown("cleanup", async ({ page }) => {
   // Usuń storage state
-  const fs = await import('fs');
-  const path = 'playwright/.auth/user.json';
+  const fs = await import("fs");
+  const path = "playwright/.auth/user.json";
   if (fs.existsSync(path)) {
     fs.unlinkSync(path);
   }
@@ -373,6 +376,7 @@ teardown('cleanup', async ({ page }) => {
 ### Problem: Setup się nie wykonuje
 
 **Rozwiązanie:**
+
 1. Sprawdź `testMatch` w konfiguracji projektu setup
 2. Sprawdź czy plik setup ma właściwą nazwę (np. `*.setup.ts`)
 3. Sprawdź czy projekt jest w tablicy `dependencies`
@@ -381,19 +385,20 @@ teardown('cleanup', async ({ page }) => {
 // Sprawdź to:
 projects: [
   {
-    name: 'setup',
-    testMatch: /.*\.setup\.ts/ // czy to pasuje do nazwy pliku?
+    name: "setup",
+    testMatch: /.*\.setup\.ts/, // czy to pasuje do nazwy pliku?
   },
   {
-    name: 'chromium',
-    dependencies: ['setup'] // czy nazwa się zgadza?
+    name: "chromium",
+    dependencies: ["setup"], // czy nazwa się zgadza?
   },
-]
+];
 ```
 
 ### Problem: Storage state nie działa
 
 **Rozwiązanie:**
+
 1. Sprawdź czy plik `playwright/.auth/user.json` został utworzony
 2. Sprawdź czy ścieżka w `storageState` się zgadza
 
@@ -412,6 +417,7 @@ use: {
 ### Problem: Testy przechodzą lokalnie ale fail w CI
 
 **Rozwiązanie:**
+
 1. Sprawdź zmienne środowiskowe w CI
 2. Upewnij się że użytkownik testowy istnieje w środowisku CI
 3. Sprawdź logi setup w CI
@@ -444,18 +450,16 @@ Jeśli w przyszłości będziesz potrzebować dodatkowego setup:
 
 ```typescript
 // e2e/seed.setup.ts - dodaj dane testowe
-import { test as setup } from '@playwright/test';
+import { test as setup } from "@playwright/test";
 
-setup('seed recipes', async ({ request }) => {
+setup("seed recipes", async ({ request }) => {
   // Dodaj podstawowe przepisy do bazy
-  await request.post('/api/recipes', {
+  await request.post("/api/recipes", {
     data: {
-      name: 'Test Recipe',
-      instructions: 'Test instructions',
-      ingredients: [
-        { name: 'Milk', quantity: 1, unit: 'L' }
-      ]
-    }
+      name: "Test Recipe",
+      instructions: "Test instructions",
+      ingredients: [{ name: "Milk", quantity: 1, unit: "L" }],
+    },
   });
 });
 ```
@@ -464,8 +468,8 @@ Następnie zaktualizuj config:
 
 ```typescript
 projects: [
-  { name: 'auth-setup', testMatch: /auth\.setup\.ts/ },
-  { name: 'seed-setup', testMatch: /seed\.setup\.ts/, dependencies: ['auth-setup'] },
-  { name: 'chromium', dependencies: ['seed-setup'] },
-]
+  { name: "auth-setup", testMatch: /auth\.setup\.ts/ },
+  { name: "seed-setup", testMatch: /seed\.setup\.ts/, dependencies: ["auth-setup"] },
+  { name: "chromium", dependencies: ["seed-setup"] },
+];
 ```

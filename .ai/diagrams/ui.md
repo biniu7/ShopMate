@@ -175,6 +175,7 @@ flowchart TD
 ## Kluczowe przepływy
 
 ### 1. Rejestracja nowego użytkownika
+
 ```
 Użytkownik → /register → RegisterPage (Astro)
   → AuthLayout → RegisterView (React)
@@ -186,6 +187,7 @@ Użytkownik → /register → RegisterPage (Astro)
 ```
 
 ### 2. Logowanie użytkownika
+
 ```
 Użytkownik → /calendar (chronione)
   → Middleware → brak sesji
@@ -197,6 +199,7 @@ Użytkownik → /calendar (chronione)
 ```
 
 ### 3. Reset hasła
+
 ```
 Użytkownik → /reset-password
   → ResetPage → AuthLayout → ResetPasswordView (tryb: request)
@@ -209,6 +212,7 @@ Użytkownik → /reset-password
 ```
 
 ### 4. Wylogowanie
+
 ```
 Użytkownik → Klik "Wyloguj" (Navigation)
   → supabase.signOut()
@@ -217,6 +221,7 @@ Użytkownik → Klik "Wyloguj" (Navigation)
 ```
 
 ### 5. Ochrona tras (Middleware)
+
 ```
 Request → /dashboard
   → Middleware → getSession() (z cookies)
@@ -227,26 +232,31 @@ Request → /dashboard
 ## Komponenty do utworzenia
 
 ### Nowe strony Astro:
+
 - `src/pages/login.astro`
 - `src/pages/register.astro`
 - `src/pages/reset-password.astro`
 
 ### Nowy layout:
+
 - `src/layouts/AuthLayout.astro`
 
 ### Nowe komponenty React:
+
 - `src/components/auth/LoginView.tsx`
 - `src/components/auth/RegisterView.tsx`
 - `src/components/auth/ResetPasswordView.tsx`
 - `src/components/Navigation.tsx`
 
 ### Nowe pliki walidacji i utils:
+
 - `src/lib/validation/auth.schema.ts`
 - `src/lib/utils/auth-errors.ts`
 
 ## Komponenty do modyfikacji
 
 ### Modyfikacje istniejących plików:
+
 - `src/middleware/index.ts` - rozszerzenie o sprawdzanie sesji i ochronę tras
 - `src/layouts/Layout.astro` - dodanie komponentu Navigation
 - `src/pages/index.astro` - dodanie CTA do rejestracji/logowania
@@ -255,6 +265,7 @@ Request → /dashboard
 ## Integracja z Supabase
 
 ### Supabase Auth Service:
+
 - **signUp()** - rejestracja nowego użytkownika
 - **signInWithPassword()** - logowanie użytkownika
 - **signOut()** - wylogowanie użytkownika
@@ -263,12 +274,14 @@ Request → /dashboard
 - **getSession()** - sprawdzanie sesji (middleware)
 
 ### Zarządzanie sesją:
+
 - **Cookies (httpOnly):**
   - `sb-access-token` - JWT access token (~1h)
   - `sb-refresh-token` - JWT refresh token (~30 dni)
 - **Automatyczny refresh** - Supabase refreshuje access token gdy wygasa
 
 ### Row Level Security (RLS):
+
 - Tabele aplikacji (recipes, meal_plan, shopping_lists) używają `auth.uid()` w policies
 - Pełna izolacja danych użytkowników
 - Foreign key: `user_id REFERENCES auth.users(id) ON DELETE CASCADE`
@@ -276,12 +289,14 @@ Request → /dashboard
 ## Walidacja i obsługa błędów
 
 ### Walidacja client-side (Zod):
+
 - **Email:** format email, lowercase, trim
 - **Hasło:** 8-100 znaków, min 1 wielka litera, min 1 cyfra
 - **Potwierdzenie hasła:** musi być identyczne
 - Komunikaty błędów inline pod polami (polski)
 
 ### Obsługa błędów Supabase:
+
 - Mapowanie kodów błędów na polskie komunikaty (auth-errors.ts)
 - Toast notifications dla błędów serwera
 - User-friendly messages (bez ujawniania szczegółów technicznych)
@@ -298,6 +313,7 @@ Request → /dashboard
 ## Przypisy
 
 Diagram utworzony na podstawie:
+
 - Dokumentu wymagań produktu (PRD) - `.ai/doc/4_prd.md`
 - Specyfikacji architektury autentykacji - `.ai/doc/31_1_auth-spec.md`
 - Reguł tworzenia diagramów Mermaid - `.ai/prompts/31_6_mermaid-diagram-ui.mdc`
