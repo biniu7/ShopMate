@@ -25,10 +25,33 @@ interface CalendarGridProps {
 export const CalendarGrid = memo<CalendarGridProps>(
   ({ cells, onAssignRecipe, onRemoveAssignment, onPreviewRecipe }) => {
     // Group cells by day for tablet/mobile layouts
-    const cellsByDay = useMemo(() => groupCellsByDay(cells), [cells]);
+    const cellsByDay = useMemo(() => {
+      const grouped = groupCellsByDay(cells);
+      // Sort cells within each day by meal type order
+      grouped.forEach((dayCells) => {
+        dayCells.sort((a, b) => {
+          const order: Record<MealType, number> = {
+            breakfast: 0,
+            second_breakfast: 1,
+            lunch: 2,
+            dinner: 3,
+          };
+          return order[a.mealType] - order[b.mealType];
+        });
+      });
+      return grouped;
+    }, [cells]);
 
     // Get array of days (1-7)
     const days = useMemo(() => Array.from({ length: 7 }, (_, i) => i + 1), []);
+
+    // Group cells by meal type for desktop grid (rows: meal types, cols: days)
+    const cellsByMealType = useMemo(() => {
+      const mealTypes: MealType[] = ["breakfast", "second_breakfast", "lunch", "dinner"];
+      return mealTypes.map((mealType) =>
+        cells.filter((cell) => cell.mealType === mealType).sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+      );
+    }, [cells]);
 
     return (
       <div className="calendar-grid-container">
@@ -57,20 +80,26 @@ export const CalendarGrid = memo<CalendarGridProps>(
           </div>
 
           {/* Calendar Grid - 7 columns × 4 rows */}
+          {/* Row 1: Śniadanie (breakfast) for all 7 days */}
+          {/* Row 2: Drugie śniadanie (second_breakfast) for all 7 days */}
+          {/* Row 3: Obiad (lunch) for all 7 days */}
+          {/* Row 4: Kolacja (dinner) for all 7 days */}
           <div className="grid grid-cols-7 gap-4">
-            {cells.map((cell) => (
-              <MealCell
-                key={`${cell.dayOfWeek}-${cell.mealType}`}
-                date={cell.date}
-                dayOfWeek={cell.dayOfWeek}
-                mealType={cell.mealType}
-                mealTypeLabel={cell.mealTypeLabel}
-                assignment={cell.assignment}
-                onAssignRecipe={onAssignRecipe}
-                onRemoveAssignment={onRemoveAssignment}
-                onPreviewRecipe={onPreviewRecipe}
-              />
-            ))}
+            {cellsByMealType.flatMap((mealTypeCells) =>
+              mealTypeCells.map((cell) => (
+                <MealCell
+                  key={`${cell.dayOfWeek}-${cell.mealType}`}
+                  date={cell.date}
+                  dayOfWeek={cell.dayOfWeek}
+                  mealType={cell.mealType}
+                  mealTypeLabel={cell.mealTypeLabel}
+                  assignment={cell.assignment}
+                  onAssignRecipe={onAssignRecipe}
+                  onRemoveAssignment={onRemoveAssignment}
+                  onPreviewRecipe={onPreviewRecipe}
+                />
+              ))
+            )}
           </div>
         </div>
 
