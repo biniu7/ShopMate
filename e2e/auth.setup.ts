@@ -29,30 +29,30 @@ setup("authenticate", async ({ page }) => {
   await page.goto("/login", { waitUntil: "networkidle" });
   console.log("Current URL after goto:", page.url());
 
-  // Wait for form to be ready
-  await page.waitForSelector("input#email", { state: "visible" });
-  await page.waitForTimeout(1000); // Give React time to hydrate
+  // Wait for form to be ready and interactive
+  const emailInput = page.locator("input#email");
+  const passwordInput = page.locator("input#password");
+
+  await emailInput.waitFor({ state: "visible" });
 
   // Fill in login form
-  await page.fill("input#email", email);
-  await page.fill("input#password", password);
+  await emailInput.fill(email);
+  await passwordInput.fill(password);
   console.log("Form filled, clicking submit");
 
   // Take screenshot before submit
   await page.screenshot({ path: "test-results/before-submit.png" });
 
   // Click login button and wait for navigation
-  await page.click('button[type="submit"]');
+  const submitButton = page.locator('button[type="submit"]');
+  await submitButton.click();
 
-  // Wait a bit to see what happens
-  await page.waitForTimeout(2000);
+  // Wait for redirect to home or recipes page (not login page)
+  await page.waitForURL(/\/(recipes|dashboard|home)?$/, { timeout: 10000 });
   console.log("Current URL after clicking submit:", page.url());
 
   // Take screenshot after submit
   await page.screenshot({ path: "test-results/after-submit.png" });
-
-  // Wait for redirect to home or recipes page
-  await page.waitForURL(/\/(recipes|dashboard|home)?$/, { timeout: 10000 });
 
   // Verify we're logged in by checking for auth indicators
   // This could be a user menu, logout button, etc.

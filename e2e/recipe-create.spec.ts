@@ -34,9 +34,24 @@ test.describe("Recipe Creation Flow", () => {
     // Assert - Verify we're on recipe details page
     expect(page.url()).toMatch(/\/recipes\/[a-f0-9-]+$/);
 
-    // Verify recipe name is displayed on details page (use specific selector to avoid Astro Dev Toolbar)
+    // Verify recipe name is displayed on details page
     const recipeNameElement = page.locator(".recipe-details-content h1");
     await expect(recipeNameElement).toContainText(uniqueRecipeName);
+
+    // Verify instructions are displayed correctly
+    const displayedInstructions = await recipeCreatePage.getRecipeInstructionsFromDetailsPage();
+    expect(displayedInstructions).toBe(testRecipe.instructions);
+
+    // Verify correct number of ingredients
+    const ingredientsCount = await recipeCreatePage.getIngredientsCountFromDetailsPage();
+    expect(ingredientsCount).toBe(testRecipe.ingredients.length);
+
+    // Verify ingredients are displayed (at least check they contain the names)
+    const displayedIngredients = await recipeCreatePage.getIngredientsFromDetailsPage();
+    for (const ingredient of testRecipe.ingredients) {
+      const found = displayedIngredients.some((displayed) => displayed.includes(ingredient.name));
+      expect(found).toBe(true);
+    }
   });
 
   test("should validate required fields", async ({ page }) => {
@@ -45,6 +60,8 @@ test.describe("Recipe Creation Flow", () => {
     const recipeCreatePage = new RecipeCreatePage(page);
 
     // Act - Navigate to create page
+    await recipesListPage.goto();
+    await recipesListPage.waitForLoad();
     await recipesListPage.clickAddRecipeButton();
     await recipeCreatePage.waitForFormLoad();
 
@@ -61,6 +78,8 @@ test.describe("Recipe Creation Flow", () => {
     const uniqueRecipeName = generateRecipeName("Ciasto");
 
     // Act - Navigate to create page
+    await recipesListPage.goto();
+    await recipesListPage.waitForLoad();
     await recipesListPage.clickAddRecipeButton();
     await recipeCreatePage.waitForFormLoad();
 
@@ -93,10 +112,13 @@ test.describe("Recipe Creation Flow", () => {
 
     // Remove second ingredient (cukier)
     await recipeCreatePage.removeIngredient(1);
-    await page.waitForTimeout(300); // Wait for removal animation
+
+    // Wait for removal to complete by checking that the ingredient at index 1 is now "jajka"
+    // (previously at index 2, shifted down after removal)
+    const ingredient1AfterRemoval = recipeCreatePage.getIngredient(1);
+    await expect(ingredient1AfterRemoval.name).toHaveValue("jajka", { timeout: 5000 });
 
     // Assert - Verify that only 2 ingredients remain (mąka and jajka)
-    // After removal, indices are updated: jajka shifts from index 2 to index 1
     const ingredient0 = recipeCreatePage.getIngredient(0);
     await expect(ingredient0.name).toHaveValue("mąka");
 
@@ -114,6 +136,8 @@ test.describe("Recipe Creation Flow", () => {
     const uniqueRecipeName = generateRecipeName("Test Recipe");
 
     // Act - Navigate to create page
+    await recipesListPage.goto();
+    await recipesListPage.waitForLoad();
     await recipesListPage.clickAddRecipeButton();
     await recipeCreatePage.waitForFormLoad();
 
@@ -126,9 +150,11 @@ test.describe("Recipe Creation Flow", () => {
     // Click cancel
     await recipeCreatePage.clickCancel();
 
-    // Assert - Should navigate back
-    // Note: Actual behavior depends on implementation (window.history.back())
-    await page.waitForTimeout(500); // Wait for navigation
+    // Assert - Should navigate back to recipes list
+    // Wait for URL to change away from /recipes/new
+    await page.waitForURL((url) => !url.pathname.includes("/recipes/new"), {
+      timeout: 5000,
+    });
   });
 
   test("should use helper method to create recipe end-to-end", async ({ page }) => {
@@ -154,9 +180,24 @@ test.describe("Recipe Creation Flow", () => {
     // Assert - Verify we're on recipe details page
     expect(page.url()).toMatch(/\/recipes\/[a-f0-9-]+$/);
 
-    // Verify the unique recipe name is displayed (use specific selector to avoid Astro Dev Toolbar)
+    // Verify the unique recipe name is displayed
     const recipeNameElement = page.locator(".recipe-details-content h1");
     await expect(recipeNameElement).toContainText(uniqueRecipeName);
+
+    // Verify instructions are displayed correctly
+    const displayedInstructions = await recipeCreatePage.getRecipeInstructionsFromDetailsPage();
+    expect(displayedInstructions).toBe(testRecipe.instructions);
+
+    // Verify all ingredients are present
+    const ingredientsCount = await recipeCreatePage.getIngredientsCountFromDetailsPage();
+    expect(ingredientsCount).toBe(testRecipe.ingredients.length);
+
+    // Verify each ingredient name appears in the displayed list
+    const displayedIngredients = await recipeCreatePage.getIngredientsFromDetailsPage();
+    testRecipe.ingredients.forEach((ingredient) => {
+      const found = displayedIngredients.some((displayed) => displayed.includes(ingredient.name));
+      expect(found).toBe(true);
+    });
   });
 });
 

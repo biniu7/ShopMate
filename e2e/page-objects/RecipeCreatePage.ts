@@ -83,9 +83,8 @@ export class RecipeCreatePage {
   async fillIngredient(index: number, ingredient: IngredientData) {
     const ingredientFields = this.getIngredient(index);
 
-    // Wait for fields to be visible and hydrated before filling
+    // Wait for fields to be visible before filling
     await ingredientFields.name.waitFor({ state: "visible", timeout: 10000 });
-    await this.page.waitForTimeout(200); // Give React time to hydrate
 
     // Name is required
     await ingredientFields.name.fill(ingredient.name);
@@ -101,11 +100,20 @@ export class RecipeCreatePage {
 
   /**
    * Click "Add Ingredient" button
+   * Returns the index of the newly added ingredient
    */
-  async clickAddIngredient() {
+  async clickAddIngredient(): Promise<number> {
+    // Count current ingredients before adding
+    const currentCount = await this.page.getByTestId(/^ingredient-name-\d+$/).count();
+
     await this.addIngredientButton.click();
+
     // Wait for new ingredient row to be added to DOM
-    await this.page.waitForTimeout(200);
+    const newIngredientIndex = currentCount;
+    const newIngredient = this.getIngredient(newIngredientIndex);
+    await newIngredient.name.waitFor({ state: "visible", timeout: 5000 });
+
+    return newIngredientIndex;
   }
 
   /**
@@ -147,10 +155,12 @@ export class RecipeCreatePage {
    * Act: Submits the form
    */
   async clickSubmit() {
-    // Wait for button to be enabled (form validation needs time)
-    await this.submitButton.waitFor({ state: "attached", timeout: 10000 });
-    await this.page.waitForTimeout(1000); // Give React Hook Form time to validate
-    await this.submitButton.click();
+    // Wait for button to be visible and enabled (form validation)
+    await this.submitButton.waitFor({ state: "visible", timeout: 10000 });
+
+    // Playwright's click() automatically waits for the element to be enabled
+    // but we can explicitly check if needed for debugging
+    await this.submitButton.click({ timeout: 10000 });
   }
 
   /**
@@ -220,6 +230,43 @@ export class RecipeCreatePage {
       return await recipeNameElement.textContent();
     }
     return null;
+  }
+
+  /**
+   * Get recipe instructions from details page
+   */
+  async getRecipeInstructionsFromDetailsPage(): Promise<string | null> {
+    const instructionsElement = this.page.locator(".instructions-section p");
+    if (await instructionsElement.isVisible()) {
+      return await instructionsElement.textContent();
+    }
+    return null;
+  }
+
+  /**
+   * Get ingredients list from details page
+   */
+  async getIngredientsFromDetailsPage(): Promise<string[]> {
+    const ingredientElements = this.page.locator(".ingredients-section li");
+    const count = await ingredientElements.count();
+    const ingredients: string[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const text = await ingredientElements.nth(i).textContent();
+      if (text) {
+        ingredients.push(text.trim());
+      }
+    }
+
+    return ingredients;
+  }
+
+  /**
+   * Get ingredients count from details page
+   */
+  async getIngredientsCountFromDetailsPage(): Promise<number> {
+    const ingredientElements = this.page.locator(".ingredients-section li");
+    return await ingredientElements.count();
   }
 
   /**
