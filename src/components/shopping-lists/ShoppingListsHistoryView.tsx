@@ -83,7 +83,10 @@ export function ShoppingListsHistoryView() {
       await queryClient.cancelQueries({ queryKey: ["shopping-lists", "list"] });
 
       // Snapshot poprzedniego stanu
-      const previousData = queryClient.getQueryData<InfiniteData<ShoppingListsPageResponse>>(["shopping-lists", "list"]);
+      const previousData = queryClient.getQueryData<InfiniteData<ShoppingListsPageResponse>>([
+        "shopping-lists",
+        "list",
+      ]);
 
       // Optimistic update - natychmiast usuń listę z cache
       queryClient.setQueryData<InfiniteData<ShoppingListsPageResponse>>(["shopping-lists", "list"], (oldData) => {
