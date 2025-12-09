@@ -2,7 +2,12 @@
  * API functions for meal plan management
  * Handles fetching, creating, and deleting meal plan assignments
  */
-import type { WeekCalendarResponseDto, CreateMealPlanDto, MealPlanAssignmentDto } from "@/types";
+import type {
+  WeekCalendarResponseDto,
+  CreateMealPlanDto,
+  MealPlanAssignmentDto,
+  DeleteMealPlanResponseDto,
+} from "@/types";
 
 /**
  * Fetch meal plan for a specific week

@@ -82,7 +82,7 @@ const callOpenRouter = async (ingredients: string[]): Promise<Map<string, Ingred
  * ```typescript
  * const result = await categorizeIngredientsWithRetry(['jajka', 'mleko', 'chleb']);
  * if (result.success) {
- *   // console.log('Categories:', result.categories);
+ *   console.log('Categories:', result.categories);
  * } else {
  *   console.error('Categorization failed:', result.error);
  *   // All items will have category "Inne"
@@ -117,11 +117,11 @@ export async function categorizeIngredientsWithRetry(ingredients: string[]): Pro
 
   // Call OpenRouter service (it has built-in retry mechanism)
   try {
-    // console.log(`[AI Categorization] Categorizing ${ingredients.length} ingredients via OpenRouter`);
+    console.log(`[AI Categorization] Categorizing ${ingredients.length} ingredients via OpenRouter`);
 
     const categories = await callOpenRouter(ingredients);
 
-    // console.log(`[AI Categorization] Successfully categorized ${categories.size} ingredients`);
+    console.log(`[AI Categorization] Successfully categorized ${categories.size} ingredients`);
     return {
       success: true,
       categories,

@@ -87,6 +87,9 @@ function RecipeDetailsData({ recipeId }: RecipeDetailsViewProps) {
     },
   });
 
+  // Debug logging
+  console.log("RecipeDetailsView render:", { recipeId, isLoading, error, recipe });
+
   // Handle loading state
   if (isLoading || !recipe) {
     return <RecipeDetailsSkeleton />;

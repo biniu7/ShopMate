@@ -4,7 +4,7 @@
  */
 import { useReducer, useCallback } from "react";
 import { toast } from "sonner";
-import { wizardReducer, initialWizardState } from "@/lib/reducers/wizard.reducer";
+import { wizardReducer, initialWizardState, type WizardState } from "@/lib/reducers/wizard.reducer";
 import { generatePreview, saveShoppingList } from "@/lib/api/shopping-lists";
 import { getCurrentWeekStart } from "@/lib/utils/date";
 import type {

@@ -7,6 +7,7 @@ import type {
   RecipeListItemDto,
   PaginatedResponse,
   PaginationMetadata,
+  DeleteRecipeResponseDto,
 } from "@/types";
 import type { RecipeListQueryInput } from "@/lib/validation/recipe.schema";
 
