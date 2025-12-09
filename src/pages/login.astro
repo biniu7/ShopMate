@@ -1,0 +1,19 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import LoginView from "@/components/auth/LoginView";
+
+// Check if user is already logged in (handled by middleware now)
+// Middleware redirects logged-in users from /login to /dashboard
+// This double-check is optional but adds extra security layer
+const user = Astro.locals.user;
+if (user) {
+  return Astro.redirect("/dashboard");
+}
+
+// Get redirect URL from query params (for protected routes)
+const redirectUrl = Astro.url.searchParams.get("redirect") || "/dashboard";
+---
+
+<AuthLayout title="Logowanie - ShopMate">
+  <LoginView client:load redirectUrl={redirectUrl} />
+</AuthLayout>

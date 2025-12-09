@@ -1,0 +1,27 @@
+---
+/**
+ * Shopping List Details page - szczegółowy widok listy zakupów
+ * Route: /shopping-lists/:id
+ */
+import Layout from "@/layouts/Layout.astro";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { ShoppingListDetailsView } from "@/components/shopping-lists/ShoppingListDetailsView";
+import { Toaster } from "@/components/ui/toaster";
+
+// Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
+const { id } = Astro.params;
+
+// Validate ID parameter
+if (!id) {
+  return Astro.redirect("/shopping-lists");
+}
+
+// Walidacja UUID odbywa się w komponencie React
+---
+
+<Layout title="Szczegóły listy zakupów - ShopMate">
+  <QueryProvider client:only="react">
+    <ShoppingListDetailsView listId={id} client:load />
+  </QueryProvider>
+  <Toaster client:only="react" />
+</Layout>

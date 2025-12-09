@@ -1,0 +1,164 @@
+---
+/**
+ * Dashboard page - główny widok po zalogowaniu
+ */
+import Layout from "@/layouts/Layout.astro";
+
+// Defense in depth: explicit auth check even though middleware protects this route
+const user = Astro.locals.user;
+
+if (!user) {
+  return Astro.redirect("/login");
+}
+---
+
+<Layout title="Dashboard - ShopMate">
+  <div class="max-w-7xl mx-auto">
+    <!-- Dashboard Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">
+        Witaj w ShopMate{user?.email ? `, ${user.email.split('@')[0]}` : ''}!
+      </h1>
+      <p class="mt-2 text-gray-600">
+        Zacznij planować swoje posiłki i listy zakupów
+      </p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Przepisy Card -->
+      <a
+        href="/recipes"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Przepisy</h2>
+          <svg
+            class="w-8 h-8 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            ></path>
+          </svg>
+        </div>
+        <p class="text-gray-600 text-sm">
+          Zarządzaj swoimi przepisami kulinarnymi
+        </p>
+        <div class="mt-4 text-primary font-medium text-sm">
+          Przejdź do przepisów →
+        </div>
+      </a>
+
+      <!-- Kalendarz Card -->
+      <a
+        href="/calendar"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Kalendarz</h2>
+          <svg
+            class="w-8 h-8 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ></path>
+          </svg>
+        </div>
+        <p class="text-gray-600 text-sm">
+          Planuj posiłki w kalendarzu tygodniowym
+        </p>
+        <div class="mt-4 text-primary font-medium text-sm">
+          Otwórz kalendarz →
+        </div>
+      </a>
+
+      <!-- Listy zakupów Card -->
+      <a
+        href="/shopping-lists"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold text-gray-900">Listy zakupów</h2>
+          <svg
+            class="w-8 h-8 text-primary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+            ></path>
+          </svg>
+        </div>
+        <p class="text-gray-600 text-sm">
+          Generuj i zarządzaj listami zakupów
+        </p>
+        <div class="mt-4 text-primary font-medium text-sm">
+          Zobacz listy →
+        </div>
+      </a>
+    </div>
+
+    <!-- Getting Started Guide -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        Jak zacząć korzystać z ShopMate?
+      </h2>
+      <ol class="space-y-3 text-gray-700">
+        <li class="flex items-start">
+          <span class="font-bold text-primary mr-2">1.</span>
+          <span>
+            Dodaj swoje ulubione przepisy w sekcji
+            <a href="/recipes" class="text-primary underline hover:no-underline">Przepisy</a>
+          </span>
+        </li>
+        <li class="flex items-start">
+          <span class="font-bold text-primary mr-2">2.</span>
+          <span>
+            Przypisz przepisy do dni i posiłków w
+            <a href="/calendar" class="text-primary underline hover:no-underline">Kalendarzu</a>
+          </span>
+        </li>
+        <li class="flex items-start">
+          <span class="font-bold text-primary mr-2">3.</span>
+          <span>
+            Wygeneruj listę zakupów i wyeksportuj ją do PDF w
+            <a href="/shopping-lists" class="text-primary underline hover:no-underline"
+              >Listach zakupów</a
+            >
+          </span>
+        </li>
+      </ol>
+      <div class="mt-6">
+        <a
+          href="/recipes"
+          class="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+        >
+          Dodaj pierwszy przepis
+          <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</Layout>
