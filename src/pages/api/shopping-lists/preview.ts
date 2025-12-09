@@ -37,7 +37,7 @@ export async function POST(context: APIContext) {
       });
     }
 
-    console.log(`[POST /api/shopping-lists/preview] User ${user.id} requesting preview`);
+    // console.log(`[POST /api/shopping-lists/preview] User ${user.id} requesting preview`);
 
     // ============================================================================
     // Step 2: Parse & Validate Request Body
@@ -79,9 +79,9 @@ export async function POST(context: APIContext) {
     // ============================================================================
     // Step 4: Return Success Response
     // ============================================================================
-    console.log(
-      `[POST /api/shopping-lists/preview] Preview generated successfully. ${preview.items.length} items, AI status: ${preview.metadata.ai_categorization_status}`
-    );
+    // console.log(
+    //   `[POST /api/shopping-lists/preview] Preview generated successfully. ${preview.items.length} items, AI status: ${preview.metadata.ai_categorization_status}`
+    // );
 
     return new Response(JSON.stringify(preview), {
       status: 200,

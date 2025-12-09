@@ -14,10 +14,8 @@ import type {
   UpcomingMealViewModel,
   RecipeListItemDto,
   ShoppingListListItemDto,
-  MealPlanAssignmentDto,
   WeekCalendarResponseDto,
   PaginatedResponse,
-  MealType,
 } from "@/types";
 import { MEAL_TYPE_LABELS, MEAL_TYPE_ORDER } from "@/types";
 

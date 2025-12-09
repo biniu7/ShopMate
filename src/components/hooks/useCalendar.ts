@@ -95,7 +95,7 @@ export function useCalendar(initialWeekStart?: string) {
       alert("Nie udało się przypisać przepisu. Spróbuj ponownie.");
     },
     onSuccess: () => {
-      console.log("Recipe assigned successfully");
+      // Recipe assigned successfully
     },
     onSettled: () => {
       // Always refetch to ensure consistency
@@ -133,7 +133,7 @@ export function useCalendar(initialWeekStart?: string) {
       alert("Nie udało się usunąć przypisania. Spróbuj ponownie.");
     },
     onSuccess: () => {
-      console.log("Assignment removed successfully");
+      // Assignment removed successfully
     },
     onSettled: () => {
       // Always refetch to ensure consistency
@@ -239,7 +239,8 @@ export function useCalendar(initialWeekStart?: string) {
     if (weekParam && isValidWeekDate(weekParam) && weekParam !== weekStartDate) {
       setWeekStartDate(weekParam);
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount to read URL param
 
   // === Browser back/forward handling ===
   useEffect(() => {

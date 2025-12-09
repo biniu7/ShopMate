@@ -11,7 +11,7 @@
  * @param error - Error object from Supabase Auth
  * @returns User-friendly error message in Polish
  */
-export function getAuthErrorMessage(error: any): string {
+export function getAuthErrorMessage(error: unknown): string {
   // Extract error code or message
   const errorCode = error?.code || error?.message || "";
   const errorMessage = typeof errorCode === "string" ? errorCode.toLowerCase() : "";
@@ -83,7 +83,7 @@ export function getAuthErrorMessage(error: any): string {
 /**
  * Check if error is a network/connection error
  */
-export function isNetworkError(error: any): boolean {
+export function isNetworkError(error: unknown): boolean {
   const errorMessage =
     (typeof error?.message === "string" ? error.message : "").toLowerCase() ||
     (typeof error?.code === "string" ? error.code : "").toLowerCase();
@@ -99,7 +99,7 @@ export function isNetworkError(error: any): boolean {
 /**
  * Check if error is a rate limit error
  */
-export function isRateLimitError(error: any): boolean {
+export function isRateLimitError(error: unknown): boolean {
   const errorMessage =
     (typeof error?.message === "string" ? error.message : "").toLowerCase() ||
     (typeof error?.code === "string" ? error.code : "").toLowerCase();
@@ -110,7 +110,7 @@ export function isRateLimitError(error: any): boolean {
 /**
  * Check if error is a session expired error
  */
-export function isSessionExpiredError(error: any): boolean {
+export function isSessionExpiredError(error: unknown): boolean {
   const errorMessage =
     (typeof error?.message === "string" ? error.message : "").toLowerCase() ||
     (typeof error?.code === "string" ? error.code : "").toLowerCase();
