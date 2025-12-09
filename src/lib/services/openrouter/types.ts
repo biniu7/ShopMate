@@ -13,8 +13,7 @@ export interface OpenRouterConfig {
 
 export interface JSONSchema {
   type: "object";
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  properties: Record<string, any>; // JSON Schema properties can be arbitrary
+  properties: Record<string, any>;
   required?: string[];
   additionalProperties: boolean;
 }
@@ -87,8 +86,7 @@ export class OpenRouterError extends Error {
     public code: string,
     public statusCode?: number,
     public retryable = false,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public originalError?: any // Original error can be of any type
+    public originalError?: any
   ) {
     super(message);
     this.name = "OpenRouterError";

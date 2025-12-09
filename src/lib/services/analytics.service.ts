@@ -30,12 +30,12 @@ interface ExportEvent {
 export async function trackExportEvent(event: ExportEvent): Promise<void> {
   // MVP: Simple console logging for tracking
   // This provides visibility during development and can be monitored in production logs
-  // console.log("[Analytics] Export event:", {
-  //   user: event.userId,
-  //   list: event.shoppingListId,
-  //   format: event.format,
-  //   time: event.timestamp,
-  // });
+  console.log("[Analytics] Export event:", {
+    user: event.userId,
+    list: event.shoppingListId,
+    format: event.format,
+    time: event.timestamp,
+  });
 
   // Future implementation options:
   // 1. Send to analytics service (Plausible, GA4)

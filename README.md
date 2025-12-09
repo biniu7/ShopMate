@@ -1,4 +1,4 @@
-# ShopMate zp
+# ShopMate
 
 > AI-powered meal planning and smart shopping list generator
 

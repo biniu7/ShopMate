@@ -146,6 +146,7 @@ export function ShoppingListDetailsView({ listId }: ShoppingListDetailsViewProps
       downloadTXT(content, filename);
       toast.success("Lista wyeksportowana do TXT");
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error exporting TXT:", error);
       toast.error("Nie udało się wyeksportować listy");
     }

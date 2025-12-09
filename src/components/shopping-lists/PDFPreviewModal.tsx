@@ -46,6 +46,7 @@ export function PDFPreviewModal({ isOpen, onClose, list }: PDFPreviewModalProps)
 
         setPDFBlobUrl(url);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error generating PDF:", error);
         toast.error("Nie udało się wygenerować PDF");
         onClose();
