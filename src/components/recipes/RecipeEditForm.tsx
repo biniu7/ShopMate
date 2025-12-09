@@ -13,16 +13,17 @@ import { InstructionsTextarea } from "./InstructionsTextarea";
 import { IngredientsList } from "./IngredientsList";
 import { FormActions } from "./FormActions";
 import type { RecipeSchemaType } from "@/lib/validation/recipe.schema";
-import type { RecipeResponseDto } from "@/types";
+import type { RecipeResponseDto, IngredientInputDto } from "@/types";
+import type { FieldArrayWithId } from "react-hook-form";
 
 interface RecipeEditFormProps {
   recipe: RecipeResponseDto;
   form: UseFormReturn<RecipeSchemaType> & {
     ingredientsArray: {
-      fields: any[];
-      append: (value: any) => void;
+      fields: FieldArrayWithId<RecipeSchemaType, "ingredients", "id">[];
+      append: (value: IngredientInputDto) => void;
       remove: (index: number) => void;
-      update: (index: number, value: any) => void;
+      update: (index: number, value: IngredientInputDto) => void;
     };
   };
   onSubmit: (e: React.FormEvent) => void;
@@ -87,7 +88,7 @@ export function RecipeEditForm({ recipe, form, onSubmit, onCancel, isSubmitting,
           control={control}
           onAdd={append}
           onRemove={remove}
-          errors={errors.ingredients as any}
+          errors={errors.ingredients}
         />
       </div>
 

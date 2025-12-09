@@ -4,17 +4,18 @@
  */
 import { memo, useCallback } from "react";
 import { Controller } from "react-hook-form";
-import type { Control } from "react-hook-form";
+import type { Control, FieldError } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import type { RecipeSchemaType } from "@/lib/validation/recipe.schema";
 
 interface IngredientRowProps {
   index: number;
-  control: Control<any>;
+  control: Control<RecipeSchemaType>;
   onRemove: (index: number) => void;
   canRemove: boolean;
-  error?: any;
+  error?: { name?: FieldError; quantity?: FieldError; unit?: FieldError };
 }
 
 /**

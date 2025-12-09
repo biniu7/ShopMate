@@ -3,19 +3,20 @@
  * Dynamic list of ingredients with add/remove functionality
  */
 import { memo } from "react";
-import type { Control } from "react-hook-form";
+import type { Control, FieldError } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { IngredientRow } from "./IngredientRow";
 import type { IngredientInputDto } from "@/types";
+import type { RecipeSchemaType } from "@/lib/validation/recipe.schema";
 
 interface IngredientsListProps {
   ingredients: (IngredientInputDto & { id: string })[];
-  control: Control<any>;
+  control: Control<RecipeSchemaType>;
   onAdd: (ingredient: IngredientInputDto) => void;
   onRemove: (index: number) => void;
-  errors?: Record<number, any>;
+  errors?: ({ name?: FieldError; quantity?: FieldError; unit?: FieldError } | undefined)[];
 }
 
 /**

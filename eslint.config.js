@@ -20,7 +20,7 @@ const gitignorePath = path.resolve(__dirname, ".gitignore");
 const baseConfig = tseslint.config({
   extends: [eslint.configs.recommended, tseslint.configs.strict, tseslint.configs.stylistic],
   rules: {
-    "no-console": "warn",
+    "no-console": ["warn", { allow: ["warn", "error"] }],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
@@ -64,7 +64,7 @@ const reactConfig = tseslint.config({
 
 // Vitest configuration dla testów jednostkowych
 const vitestConfig = tseslint.config({
-  files: ["**/*.test.{ts,tsx}", "tests/**/*.{ts,tsx}", "!tests/e2e/**"],
+  files: ["**/*.test.{ts,tsx}", "tests/**/*.{ts,tsx}", "!tests/e2e/**", "**/__tests__/**/*.{ts,tsx}"],
   plugins: {
     vitest,
   },
@@ -74,6 +74,7 @@ const vitestConfig = tseslint.config({
     "vitest/no-disabled-tests": "warn",
     "vitest/no-focused-tests": "error",
     "vitest/valid-expect": "error",
+    "@typescript-eslint/no-non-null-assertion": "off", // Allow non-null assertions in tests
   },
   languageOptions: {
     globals: {
@@ -84,7 +85,7 @@ const vitestConfig = tseslint.config({
 
 // Playwright configuration dla testów E2E
 const playwrightConfig = tseslint.config({
-  files: ["tests/e2e/**/*.spec.{ts,tsx}"],
+  files: ["tests/e2e/**/*.spec.{ts,tsx}", "e2e/**/*.{ts,tsx}"],
   plugins: {
     playwright,
   },
@@ -93,6 +94,12 @@ const playwrightConfig = tseslint.config({
     "playwright/no-focused-test": "error",
     "playwright/valid-expect": "error",
     "playwright/prefer-web-first-assertions": "warn",
+    "playwright/no-networkidle": "warn", // Allow networkidle for now
+    "playwright/no-standalone-expect": "warn", // Allow standalone expects in setup files
+    "playwright/expect-expect": "warn", // Warning for tests without assertions
+    "playwright/no-wait-for-selector": "warn", // Warning for waitForSelector
+    "no-console": "off", // Allow console in E2E tests
+    "@typescript-eslint/no-non-null-assertion": "off", // Allow non-null assertions in tests
   },
 });
 

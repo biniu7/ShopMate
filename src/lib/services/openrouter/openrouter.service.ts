@@ -90,7 +90,7 @@ export class OpenRouterService {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  private isRetryableError(error: any): boolean {
+  private isRetryableError(error: unknown): boolean {
     const retryableStatusCodes = [408, 429, 500, 502, 503, 504];
     const statusCode = error.response?.status || error.statusCode;
 
@@ -105,7 +105,7 @@ export class OpenRouterService {
   private async executeWithRetry<T>(requestFn: () => Promise<T>, attempt = 0): Promise<T> {
     try {
       return await requestFn();
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Jeśli przekroczono maxRetries, rzuć błąd
       if (attempt >= this.config.maxRetries) {
         throw this.normalizeError(error);
@@ -126,7 +126,7 @@ export class OpenRouterService {
     }
   }
 
-  private normalizeError(error: any): OpenRouterError {
+  private normalizeError(error: unknown): OpenRouterError {
     const statusCode = error.response?.status;
     const message = error.response?.data?.error?.message || error.message || "Nieznany błąd";
 
@@ -192,7 +192,7 @@ export class OpenRouterService {
     try {
       const data = JSON.parse(rawContent) as T;
       return { data, rawContent };
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new OpenRouterError(
         `Nie można sparsować odpowiedzi JSON: ${error.message}`,
         "PARSE_ERROR",
@@ -214,7 +214,9 @@ export class OpenRouterService {
       const userMessage = this.sanitizeInput(options.userMessage, 10000);
 
       // Przygotowanie payload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
+        // Dynamic payload for API request
         model: options.model || this.config.defaultModel,
         messages: [
           { role: "system", content: systemMessage },
@@ -254,7 +256,7 @@ export class OpenRouterService {
           total: apiResponse.usage.total_tokens,
         },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Obsługa błędów
       const normalizedError = error instanceof OpenRouterError ? error : this.normalizeError(error);
 

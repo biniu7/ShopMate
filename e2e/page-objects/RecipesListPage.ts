@@ -38,10 +38,7 @@ export class RecipesListPage {
     await this.addRecipeLink.waitFor({ state: "visible", timeout: 10000 });
 
     // Click the link and wait for navigation (Astro View Transitions compatible)
-    await Promise.all([
-      this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }),
-      this.addRecipeLink.click(),
-    ]);
+    await Promise.all([this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }), this.addRecipeLink.click()]);
 
     // Wait for the form to be rendered (indicates React has hydrated)
     await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
@@ -55,10 +52,7 @@ export class RecipesListPage {
     await this.addRecipeLinkFab.waitFor({ state: "visible", timeout: 10000 });
 
     // Click the FAB link and wait for navigation (Astro View Transitions compatible)
-    await Promise.all([
-      this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }),
-      this.addRecipeLinkFab.click(),
-    ]);
+    await Promise.all([this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }), this.addRecipeLinkFab.click()]);
 
     // Wait for the form to be rendered (indicates React has hydrated)
     await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });

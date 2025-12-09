@@ -24,7 +24,6 @@ export function RecipeForm() {
     control,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors, isValid },
   } = useForm<RecipeSchemaType>({
     resolver: zodResolver(RecipeSchema),
@@ -151,7 +150,7 @@ export function RecipeForm() {
           control={control}
           onAdd={append}
           onRemove={remove}
-          errors={errors.ingredients as any}
+          errors={errors.ingredients}
         />
       </div>
 
