@@ -27,7 +27,10 @@ interface ExportEvent {
  *   timestamp: new Date().toISOString()
  * });
  */
-export async function trackExportEvent(event: ExportEvent): Promise<void> {
+export async function trackExportEvent(_event: ExportEvent): Promise<void> {
+  // Parameter reserved for future implementation
+  void _event;
+
   // MVP: Simple console logging for tracking
   // This provides visibility during development and can be monitored in production logs
   // console.log("[Analytics] Export event:", {
@@ -36,7 +39,6 @@ export async function trackExportEvent(event: ExportEvent): Promise<void> {
   //   format: event.format,
   //   time: event.timestamp,
   // });
-
   // Future implementation options:
   // 1. Send to analytics service (Plausible, GA4)
   // await fetch('https://analytics.example.com/events', {

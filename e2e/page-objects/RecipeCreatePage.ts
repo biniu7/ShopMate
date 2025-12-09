@@ -39,9 +39,9 @@ export class RecipeCreatePage {
    * Navigate to recipe create page
    */
   async goto() {
-    await this.page.goto("/recipes/new", { waitUntil: "networkidle", timeout: 30000 });
+    await this.page.goto("/recipes/new", { waitUntil: "domcontentloaded", timeout: 30000 });
     // Wait for the form to be rendered (indicates React has hydrated)
-    await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
+    await this.recipeForm.waitFor({ state: "visible", timeout: 15000 });
   }
 
   /**
@@ -217,7 +217,8 @@ export class RecipeCreatePage {
     await this.page.waitForURL(/\/recipes\/[a-f0-9-]+$/, { timeout: 15000 });
     // Wait for recipe details to load (not just URL)
     // Wait for the skeleton to disappear and actual content to load
-    await this.page.waitForSelector(".recipe-details-content h1", { state: "visible", timeout: 15000 });
+    const recipeTitle = this.page.locator(".recipe-details-content h1");
+    await recipeTitle.waitFor({ state: "visible", timeout: 15000 });
   }
 
   /**

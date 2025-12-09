@@ -64,6 +64,7 @@ export function RecipeForm() {
       });
       // Redirect to recipe details after short delay
       setTimeout(() => {
+        // eslint-disable-next-line react-compiler/react-compiler
         window.location.href = `/recipes/${newRecipe.id}`;
       }, 1000);
     },
