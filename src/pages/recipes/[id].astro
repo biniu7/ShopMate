@@ -4,19 +4,21 @@
  * Route: /recipes/:id
  */
 import Layout from "@/layouts/Layout.astro";
-import { QueryProvider } from "@/components/providers/QueryProvider";
-import { RecipeDetailsView } from "@/components/recipes/RecipeDetailsView";
+import { RecipeDetailsViewWrapper } from "@/components/recipes/RecipeDetailsViewWrapper";
 import { Toaster } from "@/components/ui/toaster";
 
 // Get recipe ID from URL params
 const { id } = Astro.params;
 
+// Validate that id exists
+if (!id) {
+  return Astro.redirect("/recipes");
+}
+
 // Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
 ---
 
 <Layout title="Szczegóły przepisu - ShopMate">
-  <QueryProvider client:load>
-    <RecipeDetailsView client:load recipeId={id!} />
-    <Toaster client:load />
-  </QueryProvider>
+  <RecipeDetailsViewWrapper recipeId={id} client:load />
+  <Toaster client:only="react" />
 </Layout>

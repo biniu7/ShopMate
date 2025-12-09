@@ -58,8 +58,7 @@ export function getAuthErrorMessage(error: any): string {
     "failed to fetch": "Brak połączenia. Sprawdź internet i spróbuj ponownie.",
 
     // Signup confirmation
-    "signup requires email confirmation":
-      "Sprawdź swoją skrzynkę email i potwierdź adres.",
+    "signup requires email confirmation": "Sprawdź swoją skrzynkę email i potwierdź adres.",
   };
 
   // Check if we have a mapped message
@@ -105,11 +104,7 @@ export function isRateLimitError(error: any): boolean {
     (typeof error?.message === "string" ? error.message : "").toLowerCase() ||
     (typeof error?.code === "string" ? error.code : "").toLowerCase();
 
-  return (
-    errorMessage.includes("rate limit") ||
-    errorMessage.includes("too many") ||
-    error?.status === 429
-  );
+  return errorMessage.includes("rate limit") || errorMessage.includes("too many") || error?.status === 429;
 }
 
 /**

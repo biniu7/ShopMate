@@ -73,7 +73,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     }
 
     // Success - cookies are automatically set by Supabase SSR
-    // Session persistence enabled (answer 3: u|ytkownik pozostaje zalogowany po zamkniciu przegldarki)
+    // Session persistence enabled (answer 3: użytkownik pozostaje zalogowany po zamknięciu przeglądarki)
     return new Response(
       JSON.stringify({
         success: true,
@@ -94,7 +94,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "WystpiB nieoczekiwany bBd. Spr�buj ponownie.",
+        error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
       }),
       {
         status: 500,

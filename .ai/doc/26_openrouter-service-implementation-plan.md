@@ -19,6 +19,7 @@ Usługa OpenRouter (`OpenRouterService`) jest warstwą abstrakcji nad OpenRouter
 - Logowanie i monitoring błędów
 
 **Główne przypadki użycia:**
+
 1. Kategoryzacja składników przepisów (istniejąca funkcjonalność z OpenAI)
 2. Przyszłe rozszerzenia: generowanie przepisów, sugestie zamienników, analiza wartości odżywczych
 
@@ -38,14 +39,14 @@ constructor(config?: Partial<OpenRouterConfig>)
 
 ```typescript
 interface OpenRouterConfig {
-  apiKey: string;                    // Klucz API OpenRouter (z env: OPENROUTER_API_KEY)
-  baseUrl: string;                   // URL bazowy API (default: 'https://openrouter.ai/api/v1')
-  defaultModel: string;              // Domyślny model (default: 'openai/gpt-4o-mini')
-  timeout: number;                   // Timeout w ms (default: 10000)
-  maxRetries: number;                // Max liczba prób (default: 2)
-  retryDelay: number;                // Opóźnienie początkowe w ms (default: 1000)
-  defaultTemperature: number;        // Default temperatura (default: 0)
-  defaultMaxTokens: number;          // Default max tokens (default: 500)
+  apiKey: string; // Klucz API OpenRouter (z env: OPENROUTER_API_KEY)
+  baseUrl: string; // URL bazowy API (default: 'https://openrouter.ai/api/v1')
+  defaultModel: string; // Domyślny model (default: 'openai/gpt-4o-mini')
+  timeout: number; // Timeout w ms (default: 10000)
+  maxRetries: number; // Max liczba prób (default: 2)
+  retryDelay: number; // Opóźnienie początkowe w ms (default: 1000)
+  defaultTemperature: number; // Default temperatura (default: 0)
+  defaultMaxTokens: number; // Default max tokens (default: 500)
 }
 ```
 
@@ -66,9 +67,9 @@ const service = new OpenRouterService();
 
 // Niestandardowa konfiguracja
 const service = new OpenRouterService({
-  defaultModel: 'anthropic/claude-3-haiku',
+  defaultModel: "anthropic/claude-3-haiku",
   timeout: 15000,
-  maxRetries: 3
+  maxRetries: 3,
 });
 ```
 
@@ -92,26 +93,26 @@ async chat<T = unknown>(
 
 ```typescript
 interface ChatOptions {
-  systemMessage: string;              // Komunikat systemowy (instrukcje dla modelu)
-  userMessage: string;                // Komunikat użytkownika (dane wejściowe)
-  model?: string;                     // Opcjonalna nazwa modelu (override default)
-  temperature?: number;               // Opcjonalna temperatura (override default)
-  maxTokens?: number;                 // Opcjonalny max tokens (override default)
-  topP?: number;                      // Opcjonalny top_p sampling
-  responseFormat?: ResponseFormat;    // Opcjonalny format odpowiedzi (JSON Schema)
+  systemMessage: string; // Komunikat systemowy (instrukcje dla modelu)
+  userMessage: string; // Komunikat użytkownika (dane wejściowe)
+  model?: string; // Opcjonalna nazwa modelu (override default)
+  temperature?: number; // Opcjonalna temperatura (override default)
+  maxTokens?: number; // Opcjonalny max tokens (override default)
+  topP?: number; // Opcjonalny top_p sampling
+  responseFormat?: ResponseFormat; // Opcjonalny format odpowiedzi (JSON Schema)
 }
 
 interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
-    name: string;                     // Nazwa schematu (lowercase, snake_case)
-    strict: boolean;                  // Strict mode (zawsze true)
-    schema: JSONSchema;               // JSON Schema definicja
+    name: string; // Nazwa schematu (lowercase, snake_case)
+    strict: boolean; // Strict mode (zawsze true)
+    schema: JSONSchema; // JSON Schema definicja
   };
 }
 
 interface JSONSchema {
-  type: 'object';
+  type: "object";
   properties: Record<string, any>;
   required?: string[];
   additionalProperties: boolean;
@@ -122,10 +123,10 @@ interface JSONSchema {
 
 ```typescript
 interface ChatResponse<T = unknown> {
-  success: boolean;                   // Czy zapytanie zakończyło się sukcesem
-  data?: T;                           // Sparsowane dane (jeśli responseFormat podany)
-  rawContent?: string;                // Surowa treść odpowiedzi
-  model: string;                      // Użyty model
+  success: boolean; // Czy zapytanie zakończyło się sukcesem
+  data?: T; // Sparsowane dane (jeśli responseFormat podany)
+  rawContent?: string; // Surowa treść odpowiedzi
+  model: string; // Użyty model
   tokensUsed?: {
     prompt: number;
     completion: number;
@@ -144,31 +145,32 @@ interface ChatResponse<T = unknown> {
 ```typescript
 // Przykład 1: Kategoryzacja składników (JSON Schema response)
 const response = await service.chat<{ [key: string]: string }>({
-  systemMessage: 'Jesteś ekspertem kulinarnym. Kategoryzuj składniki do kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne.',
-  userMessage: 'Kategoryzuj składniki: 1. mleko, 2. pomidor, 3. kurczak',
-  model: 'openai/gpt-4o-mini',
+  systemMessage:
+    "Jesteś ekspertem kulinarnym. Kategoryzuj składniki do kategorii: Nabiał, Warzywa, Owoce, Mięso, Pieczywo, Przyprawy, Inne.",
+  userMessage: "Kategoryzuj składniki: 1. mleko, 2. pomidor, 3. kurczak",
+  model: "openai/gpt-4o-mini",
   temperature: 0,
   responseFormat: {
-    type: 'json_schema',
+    type: "json_schema",
     json_schema: {
-      name: 'ingredient_categories',
+      name: "ingredient_categories",
       strict: true,
       schema: {
-        type: 'object',
+        type: "object",
         properties: {
           categories: {
-            type: 'object',
+            type: "object",
             additionalProperties: {
-              type: 'string',
-              enum: ['Nabiał', 'Warzywa', 'Owoce', 'Mięso', 'Pieczywo', 'Przyprawy', 'Inne']
-            }
-          }
+              type: "string",
+              enum: ["Nabiał", "Warzywa", "Owoce", "Mięso", "Pieczywo", "Przyprawy", "Inne"],
+            },
+          },
         },
-        required: ['categories'],
-        additionalProperties: false
-      }
-    }
-  }
+        required: ["categories"],
+        additionalProperties: false,
+      },
+    },
+  },
 });
 
 if (response.success) {
@@ -179,9 +181,9 @@ if (response.success) {
 
 // Przykład 2: Proste zapytanie bez structured output
 const simpleResponse = await service.chat({
-  systemMessage: 'Jesteś pomocnym asystentem kulinarnym.',
-  userMessage: 'Zaproponuj szybki przepis na obiad.',
-  temperature: 0.7
+  systemMessage: "Jesteś pomocnym asystentem kulinarnym.",
+  userMessage: "Zaproponuj szybki przepis na obiad.",
+  temperature: 0.7,
 });
 ```
 
@@ -303,7 +305,7 @@ async testConnection(): Promise<boolean>
 ```typescript
 const isConnected = await service.testConnection();
 if (!isConnected) {
-  console.error('Nie można połączyć się z OpenRouter API');
+  console.error("Nie można połączyć się z OpenRouter API");
 }
 ```
 
@@ -476,56 +478,67 @@ private validateResponseAgainstSchema(
 ### 5.1 Scenariusze błędów
 
 #### Błąd 1: Brak klucza API
+
 **Kod:** `MISSING_API_KEY`
 **Komunikat:** `"Brak klucza API OpenRouter. Ustaw zmienną środowiskową OPENROUTER_API_KEY."`
 **Akcja:** Rzuć błąd w konstruktorze.
 
 #### Błąd 2: Nieprawidłowa konfiguracja
+
 **Kod:** `INVALID_CONFIG`
 **Komunikat:** `"Nieprawidłowa konfiguracja: {szczegóły}"`
 **Akcja:** Rzuć błąd w konstruktorze.
 
 #### Błąd 3: Timeout
+
 **Kod:** `TIMEOUT`
 **Komunikat:** `"Przekroczono limit czasu zapytania ({timeout}ms)"`
 **Akcja:** Retry (jeśli attempt < maxRetries), w przeciwnym razie zwróć błąd.
 
 #### Błąd 4: Rate limit (429)
+
 **Kod:** `RATE_LIMIT_EXCEEDED`
 **Komunikat:** `"Przekroczono limit zapytań. Spróbuj ponownie za {retry-after}s."`
 **Akcja:** Retry z exponential backoff.
 
 #### Błąd 5: Błąd serwera (500, 502, 503, 504)
+
 **Kod:** `SERVER_ERROR`
 **Komunikat:** `"Błąd serwera OpenRouter. Kod: {statusCode}"`
 **Akcja:** Retry z exponential backoff.
 
 #### Błąd 6: Nieprawidłowe zapytanie (400)
+
 **Kod:** `INVALID_REQUEST`
 **Komunikat:** `"Nieprawidłowe zapytanie: {szczegóły z API}"`
 **Akcja:** Nie retry, zwróć błąd.
 
 #### Błąd 7: Brak autoryzacji (401)
+
 **Kod:** `UNAUTHORIZED`
 **Komunikat:** `"Nieprawidłowy klucz API OpenRouter"`
 **Akcja:** Nie retry, zwróć błąd.
 
 #### Błąd 8: Brak dostępu do modelu (403)
+
 **Kod:** `FORBIDDEN`
 **Komunikat:** `"Brak dostępu do modelu {model}"`
 **Akcja:** Nie retry, zwróć błąd.
 
 #### Błąd 9: Model nie znaleziony (404)
+
 **Kod:** `MODEL_NOT_FOUND`
 **Komunikat:** `"Model {model} nie istnieje"`
 **Akcja:** Nie retry, zwróć błąd.
 
 #### Błąd 10: Błąd parsowania odpowiedzi
+
 **Kod:** `PARSE_ERROR`
 **Komunikat:** `"Nie można sparsować odpowiedzi JSON"`
 **Akcja:** Nie retry, zwróć błąd.
 
 #### Błąd 11: Przekroczono limit składników
+
 **Kod:** `TOO_MANY_INGREDIENTS`
 **Komunikat:** `"Przekroczono limit 100 składników (otrzymano: {count})"`
 **Akcja:** Zwróć błąd bez wywołania API.
@@ -542,7 +555,7 @@ class OpenRouterError extends Error {
     public originalError?: any
   ) {
     super(message);
-    this.name = 'OpenRouterError';
+    this.name = "OpenRouterError";
   }
 }
 ```
@@ -552,8 +565,8 @@ class OpenRouterError extends Error {
 ```typescript
 try {
   const response = await service.chat({
-    systemMessage: '...',
-    userMessage: '...'
+    systemMessage: "...",
+    userMessage: "...",
   });
 } catch (error) {
   if (error instanceof OpenRouterError) {
@@ -566,10 +579,10 @@ try {
 
     // Obsługa specyficznych kodów błędów
     switch (error.code) {
-      case 'UNAUTHORIZED':
+      case "UNAUTHORIZED":
         // Powiadom admina o nieprawidłowym kluczu API
         break;
-      case 'RATE_LIMIT_EXCEEDED':
+      case "RATE_LIMIT_EXCEEDED":
         // Implementuj circuit breaker lub queue
         break;
       default:
@@ -589,6 +602,7 @@ try {
 **Problem:** Klucz API nie może być eksponowany w kodzie klienta (browser).
 
 **Rozwiązanie:**
+
 1. Przechowuj klucz API w zmiennej środowiskowej: `OPENROUTER_API_KEY`
 2. Używaj klucza TYLKO w server-side code:
    - Astro API endpoints (`src/pages/api/*`)
@@ -603,6 +617,7 @@ try {
 **Problem:** User input może zawierać złośliwe dane (prompt injection).
 
 **Rozwiązanie:**
+
 1. Waliduj długość `userMessage` (max 10000 znaków)
 2. Waliduj długość `systemMessage` (max 5000 znaków)
 3. Sanityzuj input:
@@ -621,7 +636,9 @@ try {
 **Problem:** Użytkownicy mogą spamować API, generując wysokie koszty.
 
 **Rozwiązanie:**
+
 1. Implementuj rate limiting w Astro middleware:
+
    ```typescript
    // src/middleware/rate-limit.ts
    const rateLimiter = new Map<string, { count: number; resetAt: number }>();
@@ -643,6 +660,7 @@ try {
      return true;
    }
    ```
+
 2. Supabase RLS: Dodaj constraint na liczbę shopping lists per user per day
 3. Implementuj exponential backoff dla retry (już zrobione w `executeWithRetry()`)
 
@@ -651,6 +669,7 @@ try {
 **Problem:** Logi mogą zawierać wrażliwe dane (API keys, user data).
 
 **Rozwiązanie:**
+
 1. NIGDY nie loguj klucza API
 2. Maskuj wrażliwe dane w logach:
    ```typescript
@@ -664,15 +683,18 @@ try {
 **Problem:** API endpoints mogą być wywoływane z niepowołanych źródeł.
 
 **Rozwiązanie:**
+
 1. W Astro API endpoints sprawdzaj `Origin` header:
+
    ```typescript
-   const allowedOrigins = ['https://shopmate.app', 'http://localhost:3000'];
-   const origin = request.headers.get('origin');
+   const allowedOrigins = ["https://shopmate.app", "http://localhost:3000"];
+   const origin = request.headers.get("origin");
 
    if (!allowedOrigins.includes(origin)) {
-     return new Response('Forbidden', { status: 403 });
+     return new Response("Forbidden", { status: 403 });
    }
    ```
+
 2. Dodaj CSP headers w `astro.config.mjs`:
    ```typescript
    headers: {
@@ -683,6 +705,7 @@ try {
 ### 6.6 Audyt bezpieczeństwa
 
 **Checklist:**
+
 - [ ] Klucz API przechowywany w zmiennych środowiskowych
 - [ ] Klucz API używany TYLKO w server-side code
 - [ ] Walidacja input z użyciem Zod schemas
@@ -701,6 +724,7 @@ try {
 ### Krok 1: Setup projektu i dependencies
 
 **Zadania:**
+
 1. Zainstaluj wymagane pakiety:
    ```bash
    npm install axios zod
@@ -724,6 +748,7 @@ try {
    ```
 
 **Weryfikacja:**
+
 - [ ] Pakiety zainstalowane
 - [ ] `.env.local` utworzony z kluczem API
 - [ ] Types dla env vars zaktualizowane
@@ -735,6 +760,7 @@ try {
 **Lokalizacja:** `src/lib/services/openrouter/types.ts`
 
 **Kod:**
+
 ```typescript
 // src/lib/services/openrouter/types.ts
 
@@ -750,14 +776,14 @@ export interface OpenRouterConfig {
 }
 
 export interface JSONSchema {
-  type: 'object';
+  type: "object";
   properties: Record<string, any>;
   required?: string[];
   additionalProperties: boolean;
 }
 
 export interface ResponseFormat {
-  type: 'json_schema';
+  type: "json_schema";
   json_schema: {
     name: string;
     strict: boolean;
@@ -827,12 +853,13 @@ export class OpenRouterError extends Error {
     public originalError?: any
   ) {
     super(message);
-    this.name = 'OpenRouterError';
+    this.name = "OpenRouterError";
   }
 }
 ```
 
 **Weryfikacja:**
+
 - [ ] Plik utworzony z wszystkimi interfejsami
 - [ ] TypeScript kompiluje się bez błędów
 
@@ -843,18 +870,19 @@ export class OpenRouterError extends Error {
 **Lokalizacja:** `src/lib/services/openrouter/openrouter.service.ts`
 
 **Kod:**
+
 ```typescript
 // src/lib/services/openrouter/openrouter.service.ts
 
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from "axios";
 import type {
   OpenRouterConfig,
   ChatOptions,
   ChatResponse,
   CategorizeIngredientsResponse,
-  OpenRouterAPIResponse
-} from './types';
-import { OpenRouterError } from './types';
+  OpenRouterAPIResponse,
+} from "./types";
+import { OpenRouterError } from "./types";
 
 export class OpenRouterService {
   private readonly config: OpenRouterConfig;
@@ -863,14 +891,14 @@ export class OpenRouterService {
   constructor(config?: Partial<OpenRouterConfig>) {
     // Domyślna konfiguracja
     const defaultConfig: OpenRouterConfig = {
-      apiKey: import.meta.env.OPENROUTER_API_KEY || '',
-      baseUrl: 'https://openrouter.ai/api/v1',
-      defaultModel: 'openai/gpt-4o-mini',
+      apiKey: import.meta.env.OPENROUTER_API_KEY || "",
+      baseUrl: "https://openrouter.ai/api/v1",
+      defaultModel: "openai/gpt-4o-mini",
       timeout: 10000,
       maxRetries: 2,
       retryDelay: 1000,
       defaultTemperature: 0,
-      defaultMaxTokens: 500
+      defaultMaxTokens: 500,
     };
 
     // Merge z custom config
@@ -884,54 +912,45 @@ export class OpenRouterService {
       baseURL: this.config.baseUrl,
       timeout: this.config.timeout,
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'HTTP-Referer': 'https://shopmate.app',
-        'X-Title': 'ShopMate'
-      }
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.config.apiKey}`,
+        "HTTP-Referer": "https://shopmate.app",
+        "X-Title": "ShopMate",
+      },
     });
   }
 
   private validateConfig(): void {
     if (!this.config.apiKey) {
       throw new OpenRouterError(
-        'Brak klucza API OpenRouter. Ustaw zmienną środowiskową OPENROUTER_API_KEY.',
-        'MISSING_API_KEY'
+        "Brak klucza API OpenRouter. Ustaw zmienną środowiskową OPENROUTER_API_KEY.",
+        "MISSING_API_KEY"
       );
     }
 
     if (this.config.timeout <= 0) {
-      throw new OpenRouterError(
-        `Timeout musi być większy od 0 (otrzymano: ${this.config.timeout})`,
-        'INVALID_CONFIG'
-      );
+      throw new OpenRouterError(`Timeout musi być większy od 0 (otrzymano: ${this.config.timeout})`, "INVALID_CONFIG");
     }
 
     if (this.config.maxRetries < 0) {
-      throw new OpenRouterError(
-        `maxRetries musi być >= 0 (otrzymano: ${this.config.maxRetries})`,
-        'INVALID_CONFIG'
-      );
+      throw new OpenRouterError(`maxRetries musi być >= 0 (otrzymano: ${this.config.maxRetries})`, "INVALID_CONFIG");
     }
 
     if (this.config.retryDelay <= 0) {
-      throw new OpenRouterError(
-        `retryDelay musi być > 0 (otrzymano: ${this.config.retryDelay})`,
-        'INVALID_CONFIG'
-      );
+      throw new OpenRouterError(`retryDelay musi być > 0 (otrzymano: ${this.config.retryDelay})`, "INVALID_CONFIG");
     }
 
     if (this.config.defaultTemperature < 0 || this.config.defaultTemperature > 2) {
       throw new OpenRouterError(
         `defaultTemperature musi być w zakresie [0, 2] (otrzymano: ${this.config.defaultTemperature})`,
-        'INVALID_CONFIG'
+        "INVALID_CONFIG"
       );
     }
 
     if (this.config.defaultMaxTokens <= 0) {
       throw new OpenRouterError(
         `defaultMaxTokens musi być > 0 (otrzymano: ${this.config.defaultMaxTokens})`,
-        'INVALID_CONFIG'
+        "INVALID_CONFIG"
       );
     }
   }
@@ -941,6 +960,7 @@ export class OpenRouterService {
 ```
 
 **Weryfikacja:**
+
 - [ ] Konstruktor waliduje konfigurację
 - [ ] Rzuca odpowiednie błędy dla nieprawidłowej konfiguracji
 - [ ] HTTP client inicjalizowany z poprawnymi headerami
@@ -950,6 +970,7 @@ export class OpenRouterService {
 ### Krok 4: Implementacja metod pomocniczych (private)
 
 **Kod (dodaj do `openrouter.service.ts`):**
+
 ```typescript
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -1106,6 +1127,7 @@ export class OpenRouterService {
 ```
 
 **Weryfikacja:**
+
 - [ ] Metody pomocnicze działają poprawnie
 - [ ] Exponential backoff działa (test ręczny z timeout)
 - [ ] Normalizacja błędów mapuje status codes na odpowiednie kody
@@ -1115,6 +1137,7 @@ export class OpenRouterService {
 ### Krok 5: Implementacja metody `chat()`
 
 **Kod (dodaj do `openrouter.service.ts`):**
+
 ```typescript
   async chat<T = unknown>(options: ChatOptions): Promise<ChatResponse<T>> {
     try {
@@ -1185,19 +1208,21 @@ export class OpenRouterService {
 ```
 
 **Weryfikacja:**
+
 - [ ] Metoda `chat()` wysyła zapytania do OpenRouter API
 - [ ] Retry działa dla błędów retryable
 - [ ] Parsowanie JSON działa dla structured outputs
 - [ ] Error handling zwraca odpowiednie błędy
 
 **Test ręczny:**
+
 ```typescript
 const service = new OpenRouterService();
 
 const response = await service.chat({
-  systemMessage: 'Jesteś pomocnym asystentem.',
+  systemMessage: "Jesteś pomocnym asystentem.",
   userMessage: 'Powiedz "test"',
-  temperature: 0
+  temperature: 0,
 });
 
 console.log(response);
@@ -1208,6 +1233,7 @@ console.log(response);
 ### Krok 6: Implementacja metody `categorizeIngredients()`
 
 **Kod (dodaj do `openrouter.service.ts`):**
+
 ```typescript
   async categorizeIngredients(
     ingredients: Array<{ id: string; name: string }>
@@ -1307,16 +1333,18 @@ console.log(response);
 ```
 
 **Weryfikacja:**
+
 - [ ] Metoda kategoryzuje składniki poprawnie
 - [ ] Fallback do "Inne" działa
 - [ ] Walidacja limitu 100 składników działa
 
 **Test ręczny:**
+
 ```typescript
 const response = await service.categorizeIngredients([
-  { id: '1', name: 'mleko' },
-  { id: '2', name: 'pomidor' },
-  { id: '3', name: 'kurczak' }
+  { id: "1", name: "mleko" },
+  { id: "2", name: "pomidor" },
+  { id: "3", name: "kurczak" },
 ]);
 
 console.log(response);
@@ -1328,6 +1356,7 @@ console.log(response);
 ### Krok 7: Implementacja metody `testConnection()`
 
 **Kod (dodaj do `openrouter.service.ts`):**
+
 ```typescript
   async testConnection(): Promise<boolean> {
     try {
@@ -1346,6 +1375,7 @@ console.log(response);
 ```
 
 **Weryfikacja:**
+
 - [ ] Metoda zwraca `true` dla prawidłowego połączenia
 - [ ] Metoda zwraca `false` dla błędnej konfiguracji
 
@@ -1356,21 +1386,25 @@ console.log(response);
 **Lokalizacja:** `src/pages/api/ai/categorize-ingredients.ts`
 
 **Kod:**
+
 ```typescript
 // src/pages/api/ai/categorize-ingredients.ts
 
-import type { APIRoute } from 'astro';
-import { z } from 'zod';
-import { OpenRouterService } from '@/lib/services/openrouter/openrouter.service';
+import type { APIRoute } from "astro";
+import { z } from "zod";
+import { OpenRouterService } from "@/lib/services/openrouter/openrouter.service";
 
 // Zod schema dla request body
 const requestSchema = z.object({
-  ingredients: z.array(
-    z.object({
-      id: z.string().uuid(),
-      name: z.string().min(1).max(100)
-    })
-  ).min(1).max(100)
+  ingredients: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        name: z.string().min(1).max(100),
+      })
+    )
+    .min(1)
+    .max(100),
 });
 
 export const prerender = false;
@@ -1378,13 +1412,16 @@ export const prerender = false;
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
     // 1. Sprawdź autentykację
-    const { data: { user }, error: authError } = await locals.supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await locals.supabase.auth.getUser();
 
     if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { 'Content-Type': 'application/json' } }
-      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     // 2. Parsuj i waliduj request body
@@ -1394,10 +1431,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!validation.success) {
       return new Response(
         JSON.stringify({
-          error: 'Invalid request',
-          details: validation.error.flatten()
+          error: "Invalid request",
+          details: validation.error.flatten(),
         }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
@@ -1411,42 +1448,43 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!result.success) {
       return new Response(
         JSON.stringify({
-          error: result.error?.message || 'Categorization failed',
-          failedIngredients: result.error?.failedIngredients
+          error: result.error?.message || "Categorization failed",
+          failedIngredients: result.error?.failedIngredients,
         }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        categories: result.categories
+        categories: result.categories,
       }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      { status: 200, headers: { "Content-Type": "application/json" } }
     );
-
   } catch (error: any) {
-    console.error('[API] Categorize ingredients error:', error);
+    console.error("[API] Categorize ingredients error:", error);
 
     return new Response(
       JSON.stringify({
-        error: 'Internal server error',
-        message: error.message
+        error: "Internal server error",
+        message: error.message,
       }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 };
 ```
 
 **Weryfikacja:**
+
 - [ ] Endpoint wymaga autentykacji
 - [ ] Walidacja request body działa
 - [ ] Endpoint zwraca poprawne kategorie
 - [ ] Error handling działa
 
 **Test endpoint:**
+
 ```bash
 curl -X POST http://localhost:3000/api/ai/categorize-ingredients \
   -H "Content-Type: application/json" \
@@ -1466,6 +1504,7 @@ curl -X POST http://localhost:3000/api/ai/categorize-ingredients \
 **Lokalizacja:** `src/pages/api/shopping-lists/generate.ts`
 
 **Modyfikacja istniejącego kodu:**
+
 ```typescript
 // src/pages/api/shopping-lists/generate.ts
 
@@ -1518,6 +1557,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 ```
 
 **Weryfikacja:**
+
 - [ ] Integracja z istniejącym workflow działa
 - [ ] Fallback do "Inne" działa w przypadku błędu
 - [ ] Shopping list generuje się poprawnie z kategoriami
@@ -1529,58 +1569,59 @@ export const POST: APIRoute = async ({ request, locals }) => {
 **Lokalizacja:** `src/lib/services/openrouter/__tests__/openrouter.service.test.ts`
 
 **Kod (przykładowe testy z vitest):**
-```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { OpenRouterService } from '../openrouter.service';
-import { OpenRouterError } from '../types';
 
-describe('OpenRouterService', () => {
+```typescript
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { OpenRouterService } from "../openrouter.service";
+import { OpenRouterError } from "../types";
+
+describe("OpenRouterService", () => {
   beforeEach(() => {
     // Mock environment variable
-    vi.stubEnv('OPENROUTER_API_KEY', 'test-api-key');
+    vi.stubEnv("OPENROUTER_API_KEY", "test-api-key");
   });
 
-  describe('Constructor', () => {
-    it('should throw error when API key is missing', () => {
-      vi.stubEnv('OPENROUTER_API_KEY', '');
+  describe("Constructor", () => {
+    it("should throw error when API key is missing", () => {
+      vi.stubEnv("OPENROUTER_API_KEY", "");
 
       expect(() => new OpenRouterService()).toThrow(OpenRouterError);
-      expect(() => new OpenRouterService()).toThrow('Brak klucza API');
+      expect(() => new OpenRouterService()).toThrow("Brak klucza API");
     });
 
-    it('should validate timeout', () => {
-      expect(() => new OpenRouterService({ timeout: -1 })).toThrow('Timeout musi być większy od 0');
+    it("should validate timeout", () => {
+      expect(() => new OpenRouterService({ timeout: -1 })).toThrow("Timeout musi być większy od 0");
     });
 
-    it('should validate temperature range', () => {
-      expect(() => new OpenRouterService({ defaultTemperature: 3 })).toThrow('w zakresie [0, 2]');
+    it("should validate temperature range", () => {
+      expect(() => new OpenRouterService({ defaultTemperature: 3 })).toThrow("w zakresie [0, 2]");
     });
   });
 
-  describe('categorizeIngredients', () => {
-    it('should return error for empty ingredients', async () => {
+  describe("categorizeIngredients", () => {
+    it("should return error for empty ingredients", async () => {
       const service = new OpenRouterService();
       const result = await service.categorizeIngredients([]);
 
       expect(result.success).toBe(false);
-      expect(result.error?.message).toContain('pusta');
+      expect(result.error?.message).toContain("pusta");
     });
 
-    it('should return error for > 100 ingredients', async () => {
+    it("should return error for > 100 ingredients", async () => {
       const service = new OpenRouterService();
       const ingredients = Array.from({ length: 101 }, (_, i) => ({
         id: `${i}`,
-        name: `ingredient${i}`
+        name: `ingredient${i}`,
       }));
 
       const result = await service.categorizeIngredients(ingredients);
 
       expect(result.success).toBe(false);
-      expect(result.error?.message).toContain('limit 100');
+      expect(result.error?.message).toContain("limit 100");
     });
 
     // Mock test dla sukcesu
-    it('should categorize ingredients successfully', async () => {
+    it("should categorize ingredients successfully", async () => {
       // Mock axios response
       // ... (implementation z vi.mock)
     });
@@ -1589,11 +1630,13 @@ describe('OpenRouterService', () => {
 ```
 
 **Weryfikacja:**
+
 - [ ] Testy jednostkowe dla konstruktora przechodzą
 - [ ] Testy dla walidacji przechodzą
 - [ ] Testy dla `categorizeIngredients()` przechodzą
 
 **Uruchomienie testów:**
+
 ```bash
 npm run test
 ```
@@ -1605,7 +1648,8 @@ npm run test
 **Lokalizacja:** `src/lib/services/openrouter/README.md`
 
 **Kod:**
-```markdown
+
+````markdown
 # OpenRouter Service
 
 Service dla komunikacji z OpenRouter API w projekcie ShopMate.
@@ -1615,6 +1659,7 @@ Service dla komunikacji z OpenRouter API w projekcie ShopMate.
 ```bash
 npm install
 ```
+````
 
 ## Konfiguracja
 
@@ -1629,14 +1674,14 @@ OPENROUTER_API_KEY=sk-or-v1-...
 ### Podstawowe użycie
 
 ```typescript
-import { OpenRouterService } from '@/lib/services/openrouter/openrouter.service';
+import { OpenRouterService } from "@/lib/services/openrouter/openrouter.service";
 
 const service = new OpenRouterService();
 
 const response = await service.chat({
-  systemMessage: 'Jesteś pomocnym asystentem.',
-  userMessage: 'Powiedz coś zabawnego.',
-  temperature: 0.7
+  systemMessage: "Jesteś pomocnym asystentem.",
+  userMessage: "Powiedz coś zabawnego.",
+  temperature: 0.7,
 });
 
 console.log(response.rawContent);
@@ -1646,8 +1691,8 @@ console.log(response.rawContent);
 
 ```typescript
 const result = await service.categorizeIngredients([
-  { id: '1', name: 'mleko' },
-  { id: '2', name: 'pomidor' }
+  { id: "1", name: "mleko" },
+  { id: "2", name: "pomidor" },
 ]);
 
 console.log(result.categories);
@@ -1658,23 +1703,23 @@ console.log(result.categories);
 
 ```typescript
 const response = await service.chat<{ answer: string }>({
-  systemMessage: 'Odpowiadaj w formacie JSON.',
-  userMessage: 'Jaka jest stolica Polski?',
+  systemMessage: "Odpowiadaj w formacie JSON.",
+  userMessage: "Jaka jest stolica Polski?",
   responseFormat: {
-    type: 'json_schema',
+    type: "json_schema",
     json_schema: {
-      name: 'answer_format',
+      name: "answer_format",
       strict: true,
       schema: {
-        type: 'object',
+        type: "object",
         properties: {
-          answer: { type: 'string' }
+          answer: { type: "string" },
         },
-        required: ['answer'],
-        additionalProperties: false
-      }
-    }
-  }
+        required: ["answer"],
+        additionalProperties: false,
+      },
+    },
+  },
 });
 
 console.log(response.data?.answer); // "Warszawa"
@@ -1683,7 +1728,8 @@ console.log(response.data?.answer); // "Warszawa"
 ## API Reference
 
 Pełna dokumentacja znajduje się w pliku implementacji.
-```
+
+````
 
 **Weryfikacja:**
 - [ ] Dokumentacja jest jasna i kompletna
@@ -1722,9 +1768,10 @@ catch (error: any) {
 
   // ...
 }
-```
+````
 
 **Weryfikacja:**
+
 - [ ] Błędy są logowane do Sentry
 - [ ] Nie logujemy wrażliwych danych (API keys, pełne messages)
 
@@ -1738,6 +1785,7 @@ catch (error: any) {
    - `OPENROUTER_API_KEY=sk-or-v1-...`
 
 2. Deploy:
+
    ```bash
    git add .
    git commit -m "feat: add OpenRouter service integration"
@@ -1747,6 +1795,7 @@ catch (error: any) {
 3. Vercel automatycznie wdroży zmiany.
 
 **Weryfikacja:**
+
 - [ ] Aplikacja deployuje się bez błędów
 - [ ] API endpoint działa na production
 - [ ] Kategoryzacja składników działa end-to-end
@@ -1774,6 +1823,7 @@ Plan implementacji obejmuje:
 **Szacowany czas implementacji:** 4-6 godzin dla doświadczonego developera.
 
 **Priorytety:**
+
 - **Must have:** Kroki 1-9 (core functionality)
 - **Should have:** Krok 10-11 (testy, dokumentacja)
 - **Nice to have:** Krok 12-13 (monitoring, advanced deployment)

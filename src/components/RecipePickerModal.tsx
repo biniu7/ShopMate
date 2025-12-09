@@ -39,7 +39,7 @@ const RecipeCard = memo<{
   name: string;
   ingredientsCount: number;
   onClick: () => void;
-}>(({ id, name, ingredientsCount, onClick }) => {
+}>(({ name, ingredientsCount, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -60,115 +60,113 @@ RecipeCard.displayName = "RecipeCard";
  * Recipe Picker Modal Component
  * Modal with search, infinite scroll, and recipe selection
  */
-const RecipePickerModal = memo<RecipePickerModalProps>(
-  ({ isOpen, onClose, targetCell, weekStartDate, onRecipeSelected }) => {
-    const { searchQuery, setSearchQuery, recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
-      useRecipeSearch();
+const RecipePickerModal = memo<RecipePickerModalProps>(({ isOpen, onClose, targetCell, onRecipeSelected }) => {
+  const { searchQuery, setSearchQuery, recipes, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
+    useRecipeSearch();
 
-    // Intersection Observer for infinite scroll
-    const loadMoreRef = useRef<HTMLDivElement>(null);
+  // Intersection Observer for infinite scroll
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-      if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage) return;
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage) return;
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            fetchNextPage();
-          }
-        },
-        { threshold: 0.1 }
-      );
-
-      observer.observe(loadMoreRef.current);
-
-      return () => observer.disconnect();
-    }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-    // Handle recipe selection
-    const handleSelectRecipe = useCallback(
-      (recipeId: string) => {
-        onRecipeSelected(recipeId);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
       },
-      [onRecipeSelected]
+      { threshold: 0.1 }
     );
 
-    // Get target cell display name
-    const targetCellDisplay = targetCell
-      ? `${getDayName(targetCell.dayOfWeek)} - ${getMealTypeLabel(targetCell.mealType)}`
-      : "";
+    observer.observe(loadMoreRef.current);
 
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Wybierz przepis</DialogTitle>
-            <DialogDescription>{targetCell && `Przypisujesz przepis do: ${targetCellDisplay}`}</DialogDescription>
-          </DialogHeader>
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-          {/* Search Bar */}
-          <div className="py-4">
-            <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Szukaj przepisu..." />
-          </div>
+  // Handle recipe selection
+  const handleSelectRecipe = useCallback(
+    (recipeId: string) => {
+      onRecipeSelected(recipeId);
+    },
+    [onRecipeSelected]
+  );
 
-          {/* Recipe List */}
-          <ScrollArea className="flex-1 h-[400px] -mx-6 px-6">
-            {isLoading && (
-              <div className="text-center py-8 text-gray-500">
-                <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2" />
-                Ładowanie przepisów...
-              </div>
-            )}
+  // Get target cell display name
+  const targetCellDisplay = targetCell
+    ? `${getDayName(targetCell.dayOfWeek)} - ${getMealTypeLabel(targetCell.mealType)}`
+    : "";
 
-            {error && (
-              <div className="text-center py-8 text-red-600">Nie udało się załadować przepisów. Spróbuj ponownie.</div>
-            )}
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>Wybierz przepis</DialogTitle>
+          <DialogDescription>{targetCell && `Przypisujesz przepis do: ${targetCellDisplay}`}</DialogDescription>
+        </DialogHeader>
 
-            {!isLoading && !error && recipes.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                {searchQuery
-                  ? `Nie znaleziono przepisów dla: "${searchQuery}"`
-                  : "Brak przepisów. Dodaj pierwszy przepis!"}
-              </div>
-            )}
+        {/* Search Bar */}
+        <div className="py-4">
+          <SearchBar value={searchQuery} onChange={setSearchQuery} placeholder="Szukaj przepisu..." />
+        </div>
 
-            {!isLoading && !error && recipes.length > 0 && (
-              <div className="space-y-3">
-                {recipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.id}
-                    id={recipe.id}
-                    name={recipe.name}
-                    ingredientsCount={recipe.ingredients_count}
-                    onClick={() => handleSelectRecipe(recipe.id)}
-                  />
-                ))}
+        {/* Recipe List */}
+        <ScrollArea className="flex-1 h-[400px] -mx-6 px-6">
+          {isLoading && (
+            <div className="text-center py-8 text-gray-500">
+              <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2" />
+              Ładowanie przepisów...
+            </div>
+          )}
 
-                {/* Load More Trigger */}
-                {hasNextPage && (
-                  <div ref={loadMoreRef} className="text-center py-4">
-                    {isFetchingNextPage ? (
-                      <div className="animate-spin w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
-                    ) : (
-                      <p className="text-sm text-gray-500">Przewiń, aby załadować więcej</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </ScrollArea>
+          {error && (
+            <div className="text-center py-8 text-red-600">Nie udało się załadować przepisów. Spróbuj ponownie.</div>
+          )}
 
-          {/* Footer */}
-          <DialogFooter>
-            <Button variant="outline" onClick={onClose}>
-              Anuluj
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-);
+          {!isLoading && !error && recipes.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              {searchQuery
+                ? `Nie znaleziono przepisów dla: "${searchQuery}"`
+                : "Brak przepisów. Dodaj pierwszy przepis!"}
+            </div>
+          )}
+
+          {!isLoading && !error && recipes.length > 0 && (
+            <div className="space-y-3">
+              {recipes.map((recipe) => (
+                <RecipeCard
+                  key={recipe.id}
+                  id={recipe.id}
+                  name={recipe.name}
+                  ingredientsCount={recipe.ingredients_count}
+                  onClick={() => handleSelectRecipe(recipe.id)}
+                />
+              ))}
+
+              {/* Load More Trigger */}
+              {hasNextPage && (
+                <div ref={loadMoreRef} className="text-center py-4">
+                  {isFetchingNextPage ? (
+                    <div className="animate-spin w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full mx-auto" />
+                  ) : (
+                    <p className="text-sm text-gray-500">Przewiń, aby załadować więcej</p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </ScrollArea>
+
+        {/* Footer */}
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Anuluj
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+});
 
 RecipePickerModal.displayName = "RecipePickerModal";
 

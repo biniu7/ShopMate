@@ -4,8 +4,7 @@
  * Route: /shopping-lists/:id
  */
 import Layout from "@/layouts/Layout.astro";
-import { QueryProvider } from "@/components/providers/QueryProvider";
-import { ShoppingListDetailsView } from "@/components/shopping-lists/ShoppingListDetailsView";
+import { ShoppingListDetailsViewWrapper } from "@/components/shopping-lists/ShoppingListDetailsViewWrapper";
 import { Toaster } from "@/components/ui/toaster";
 
 // Middleware sprawdza auth, więc tu mamy pewność że user jest zalogowany
@@ -20,8 +19,6 @@ if (!id) {
 ---
 
 <Layout title="Szczegóły listy zakupów - ShopMate">
-  <QueryProvider client:only="react">
-    <ShoppingListDetailsView listId={id} client:load />
-  </QueryProvider>
+  <ShoppingListDetailsViewWrapper listId={id} client:load />
   <Toaster client:only="react" />
 </Layout>

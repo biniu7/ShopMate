@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ShoppingListsHeader } from "./ShoppingListsHeader";
 import { ShoppingListsGrid } from "./ShoppingListsGrid";
@@ -65,7 +65,7 @@ export function ShoppingListsHistoryView() {
   // Flatten pages
   const shoppingLists = React.useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data]);
 
-  // Delete mutation
+  // Delete mutation with optimistic updates
   const deleteMutation = useMutation({
     mutationFn: async (listId: string) => {
       const response = await fetch(`/api/shopping-lists/${listId}`, {
@@ -78,12 +78,47 @@ export function ShoppingListsHistoryView() {
 
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["shopping-lists"] });
-      toast.success("Lista usunięta");
+    onMutate: async (listId) => {
+      // Anuluj wszystkie outgoing refetches (żeby nie nadpisały naszego optimistic update)
+      await queryClient.cancelQueries({ queryKey: ["shopping-lists", "list"] });
+
+      // Snapshot poprzedniego stanu
+      const previousData = queryClient.getQueryData<InfiniteData<ShoppingListsPageResponse>>([
+        "shopping-lists",
+        "list",
+      ]);
+
+      // Optimistic update - natychmiast usuń listę z cache
+      queryClient.setQueryData<InfiniteData<ShoppingListsPageResponse>>(["shopping-lists", "list"], (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            data: page.data.filter((list) => list.id !== listId),
+            pagination: {
+              ...page.pagination,
+              total: Math.max(0, page.pagination.total - 1),
+            },
+          })),
+        };
+      });
+
       closeDeleteDialog();
+
+      // Zwróć context z poprzednim stanem (dla rollback)
+      return { previousData };
     },
-    onError: (error: Error) => {
+    onSuccess: () => {
+      toast.success("Lista usunięta");
+      // Nie odświeżamy danych - optimistic update już zaktualizował cache
+    },
+    onError: (error: Error, _listId, context) => {
+      // Rollback do poprzedniego stanu
+      if (context?.previousData) {
+        queryClient.setQueryData(["shopping-lists", "list"], context.previousData);
+      }
       toast.error(error.message || "Nie udało się usunąć listy");
     },
   });

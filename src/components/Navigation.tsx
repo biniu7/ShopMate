@@ -76,28 +76,16 @@ export default function Navigation({ user }: NavigationProps) {
             {user ? (
               <>
                 {/* Authenticated user menu */}
-                <a
-                  href="/dashboard"
-                  className="text-gray-700 hover:text-primary transition-colors"
-                >
+                <a href="/dashboard" className="text-gray-700 hover:text-primary transition-colors">
                   Dashboard
                 </a>
-                <a
-                  href="/recipes"
-                  className="text-gray-700 hover:text-primary transition-colors"
-                >
+                <a href="/recipes" className="text-gray-700 hover:text-primary transition-colors">
                   Przepisy
                 </a>
-                <a
-                  href="/calendar"
-                  className="text-gray-700 hover:text-primary transition-colors"
-                >
+                <a href="/calendar" className="text-gray-700 hover:text-primary transition-colors">
                   Kalendarz
                 </a>
-                <a
-                  href="/shopping-lists"
-                  className="text-gray-700 hover:text-primary transition-colors"
-                >
+                <a href="/shopping-lists" className="text-gray-700 hover:text-primary transition-colors">
                   Listy zakupów
                 </a>
 
@@ -135,11 +123,7 @@ export default function Navigation({ user }: NavigationProps) {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              {isMobileMenuOpen ? (
-                <path d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              )}
+              {isMobileMenuOpen ? <path d="M6 18L18 6M6 6l12 12" /> : <path d="M4 6h16M4 12h16M4 18h16" />}
             </svg>
           </button>
         </div>
@@ -149,22 +133,13 @@ export default function Navigation({ user }: NavigationProps) {
           <div className="md:hidden py-4 border-t">
             {user ? (
               <div className="flex flex-col space-y-3">
-                <a
-                  href="/dashboard"
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                >
+                <a href="/dashboard" className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
                   Dashboard
                 </a>
-                <a
-                  href="/recipes"
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                >
+                <a href="/recipes" className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
                   Przepisy
                 </a>
-                <a
-                  href="/calendar"
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                >
+                <a href="/calendar" className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
                   Kalendarz
                 </a>
                 <a
@@ -174,12 +149,7 @@ export default function Navigation({ user }: NavigationProps) {
                   Listy zakupów
                 </a>
                 <div className="px-4 pt-2">
-                  <Button
-                    onClick={handleLogout}
-                    variant="outline"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
+                  <Button onClick={handleLogout} variant="outline" className="w-full" disabled={isLoading}>
                     {isLoading ? "Wylogowuj..." : "Wyloguj"}
                   </Button>
                 </div>

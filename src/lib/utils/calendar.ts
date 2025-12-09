@@ -87,10 +87,12 @@ export function groupCellsByDay(cells: CalendarCellViewModel[]): Map<number, Cal
   const grouped = new Map<number, CalendarCellViewModel[]>();
 
   for (const cell of cells) {
-    if (!grouped.has(cell.dayOfWeek)) {
-      grouped.set(cell.dayOfWeek, []);
+    const dayCells = grouped.get(cell.dayOfWeek);
+    if (!dayCells) {
+      grouped.set(cell.dayOfWeek, [cell]);
+    } else {
+      dayCells.push(cell);
     }
-    grouped.get(cell.dayOfWeek)!.push(cell);
   }
 
   return grouped;

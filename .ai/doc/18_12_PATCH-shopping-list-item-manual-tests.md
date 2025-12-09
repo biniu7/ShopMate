@@ -648,7 +648,7 @@ done | awk '{sum+=$1; count++} END {print "Average:", sum/count*1000, "ms"}'
 
 ---
 
-**Test Execution Date:** ****\_****
-**Tester:** ****\_****
+**Test Execution Date:** \***\*\_\*\***
+**Tester:** \***\*\_\*\***
 **Result:** PASS / FAIL
-**Notes:** ****\_****
+**Notes:** \***\*\_\*\***

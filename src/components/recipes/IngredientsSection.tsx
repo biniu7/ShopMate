@@ -23,7 +23,7 @@ export function IngredientsSection({ ingredients }: IngredientsSectionProps) {
         Składniki ({ingredients.length})
       </h2>
 
-      <ul className="space-y-2" role="list">
+      <ul className="space-y-2">
         {sortedIngredients.map((ingredient) => (
           <li key={ingredient.id} className="flex items-baseline gap-2 text-gray-800">
             <span className="text-primary" aria-hidden="true">

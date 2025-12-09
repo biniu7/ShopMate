@@ -102,7 +102,9 @@ function CalendarEmptyState({ onAssignFirst }: { onAssignFirst: () => void }) {
         </svg>
       </div>
       <h3 className="text-xl font-semibold text-gray-900 mb-2">Twój kalendarz jest pusty</h3>
-      <p className="text-gray-600 mb-6">Zacznij planować posiłki klikając "Przypisz przepis" w wybranej komórce</p>
+      <p className="text-gray-600 mb-6">
+        Zacznij planować posiłki klikając &quot;Przypisz przepis&quot; w wybranej komórce
+      </p>
       <Button onClick={onAssignFirst} variant="default">
         Przypisz pierwszy przepis
       </Button>

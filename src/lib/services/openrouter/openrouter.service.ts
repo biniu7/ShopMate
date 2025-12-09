@@ -168,10 +168,13 @@ export class OpenRouterService {
   }
 
   private sanitizeInput(input: string, maxLength = 10000): string {
-    return input
-      .trim()
-      .replace(/[\x00-\x1F\x7F]/g, "") // Usuń control characters
-      .slice(0, maxLength);
+    return (
+      input
+        .trim()
+        // eslint-disable-next-line no-control-regex
+        .replace(/[\x00-\x1F\x7F]/g, "") // Usuń control characters
+        .slice(0, maxLength)
+    );
   }
 
   private parseResponse<T>(

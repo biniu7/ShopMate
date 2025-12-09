@@ -52,12 +52,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     });
 
     // Attempt registration via Supabase Auth
+    // Email confirmation is enabled - user will receive confirmation link
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      // Email verification optional in MVP (spec 1.2)
       options: {
-        emailRedirectTo: undefined, // No email confirmation in MVP
+        // User will receive email with confirmation link
+        // After clicking, they'll be redirected to login page
+        emailRedirectTo: `${new URL(request.url).origin}/login`,
       },
     });
 
@@ -82,7 +84,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: "Nie udaBo si utworzy konta. Spr�buj ponownie.",
+          error: "Nie udało się utworzyć konta. Spróbuj ponownie.",
         }),
         {
           status: 500,
@@ -91,7 +93,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       );
     }
 
-    // Success - user automatically logged in, cookies set by Supabase SSR
+    // Success - user created, but needs to confirm email
+    // Note: User is NOT automatically logged in when email confirmation is enabled
     return new Response(
       JSON.stringify({
         success: true,
@@ -99,7 +102,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
           id: data.user.id,
           email: data.user.email,
         },
-        message: "Witaj w ShopMate! Twoje konto zostaBo utworzone.",
+        requiresEmailConfirmation: true,
+        message: "Konto utworzone! Sprawdź swoją skrzynkę email i kliknij link potwierdzający, aby aktywować konto.",
       }),
       {
         status: 201, // Created
@@ -113,7 +117,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "WystpiB nieoczekiwany bBd. Spr�buj ponownie.",
+        error: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
       }),
       {
         status: 500,

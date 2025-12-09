@@ -42,11 +42,13 @@ src/pages/api/ai/
 ## ✅ Checklist zgodności z planem
 
 ### Krok 1: Setup projektu ✅
+
 - [x] Zainstalowane pakiety: `axios` (1.13.2), `zod` (3.25.76)
 - [x] Zmienne środowiskowe: `OPENROUTER_API_KEY` w `.env.example` i `env.d.ts`
 - [x] Struktura katalogów: `src/lib/services/openrouter/`
 
 ### Krok 2: Types i interfaces ✅
+
 - [x] `OpenRouterConfig` - pełna konfiguracja serwisu
 - [x] `JSONSchema` - definicja schematów JSON
 - [x] `ResponseFormat` - format structured output
@@ -57,6 +59,7 @@ src/pages/api/ai/
 - [x] `OpenRouterError` - klasa błędu z metadanymi
 
 ### Krok 3: Konstruktor i walidacja ✅
+
 - [x] Domyślna konfiguracja (baseUrl, model, timeout, retries, temperatura)
 - [x] Merge z custom config
 - [x] Walidacja API key (rzuca `MISSING_API_KEY`)
@@ -68,6 +71,7 @@ src/pages/api/ai/
 - [x] Inicjalizacja axios client z headerami
 
 ### Krok 4: Metody pomocnicze (private) ✅
+
 - [x] `sleep(ms)` - opóźnienie dla backoff
 - [x] `isRetryableError(error)` - wykrywanie retryable errors (408, 429, 500-504, ECONNABORTED, ETIMEDOUT, ECONNRESET)
 - [x] `executeWithRetry<T>()` - mechanizm retry z exponential backoff (1s → 2s)
@@ -83,6 +87,7 @@ src/pages/api/ai/
 - [x] `parseResponse<T>()` - parsowanie JSON z obsługą błędów PARSE_ERROR
 
 ### Krok 5: Metoda chat() ✅
+
 - [x] Sanityzacja systemMessage (max 5000) i userMessage (max 10000)
 - [x] Przygotowanie payload (model, messages, temperature, max_tokens)
 - [x] Obsługa opcjonalnych parametrów (topP, responseFormat)
@@ -92,6 +97,7 @@ src/pages/api/ai/
 - [x] Obsługa błędów bez rzucania wyjątków (zawsze zwraca response)
 
 ### Krok 6: Metoda categorizeIngredients() ✅
+
 - [x] Walidacja: pusta lista → błąd
 - [x] Walidacja: max 100 składników → błąd + failedIngredients
 - [x] Formatowanie jako numerowana lista (1. mleko, 2. pomidor...)
@@ -102,6 +108,7 @@ src/pages/api/ai/
 - [x] Fallback do "Inne" dla nieprawidłowych wartości
 
 ### Krok 7: API endpoint ✅
+
 - [x] Plik: `src/pages/api/ai/categorize-ingredients.ts`
 - [x] `export const prerender = false`
 - [x] Autentykacja Supabase (`locals.supabase.auth.getUser()`)
@@ -113,6 +120,7 @@ src/pages/api/ai/
 - [x] TODO: Sentry integration
 
 ### Krok 8: Testowy skrypt ✅
+
 - [x] README.md z przykładami użycia
 - [x] Przykład prostego zapytania `chat()`
 - [x] Przykład `categorizeIngredients()`
@@ -122,6 +130,7 @@ src/pages/api/ai/
 - [x] Przykłady obsługi błędów
 
 ### Krok 9: Dokumentacja i weryfikacja ✅
+
 - [x] README.md z pełną dokumentacją (500+ linii)
 - [x] Sekcje: Instalacja, Konfiguracja, Użycie, API Reference, Przykłady, Testowanie, Błędy
 - [x] Tabela kodów błędów z opisami
@@ -139,44 +148,52 @@ src/pages/api/ai/
 ### Podstawowe
 
 ✅ **Komunikacja z OpenRouter API**
+
 - Wysyłanie zapytań do modeli LLM
 - Obsługa komunikatów system + user
 - Parametry: model, temperature, maxTokens, topP
 
 ✅ **Structured Output**
+
 - JSON Schema response format
 - Strict mode
 - Automatyczne parsowanie i walidacja
 
 ✅ **Kategoryzacja składników**
+
 - Wyspecjalizowana metoda dla przepisów
 - 7 predefiniowanych kategorii + "Inne"
 - Limit 100 składników
 - Fallback do "Inne"
 
 ✅ **Test Connection**
+
 - Metoda `testConnection()` dla health check
 
 ### Zaawansowane
 
 ✅ **Retry mechanism**
+
 - Exponential backoff (1s → 2s)
 - Wykrywanie retryable errors
 - Maksymalnie 2 próby (konfigurowalnie)
 
 ✅ **Error handling**
+
 - 11 typów błędów z kodami
 - Normalizacja błędów HTTP → OpenRouterError
 - Retryable vs non-retryable
 - Szczegółowe komunikaty
 
 ✅ **Security**
+
 - Sanityzacja input (control characters)
 - Limitowanie długości komunikatów
 - Walidacja liczby składników
 - API key tylko server-side
 
 ✅ **TypeScript**
+
 - Pełne typowanie
 - Generyczne typy dla chat<T>()
 - Interfejsy dla wszystkich struktur
@@ -209,7 +226,7 @@ src/pages/api/ai/
 
 - **Timeout:** 10s (konfigurowalny)
 - **Retry:** 2 próby + exponential backoff
-- **Maksymalny czas zapytania:** ~10s + 2*(1s + 2s) = 16s (worst case)
+- **Maksymalny czas zapytania:** ~10s + 2\*(1s + 2s) = 16s (worst case)
 
 ### Koszty (GPT-4o-mini):
 
@@ -249,26 +266,26 @@ Propozycja frameworka: **Vitest** (zgodnie z planem w kroku 10)
 
 ### Zrealizowane kroki (1-9):
 
-| Krok | Nazwa | Status |
-|------|-------|--------|
-| 1 | Setup projektu i dependencies | ✅ 100% |
-| 2 | Utworzenie types i interfaces | ✅ 100% |
-| 3 | Konstruktor i walidacja | ✅ 100% |
-| 4 | Metody pomocnicze (private) | ✅ 100% |
-| 5 | Metoda chat() | ✅ 100% |
-| 6 | Metoda categorizeIngredients() | ✅ 100% |
-| 7 | API endpoint | ✅ 100% |
-| 8 | Testowy skrypt | ✅ 100% |
-| 9 | Dokumentacja | ✅ 100% |
+| Krok | Nazwa                          | Status  |
+| ---- | ------------------------------ | ------- |
+| 1    | Setup projektu i dependencies  | ✅ 100% |
+| 2    | Utworzenie types i interfaces  | ✅ 100% |
+| 3    | Konstruktor i walidacja        | ✅ 100% |
+| 4    | Metody pomocnicze (private)    | ✅ 100% |
+| 5    | Metoda chat()                  | ✅ 100% |
+| 6    | Metoda categorizeIngredients() | ✅ 100% |
+| 7    | API endpoint                   | ✅ 100% |
+| 8    | Testowy skrypt                 | ✅ 100% |
+| 9    | Dokumentacja                   | ✅ 100% |
 
 ### Niezrealizowane (z planu 10-13):
 
-| Krok | Nazwa | Status | Priorytet |
-|------|-------|--------|-----------|
-| 10 | Testy jednostkowe | ⏸️ Pominięte | Should have |
-| 11 | Dodatkowa dokumentacja | ✅ Zrobione (README) | Should have |
-| 12 | Monitoring (Sentry) | ⏸️ TODO w kodzie | Nice to have |
-| 13 | Deployment | ⏸️ Nie wymagany | Nice to have |
+| Krok | Nazwa                  | Status               | Priorytet    |
+| ---- | ---------------------- | -------------------- | ------------ |
+| 10   | Testy jednostkowe      | ⏸️ Pominięte         | Should have  |
+| 11   | Dodatkowa dokumentacja | ✅ Zrobione (README) | Should have  |
+| 12   | Monitoring (Sentry)    | ⏸️ TODO w kodzie     | Nice to have |
+| 13   | Deployment             | ⏸️ Nie wymagany      | Nice to have |
 
 **Uzasadnienie:** Kroki 1-9 to "Must have" i zostały w pełni zrealizowane. Kroki 10-13 to "Should/Nice to have" i mogą być zrealizowane w kolejnej iteracji.
 
@@ -304,30 +321,35 @@ Propozycja frameworka: **Vitest** (zgodnie z planem w kroku 10)
 ## 📌 Checkpoints dla Code Review
 
 ### Architektura:
+
 - [x] Separation of concerns (service, types, API)
 - [x] Dependency injection (config w konstruktorze)
 - [x] Error handling (try-catch, normalizacja)
 - [x] Single Responsibility Principle
 
 ### Code Quality:
+
 - [x] TypeScript strict mode
 - [x] Czytelne nazwy zmiennych/funkcji
 - [x] Komentarze dla złożonej logiki
 - [x] Consistent code style (ESLint ready)
 
 ### Security:
+
 - [x] API key server-side only
 - [x] Input sanitization
 - [x] Request validation (Zod)
 - [x] Authentication check
 
 ### Performance:
+
 - [x] Retry mechanism
 - [x] Timeout configuration
 - [x] Exponential backoff
 - [x] Reusable HTTP client
 
 ### Documentation:
+
 - [x] README z przykładami
 - [x] Inline comments
 - [x] JSDoc dla publicznych metod

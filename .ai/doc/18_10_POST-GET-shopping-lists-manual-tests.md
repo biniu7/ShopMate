@@ -818,8 +818,8 @@ curl -X GET http://localhost:3001/api/shopping-lists `
 
 ## 📊 Test Results Template
 
-**Date:** ******\_\_\_******
-**Tester:** ******\_\_\_******
+**Date:** **\*\***\_\_\_**\*\***
+**Tester:** **\*\***\_\_\_**\*\***
 **Environment:** Local / Staging / Production
 
 | Test Case                       | Status | Response Time | Notes |

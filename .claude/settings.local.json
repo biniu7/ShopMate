@@ -7,7 +7,17 @@
       "Bash(cat:*)",
       "Bash(mkdir:*)",
       "Bash(sed:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npx playwright test:*)",
+      "Bash(curl -s https://api.github.com/repos/actions/checkout/releases/latest)",
+      "Bash(curl -s https://api.github.com/repos/actions/setup-node/releases/latest)",
+      "Bash(curl -s https://api.github.com/repos/actions/upload-artifact/releases/latest)",
+      "Bash(curl -s https://api.github.com/repos/codecov/codecov-action/releases/latest)",
+      "Bash(curl -s https://api.github.com/repos/actions/github-script/releases/latest)",
+      "Bash(npx js-yaml:*)",
+      "Bash(/dev/null)",
+      "Bash(npm install:*)",
+      "Bash(tree:*)"
     ],
     "deny": [
       "Read(./.env)",

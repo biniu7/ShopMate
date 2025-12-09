@@ -37,7 +37,7 @@ export function RecipeForm() {
   });
 
   // Setup field array for dynamic ingredients
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: "ingredients",
   });
@@ -120,6 +120,7 @@ export function RecipeForm() {
       className="recipe-form bg-white rounded-lg shadow-sm p-6 sm:p-8"
       noValidate
       aria-label="Formularz dodawania przepisu"
+      data-testid="recipe-form"
     >
       {/* Header with breadcrumbs */}
       <FormHeader />
@@ -147,12 +148,9 @@ export function RecipeForm() {
         {/* Ingredients List */}
         <IngredientsList
           ingredients={fields}
+          control={control}
           onAdd={append}
           onRemove={remove}
-          onUpdate={(index, field, value) => {
-            const ingredient = fields[index];
-            update(index, { ...ingredient, [field]: value });
-          }}
           errors={errors.ingredients as any}
         />
       </div>

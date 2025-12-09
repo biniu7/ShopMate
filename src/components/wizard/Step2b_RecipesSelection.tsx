@@ -43,8 +43,8 @@ export default function Step2b_RecipesSelection({
       setError(null);
 
       try {
-        // Pobierz wszystkie przepisy (bez paginacji, bo potrzebujemy pełnej listy)
-        const response = await fetch("/api/recipes?limit=1000");
+        // Pobierz wszystkie przepisy (max 100 - limit API)
+        const response = await fetch("/api/recipes?limit=100");
 
         if (!response.ok) {
           throw new Error("Nie udało się pobrać przepisów");
@@ -165,12 +165,7 @@ export default function Step2b_RecipesSelection({
                       role="button"
                       tabIndex={isDisabled ? -1 : 0}
                     >
-                      <Checkbox
-                        id={`recipe-${recipe.id}`}
-                        checked={isSelected}
-                        onCheckedChange={() => onToggleRecipe(recipe.id)}
-                        disabled={isDisabled}
-                      />
+                      <Checkbox id={`recipe-${recipe.id}`} checked={isSelected} disabled={isDisabled} />
                       <div className="ml-3 flex-1 min-w-0">
                         <Label
                           htmlFor={`recipe-${recipe.id}`}

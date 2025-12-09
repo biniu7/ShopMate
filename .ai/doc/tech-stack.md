@@ -828,7 +828,240 @@ Monitoring i Analytics:
   - Error tracking: Sentry (free tier)
   - Analytics: Plausible (privacy-focused) lub Google Analytics 4
   - Performance: Web Vitals (built-in Vercel)
+
+Testing i Quality Assurance:
+  - Unit & Integration Testing: Vitest (kompatybilny z Vite/Astro)
+  - Component Testing: React Testing Library
+  - E2E Testing: Playwright
+  - Code Quality: ESLint + Prettier + TypeScript (strict mode)
 ```
+
+---
+
+## 7. Narzędzia testowe i zapewnienie jakości
+
+### ✅ **OCENA: Kompleksowa strategia testowania**
+
+#### Testing Framework
+
+**Vitest** - Framework do testów jednostkowych i integracyjnych
+
+**Zalety:**
+
+- **Natywna kompatybilność z Vite/Astro:** Zero konfiguracji, działa out-of-the-box
+- **Szybkość wykonania:** Wykorzystuje Vite's HMR = błyskawiczne re-run testów
+- **API kompatybilne z Jest:** Łatwa migracja wiedzy, podobne API (describe, it, expect)
+- **TypeScript first-class support:** Natywne wsparcie dla TS bez dodatkowej konfiguracji
+- **Watch mode:** Automatyczne uruchamianie testów przy zmianach
+- **Coverage reporting:** Wbudowane wsparcie dla code coverage (c8/istanbul)
+
+**Obszary testowania:**
+
+- Schematy walidacji Zod (`src/lib/validation/*.schema.ts`)
+- Funkcje użytkowe (`src/lib/utils/*.ts`) - formatowanie dat, agregacja składników
+- Serwisy logiczne (`src/lib/services/*.ts`) - z mockowaniem zewnętrznych API
+
+**Uruchomienie:**
+
+```bash
+npm run test              # Uruchom wszystkie testy
+npm run test:watch        # Tryb watch (development)
+npm run test:coverage     # Raport pokrycia kodu
+```
+
+**Verdict:** ✅ **Doskonały wybór** dla projektu opartego na Vite. Vitest jest szybszy i bardziej zintegrowany niż Jest dla tego stacku.
+
+---
+
+**React Testing Library** - Testowanie komponentów React
+
+**Zalety:**
+
+- **User-centric approach:** Testy skupione na tym, jak użytkownik widzi komponenty
+- **Accessible by default:** Zachęca do pisania dostępnych komponentów (WCAG AA target)
+- **Integration z Vitest:** Bezproblemowa współpraca z Vitest
+- **No implementation details:** Testuje zachowanie, nie implementację (mniej kruche testy)
+- **Comprehensive utilities:** `screen`, `userEvent`, `waitFor` - wszystko czego potrzeba
+
+**Obszary testowania:**
+
+- Komponenty React (`src/components/**/*.tsx`)
+- Formularze z react-hook-form
+- Komponenty używające TanStack Query (z mockowaniem)
+- Interaktywne "wyspy" w architekturze Astro
+
+**Przykład testu:**
+
+```typescript
+import { render, screen } from '@testing-library/react'
+import { RecipeCard } from './RecipeCard'
+
+test('displays recipe name and ingredients count', () => {
+  render(<RecipeCard name="Pasta" ingredientsCount={5} />)
+  expect(screen.getByText('Pasta')).toBeInTheDocument()
+  expect(screen.getByText('5 składników')).toBeInTheDocument()
+})
+```
+
+**Verdict:** ✅ **Standard branżowy** dla testowania React. Lepszy niż Enzyme (deprecated) czy shallow rendering.
+
+---
+
+**Playwright** - Testy End-to-End
+
+**Zalety:**
+
+- **Multi-browser support:** Chromium, Firefox, WebKit (Safari) = pełne pokrycie
+- **Auto-wait:** Automatyczne czekanie na elementy = mniej flaky tests
+- **Test isolation:** Każdy test w czystym kontekście przeglądarki
+- **Debugging tools:** UI mode, trace viewer, codegen = łatwe debugowanie
+- **Parallel execution:** Szybkie wykonanie testów (parallel by default)
+- **Network mocking:** Interceptowanie requestów (test bez backendu)
+- **Authentication contexts:** Łatwe zarządzanie sesjami użytkownika
+
+**Dlaczego Playwright, a nie Cypress?**
+
+| Aspekt                 | Playwright                                  | Cypress                            | Winner     |
+| ---------------------- | ------------------------------------------- | ---------------------------------- | ---------- |
+| **Multi-browser**      | Chromium, Firefox, WebKit                   | Chromium, Firefox (limited WebKit) | Playwright |
+| **Speed**              | Szybszy (parallel execution out-of-the-box) | Wolniejszy (serial by default)     | Playwright |
+| **Network mocking**    | Native (route interception)                 | Native (cy.intercept)              | Tie        |
+| **Learning curve**     | Medium (Node.js API)                        | Easier (custom API)                | Cypress    |
+| **Tab/window support** | Excellent (contexts)                        | Limited (single tab)               | Playwright |
+| **Maturity**           | Newer (2020), but mature                    | Older (2015), very mature          | Cypress    |
+| **Modern apps**        | Excellent dla Astro/React                   | Good                               | Playwright |
+
+**Obszary testowania - Ścieżki krytyczne:**
+
+1. **Auth flow:** Rejestracja → Email verification → Login → Password reset
+2. **Recipe management:** Create → Edit → Delete (z dialogiem potwierdzenia)
+3. **Calendar:** Assign recipe → Navigate weeks → Optimistic updates + rollback
+4. **Shopping lists:** Generate z kalendarza → Edit preview → Save → Check items → Export PDF/TXT
+
+**Przykład testu E2E:**
+
+```typescript
+import { test, expect } from "@playwright/test";
+
+test("user can create recipe and add to calendar", async ({ page }) => {
+  // Login
+  await page.goto("/login");
+  await page.fill('[name="email"]', "test@example.com");
+  await page.fill('[name="password"]', "password123");
+  await page.click('button[type="submit"]');
+
+  // Create recipe
+  await page.goto("/recipes/new");
+  await page.fill('[name="name"]', "Spaghetti Carbonara");
+  await page.fill('[name="ingredients[0].name"]', "Makaron");
+  await page.click('button:has-text("Zapisz")');
+
+  // Add to calendar
+  await page.goto("/calendar");
+  await page.click('[data-day="monday"][data-meal="dinner"]');
+  await page.click("text=Spaghetti Carbonara");
+
+  // Verify
+  await expect(page.locator('[data-day="monday"][data-meal="dinner"]')).toContainText("Spaghetti");
+});
+```
+
+**Uruchomienie:**
+
+```bash
+npx playwright test                # Wszystkie testy E2E
+npx playwright test --ui           # UI mode (interactive)
+npx playwright test --headed       # Widoczna przeglądarka
+npx playwright test --debug        # Debug mode
+npx playwright codegen             # Generowanie testów przez nagrywanie
+```
+
+**Verdict:** ✅ **Playwright jest optymalny** dla nowoczesnych aplikacji webowych jak ShopMate. Lepszy niż Cypress dla multi-browser support i speed.
+
+---
+
+#### Strategia testowania
+
+**Piramida testów dla ShopMate:**
+
+```
+       /\
+      /  \     E2E (10-15 testów)
+     /    \    ↑ Ścieżki krytyczne (Playwright)
+    /------\
+   /        \   Integration (30-50 testów)
+  /          \  ↑ API endpoints, hooks, forms (Vitest + RTL)
+ /------------\
+/______________\ Unit (100-200 testów)
+                 ↑ Utils, schemas, services (Vitest)
+```
+
+**Podział odpowiedzialności:**
+
+1. **Unit tests (80% testów, 80% coverage dla src/lib):**
+   - Zod schemas: wszystkie edge cases walidacji
+   - Utils: formatowanie dat, agregacja składników, kalkulacje
+   - Services: AI categorization (z mockowaniem OpenAI API)
+
+2. **Integration tests (15% testów, 60% coverage dla components):**
+   - Formularze (react-hook-form + Zod)
+   - TanStack Query hooks (caching, invalidation, optimistic updates)
+   - API endpoints (request/response z testową bazą)
+
+3. **E2E tests (5% testów, 100% critical paths):**
+   - Happy path: Registration → Recipe → Calendar → Shopping list → Export
+   - Error scenarios: Network failures, validation errors
+   - Edge cases: Empty states, loading states
+
+**Kryteria akceptacji:**
+
+- ✅ Code coverage: min. 80% dla `src/lib`, min. 60% dla components
+- ✅ Wszystkie testy przechodzą (CI/CD gate)
+- ✅ E2E testy dla critical paths (4 główne flows)
+- ✅ Brak console errors w testach E2E
+- ✅ Accessibility tests (basic keyboard navigation)
+
+**Test data management:**
+
+- **Fixtures:** Reusable test data w `tests/fixtures/`
+- **Factory functions:** Generowanie testowych obiektów (recipes, users)
+- **Database seeding:** Skrypty do seedowania testowej bazy Supabase
+- **Test isolation:** Każdy test czyści po sobie (transactions lub wipeout)
+
+**CI/CD Integration (GitHub Actions):**
+
+```yaml
+name: Tests
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npm run test:coverage
+      - uses: codecov/codecov-action@v3 # Upload coverage
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v3 # Upload test results
+        if: always()
+```
+
+**Koszt testowania:**
+
+- **Initial setup:** 2-3 dni (Vitest + Playwright config, pierwsze testy)
+- **Ongoing:** ~30% czasu developmentu (pisanie testów równolegle z features)
+- **Maintenance:** Minimal (testy muszą być aktualizowane przy refactorze)
+- **ROI:** High - oszczędność czasu na manual testing i regression bugs
+
+**Verdict:** ✅ **Strategia testowania jest kompletna i adekwatna** dla MVP. Vitest + RTL + Playwright to industry standard dla tego stacku.
 
 ---
 

@@ -28,6 +28,7 @@ export function AddRecipeButton({ variant = "normal", className }: AddRecipeButt
         size={isFab ? "lg" : "default"}
         className={cn(isFab && "rounded-full w-14 h-14 shadow-lg hover:shadow-xl transition-shadow", !isFab && "gap-2")}
         aria-label="Dodaj nowy przepis"
+        data-testid={isFab ? "add-recipe-button-fab" : "add-recipe-button"}
       >
         {isFab ? (
           <Plus className="h-6 w-6" />

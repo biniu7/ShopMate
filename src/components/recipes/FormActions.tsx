@@ -23,11 +23,23 @@ export const FormActions = memo<FormActionsProps>(({ onCancel, isSubmitting, isV
   return (
     <div className="form-actions sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg mt-8 -mx-4">
       <div className="container mx-auto max-w-3xl flex gap-4 justify-end">
-        <Button type="button" onClick={onCancel} variant="ghost" disabled={isSubmitting} className="min-w-24">
+        <Button
+          type="button"
+          onClick={onCancel}
+          variant="ghost"
+          disabled={isSubmitting}
+          className="min-w-24"
+          data-testid="cancel-button"
+        >
           Anuluj
         </Button>
 
-        <Button type="submit" disabled={!isValid || isSubmitting} className="min-w-32">
+        <Button
+          type="submit"
+          disabled={!isValid || isSubmitting}
+          className="min-w-32"
+          data-testid="submit-recipe-button"
+        >
           {isSubmitting ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />

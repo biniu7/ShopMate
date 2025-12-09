@@ -158,6 +158,78 @@ The project uses Husky and lint-staged to ensure code quality:
 
 - **Pre-commit**: Automatically runs ESLint on TypeScript/Astro files and Prettier on JSON/CSS/Markdown files
 
+## Testing
+
+ShopMate employs a comprehensive testing strategy to ensure code quality and reliability across all layers of the application.
+
+### Testing Framework
+
+- **[Vitest](https://vitest.dev/)** - Fast unit testing framework compatible with Vite/Astro
+- **[React Testing Library](https://testing-library.com/react)** - Component testing with user-centric approach
+- **[Playwright](https://playwright.dev/)** - End-to-end testing for critical user flows
+
+### Running Tests
+
+#### Unit and Integration Tests
+
+```bash
+# Run all unit tests
+npm run test
+
+# Run tests in watch mode (during development)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+#### End-to-End Tests
+
+```bash
+# Run all E2E tests
+npx playwright test
+
+# Run E2E tests in UI mode (interactive debugging)
+npx playwright test --ui
+
+# Run E2E tests in headed mode (see browser)
+npx playwright test --headed
+```
+
+### Test Structure
+
+```
+src/
+├── lib/
+│   ├── validation/
+│   │   └── *.schema.test.ts       # Zod schema validation tests
+│   ├── utils/
+│   │   └── *.test.ts               # Utility function tests
+│   └── services/
+│       └── *.test.ts               # Service layer tests (with API mocking)
+├── components/
+│   └── **/*.test.tsx               # React component tests
+tests/
+└── e2e/
+    ├── auth.spec.ts                # Authentication flow tests
+    ├── recipes.spec.ts             # Recipe management tests
+    ├── calendar.spec.ts            # Meal planning tests
+    └── shopping-lists.spec.ts      # Shopping list generation tests
+```
+
+### Test Coverage Goals
+
+- **Business Logic** (`src/lib`): Minimum 80% coverage
+- **UI Components**: Minimum 60% coverage
+- **Critical Paths**: 100% E2E test coverage (registration → recipe → calendar → shopping list)
+
+### Testing Best Practices
+
+- **Unit Tests**: Focus on validation schemas (Zod), utility functions, and service logic
+- **Integration Tests**: Verify API endpoints, React hooks with TanStack Query, and form submissions
+- **E2E Tests**: Cover critical user journeys and cross-module interactions
+- **Test Data**: Use Supabase test database with seeded data for consistent test environments
+
 ## Project Scope
 
 ### ✅ Included in MVP

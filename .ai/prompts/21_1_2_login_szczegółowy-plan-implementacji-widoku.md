@@ -9,6 +9,7 @@ Najpierw przejrzyj następujące informacje:
 
 2. Opis widoku:
    <view_description>
+
 #### 2.1.2 Login
 
 **Ścieżka:** `/login`
@@ -26,12 +27,12 @@ Najpierw przejrzyj następujące informacje:
 **Kluczowe komponenty:**
 
 - `<LoginForm>` (React component, client:load)
-    - `<Input>` email (Zod validation)
-    - `<Input>` password (show/hide toggle)
-    - `<Button>` "Zaloguj się" (disabled podczas submit)
-    - `<FormMessage>` dla błędów walidacji
-    - Link do reset hasła
-    - Link do rejestracji
+  - `<Input>` email (Zod validation)
+  - `<Input>` password (show/hide toggle)
+  - `<Button>` "Zaloguj się" (disabled podczas submit)
+  - `<FormMessage>` dla błędów walidacji
+  - Link do reset hasła
+  - Link do rejestracji
 
 **UX considerations:**
 
@@ -71,11 +72,11 @@ Najpierw przejrzyj następujące informacje:
 **Kluczowe komponenty:**
 
 - `<RegisterForm>` (React component, client:load)
-    - `<Input>` email
-    - `<Input>` password (strength indicator)
-    - `<Input>` confirmPassword
-    - `<Button>` "Zarejestruj się"
-    - Link do login
+  - `<Input>` email
+  - `<Input>` password (strength indicator)
+  - `<Input>` confirmPassword
+  - `<Button>` "Zarejestruj się"
+  - Link do login
 
 **UX considerations:**
 
@@ -112,8 +113,8 @@ Najpierw przejrzyj następujące informacje:
 **Kluczowe komponenty:**
 
 - `<ResetPasswordForm>` (2 wersje):
-    - **Step 1 (Request):** Email input + "Wyślij link"
-    - **Step 2 (Reset):** Nowe hasło + Potwierdzenie + "Zmień hasło"
+  - **Step 1 (Request):** Email input + "Wyślij link"
+  - **Step 2 (Reset):** Nowe hasło + Potwierdzenie + "Zmień hasło"
 
 **UX considerations:**
 
@@ -132,10 +133,12 @@ Najpierw przejrzyj następujące informacje:
 - Rate limiting na wysyłanie emaili (max 3/hour)
 
 ---
-   </view_description>
+
+</view_description>
 
 3. User Stories:
    <user_stories>
+
 ### 5.1 Rejestracja i autoryzacja
 
 US-001: Rejestracja nowego użytkownika
@@ -207,10 +210,11 @@ Kryteria akceptacji:
 - URL chronionej trasy zapisywany jako redirect parameter: /login?redirect=/calendar
 - Po zalogowaniu użytkownik przekierowywany do oryginalnie żądanej trasy
 - Publiczne trasy dostępne bez logowania: /, /login, /register, /reset-password
-   </user_stories>
+  </user_stories>
 
 4. Endpoint Description:
    <endpoint_description>
+
 ### Authentication Mechanism
 
 **Provider:** Supabase Auth
@@ -269,7 +273,7 @@ export const GET: APIRoute = async ({ locals }) => {
 };
 ```
 
-   </endpoint_description>
+</endpoint_description>
 
 5. Endpoint Implementation:
    <endpoint_implementation>
