@@ -41,7 +41,8 @@ export class RecipesListPage {
     await Promise.all([this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }), this.addRecipeLink.click()]);
 
     // Wait for the form to be rendered (indicates React has hydrated)
-    await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
+    const recipeForm = this.page.getByTestId("recipe-form");
+    await recipeForm.waitFor({ state: "visible", timeout: 15000 });
   }
 
   /**
@@ -55,13 +56,14 @@ export class RecipesListPage {
     await Promise.all([this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }), this.addRecipeLinkFab.click()]);
 
     // Wait for the form to be rendered (indicates React has hydrated)
-    await this.page.waitForSelector('[data-testid="recipe-form"]', { timeout: 15000 });
+    const recipeForm = this.page.getByTestId("recipe-form");
+    await recipeForm.waitFor({ state: "visible", timeout: 15000 });
   }
 
   /**
    * Wait for page to load
    */
   async waitForLoad() {
-    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForLoadState("domcontentloaded");
   }
 }

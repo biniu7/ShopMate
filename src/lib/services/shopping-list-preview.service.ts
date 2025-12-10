@@ -232,8 +232,8 @@ export function aggregateIngredients(rawIngredients: RawIngredient[]): Aggregate
   }
 
   // console.log(
-    `[Shopping List Preview] Aggregated ${rawIngredients.length} ingredients into ${aggregated.length} unique items`
-  );
+  //   `[Shopping List Preview] Aggregated ${rawIngredients.length} ingredients into ${aggregated.length} unique items`
+  // );
 
   return aggregated;
 }
@@ -373,8 +373,8 @@ export async function generateShoppingListPreview(
   };
 
   // console.log(
-    `[Shopping List Preview] Preview generated successfully. ${sortedItems.length} items, AI status: ${metadata.ai_categorization_status}`
-  );
+  //   `[Shopping List Preview] Preview generated successfully. ${sortedItems.length} items, AI status: ${metadata.ai_categorization_status}`
+  // );
 
   return {
     items: sortedItems,

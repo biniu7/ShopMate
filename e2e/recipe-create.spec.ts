@@ -155,6 +155,9 @@ test.describe("Recipe Creation Flow", () => {
     await page.waitForURL((url) => !url.pathname.includes("/recipes/new"), {
       timeout: 5000,
     });
+
+    // Verify we're back on recipes list page
+    await expect(page).toHaveURL("/recipes");
   });
 
   test("should use helper method to create recipe end-to-end", async ({ page }) => {

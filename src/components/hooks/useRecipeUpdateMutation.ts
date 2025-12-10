@@ -36,6 +36,7 @@ export function useRecipeUpdateMutation(recipeId: string) {
 
       // Redirect to recipe details after short delay
       setTimeout(() => {
+        // eslint-disable-next-line react-compiler/react-compiler
         window.location.href = `/recipes/${updatedRecipe.id}`;
       }, 1000);
     },

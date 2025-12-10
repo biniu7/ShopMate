@@ -80,6 +80,7 @@ function RecipeDetailsData({ recipeId }: RecipeDetailsViewProps) {
       );
 
       // Redirect to recipes list
+      // eslint-disable-next-line react-compiler/react-compiler
       window.location.href = "/recipes";
     },
     onError: (error: Error) => {

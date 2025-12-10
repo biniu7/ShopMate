@@ -151,6 +151,7 @@ export function useShoppingListWizard() {
         toast.success("Lista zakupów została zapisana");
 
         // Redirect to shopping list details
+        // eslint-disable-next-line react-compiler/react-compiler
         window.location.href = `/shopping-lists/${savedList.id}`;
       } catch (error) {
         console.error("Save error:", error);

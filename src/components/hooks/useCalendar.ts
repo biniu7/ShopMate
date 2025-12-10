@@ -2,7 +2,7 @@
  * Main calendar hook
  * Manages calendar state, meal plan data, and modal states
  */
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type {
   CreateMealPlanDto,
@@ -232,15 +232,18 @@ export function useCalendar(initialWeekStart?: string) {
   );
 
   // === URL sync on mount ===
+  const isInitialMount = useRef(true);
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const weekParam = params.get("week");
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      const params = new URLSearchParams(window.location.search);
+      const weekParam = params.get("week");
 
-    if (weekParam && isValidWeekDate(weekParam) && weekParam !== weekStartDate) {
-      setWeekStartDate(weekParam);
+      if (weekParam && isValidWeekDate(weekParam) && weekParam !== weekStartDate) {
+        setWeekStartDate(weekParam);
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount to read URL param
+  }, [weekStartDate]); // Properly include dependency
 
   // === Browser back/forward handling ===
   useEffect(() => {

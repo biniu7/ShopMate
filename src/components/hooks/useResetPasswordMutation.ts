@@ -51,6 +51,7 @@ export function useUpdatePasswordMutation() {
 
       // Redirect to login after 1.5s
       setTimeout(() => {
+        // eslint-disable-next-line react-compiler/react-compiler
         window.location.href = "/login";
       }, 1500);
     },

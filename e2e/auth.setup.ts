@@ -26,7 +26,7 @@ setup("authenticate", async ({ page }) => {
   page.on("console", (msg) => console.log("Browser console:", msg.text()));
 
   // Navigate to login page
-  await page.goto("/login", { waitUntil: "networkidle" });
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
   console.log("Current URL after goto:", page.url());
 
   // Wait for form to be ready and interactive
@@ -57,6 +57,7 @@ setup("authenticate", async ({ page }) => {
   // Verify we're logged in by checking for auth indicators
   // This could be a user menu, logout button, etc.
   // Adjust selector based on your app's layout
+  // eslint-disable-next-line playwright/no-standalone-expect
   await expect(page).not.toHaveURL(/\/login/);
 
   console.log("Authentication successful");
