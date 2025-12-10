@@ -95,6 +95,10 @@ export async function fetchRecipeIdsFromCalendar(
   // Extract unique recipe IDs
   const recipeIds = [...new Set(data?.map((row) => row.recipe_id) || [])];
 
+  // console.log(
+  //   `[Shopping List Preview] Found ${recipeIds.length} unique recipes from ${filters.length} meal selections`
+  // );
+
   return recipeIds;
 }
 
@@ -145,6 +149,8 @@ export async function fetchIngredientsByRecipeIds(
       unit: row.unit,
       recipe_id: row.recipe_id,
     })) || [];
+
+  // console.log(`[Shopping List Preview] Fetched ${ingredients.length} ingredients from ${recipeIds.length} recipes`);
 
   return ingredients;
 }
@@ -225,6 +231,10 @@ export function aggregateIngredients(rawIngredients: RawIngredient[]): Aggregate
     });
   }
 
+  // console.log(
+  //   `[Shopping List Preview] Aggregated ${rawIngredients.length} ingredients into ${aggregated.length} unique items`
+  // );
+
   return aggregated;
 }
 
@@ -304,6 +314,8 @@ export async function generateShoppingListPreview(
   userId: string,
   request: ShoppingListPreviewRequestDto
 ): Promise<ShoppingListPreviewResponseDto> {
+  // console.log(`[Shopping List Preview] Generating preview for source: ${request.source}`);
+
   // Step 1: Fetch recipe IDs based on source
   let recipeIds: string[];
   let skippedEmptyMeals = 0;
@@ -359,6 +371,10 @@ export async function generateShoppingListPreview(
     ai_error: categorizationResult.error,
     skipped_empty_meals: request.source === "calendar" ? skippedEmptyMeals : undefined,
   };
+
+  // console.log(
+  //   `[Shopping List Preview] Preview generated successfully. ${sortedItems.length} items, AI status: ${metadata.ai_categorization_status}`
+  // );
 
   return {
     items: sortedItems,

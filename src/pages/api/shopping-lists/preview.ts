@@ -37,8 +37,6 @@ export async function POST(context: APIContext) {
       });
     }
 
-    // console.log(`[POST /api/shopping-lists/preview] User ${user.id} requesting preview`);
-
     // ============================================================================
     // Step 2: Parse & Validate Request Body
     // ============================================================================
@@ -79,10 +77,6 @@ export async function POST(context: APIContext) {
     // ============================================================================
     // Step 4: Return Success Response
     // ============================================================================
-    // console.log(
-    //   `[POST /api/shopping-lists/preview] Preview generated successfully. ${preview.items.length} items, AI status: ${preview.metadata.ai_categorization_status}`
-    // );
-
     return new Response(JSON.stringify(preview), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -103,14 +97,6 @@ export async function POST(context: APIContext) {
 
     // Unexpected errors
     console.error("[POST /api/shopping-lists/preview] Unexpected error:", error);
-
-    // Log to Sentry if configured (optional - uncomment when Sentry is set up)
-    // if (import.meta.env.SENTRY_DSN) {
-    //   Sentry.captureException(error, {
-    //     tags: { endpoint: "POST /api/shopping-lists/preview" },
-    //     extra: { user_id: user?.id }
-    //   });
-    // }
 
     return new Response(
       JSON.stringify({
