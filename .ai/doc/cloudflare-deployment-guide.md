@@ -258,15 +258,15 @@ Po testach możesz dodać custom domenę:
 
 Wszystkie akcje używają najnowszych wersji (stan na 2025-12-11):
 
-| Akcja | Wersja |
-|-------|--------|
-| `actions/checkout` | v6 |
-| `actions/setup-node` | v6 |
-| `actions/upload-artifact` | v5 |
-| `actions/download-artifact` | v6 |
-| `codecov/codecov-action` | v5 |
-| `actions/github-script` | v8 |
-| `cloudflare/wrangler-action` | v3 |
+| Akcja | Wersja | Uwagi |
+|-------|--------|-------|
+| `actions/checkout` | v6 | |
+| `actions/setup-node` | v6 | |
+| `actions/upload-artifact` | v5 | |
+| `actions/download-artifact` | v6 | |
+| `codecov/codecov-action` | v5 | |
+| `actions/github-script` | v8 | |
+| `cloudflare/wrangler-action` | v3 | wranglerVersion: "3.90.0" |
 
 ## Następne kroki
 
