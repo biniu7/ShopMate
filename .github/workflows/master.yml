@@ -120,7 +120,8 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist --project-name=shopmate --branch=main
+          accountId: ${{secrets.CLOUDFLARE_ACCOUNT_ID}}
+          command: pages deploy dist --project-name=shopmate --branch=master
 
   # Job 5: Deployment Status - runs after deployment completes
   deployment-status:
