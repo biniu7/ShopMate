@@ -1,0 +1,56 @@
+/usr/local/bin/npm i wrangler@3.90.0
+  npm warn ERESOLVE overriding peer dependency
+  npm warn While resolving: @typescript-eslint/utils@7.18.0
+  npm warn Found: eslint@9.23.0
+  npm warn node_modules/eslint
+  npm warn   peer eslint@"^6.0.0 || ^7.0.0 || >=8.0.0" from @eslint-community/eslint-utils@4.9.0
+  npm warn   node_modules/@eslint-community/eslint-utils
+  npm warn     @eslint-community/eslint-utils@"^4.4.0" from @typescript-eslint/utils@8.28.0
+  npm warn     node_modules/@typescript-eslint/utils
+  npm warn     3 more (eslint, eslint-plugin-astro, @typescript-eslint/utils)
+  npm warn   19 more (@eslint/compat, @typescript-eslint/eslint-plugin, ...)
+  npm warn
+  npm warn Could not resolve dependency:
+  npm warn peer eslint@"^8.56.0" from @typescript-eslint/utils@7.18.0
+  npm warn node_modules/eslint-plugin-vitest/node_modules/@typescript-eslint/utils
+  npm warn   @typescript-eslint/utils@"^7.7.1" from eslint-plugin-vitest@0.5.4
+  npm warn   node_modules/eslint-plugin-vitest
+  npm warn
+  npm warn Conflicting peer dependency: eslint@8.57.1
+  npm warn node_modules/eslint
+  npm warn   peer eslint@"^8.56.0" from @typescript-eslint/utils@7.18.0
+  npm warn   node_modules/eslint-plugin-vitest/node_modules/@typescript-eslint/utils
+  npm warn     @typescript-eslint/utils@"^7.7.1" from eslint-plugin-vitest@0.5.4
+  npm warn     node_modules/eslint-plugin-vitest
+  npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+  npm warn deprecated rollup-plugin-inject@3.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-inject.
+  npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+  npm warn deprecated @babel/plugin-proposal-private-methods@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-methods instead.
+  npm error code 1
+  npm error path /home/runner/work/ShopMate/ShopMate/node_modules/supabase
+  npm error command failed
+  npm error command sh -c node scripts/postinstall.js
+  npm error Downloading https://github.com/supabase/cli/releases/download/v2.65.6/supabase_2.65.6_checksums.txt
+  npm error Downloading https://github.com/supabase/cli/releases/download/v2.65.6/supabase_linux_amd64.tar.gz
+  npm error node:events:502
+  npm error       throw er; // Unhandled 'error' event
+  npm error       ^
+  npm error
+  npm error Error: incorrect header check
+  npm error     at genericNodeError (node:internal/errors:984:15)
+  npm error     at wrappedFn (node:internal/errors:538:14)
+  npm error     at Zlib.zlibOnError [as onerror] (node:zlib:189:17)
+  npm error Emitted 'error' event on Gunzip instance at:
+  npm error     at Gunzip.onerror (node:internal/streams/readable:1028:14)
+  npm error     at Gunzip.emit (node:events:524:28)
+  npm error     at emitErrorNT (node:internal/streams/destroy:169:8)
+  npm error     at emitErrorCloseNT (node:internal/streams/destroy:128:3)
+  npm error     at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+  npm error   errno: -3,
+  npm error   code: 'Z_DATA_ERROR'
+  npm error }
+  npm error
+  npm error Node.js v20.19.6
+  npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-12-11T19_04_05_465Z-debug-0.log
+Error: The process '/usr/local/bin/npm' failed with exit code 1
+Error: 🚨 Action failed

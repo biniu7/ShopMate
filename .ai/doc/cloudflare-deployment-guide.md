@@ -146,6 +146,36 @@ Po pomyślnym wdrożeniu:
 
 ## Rozwiązywanie problemów
 
+### Problem: Błąd "incorrect header check" podczas npm ci w GitHub Actions
+
+**Symptomy:**
+```
+npm error Error: incorrect header check
+npm error code Z_DATA_ERROR
+npm error path /home/runner/work/ShopMate/ShopMate/node_modules/supabase
+```
+
+**Przyczyna:**
+- Pakiet `supabase` (w devDependencies) próbuje pobrać Supabase CLI binary podczas postinstall
+- Pobieranie kończy się błędem dekompresji w środowisku CI
+- Supabase CLI nie jest potrzebny do buildu - służy tylko do lokalnego developmentu
+
+**Rozwiązanie (już zastosowane):**
+W workflows używamy `npm ci --ignore-scripts` aby pominąć postinstall scripts:
+
+```yaml
+- name: Install dependencies
+  run: npm ci --ignore-scripts
+  env:
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+```
+
+To ignoruje:
+- ✅ Supabase CLI download (nie jest potrzebny w CI)
+- ✅ Playwright browsers download (instalowane osobno dla E2E testów)
+
+**Uwaga:** Jeśli dodajesz nowe pakiety które wymagają postinstall scripts dla działania aplikacji, może być konieczna modyfikacja tego podejścia.
+
 ### Problem: Deployment kończy się błędem "Authentication error"
 
 **Rozwiązanie:**
