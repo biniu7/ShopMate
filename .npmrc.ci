@@ -1,0 +1,17 @@
+# NPM configuration for CI/CD environments
+# This file is used in GitHub Actions to skip unnecessary downloads
+
+# Skip downloading Playwright browsers (not needed for build)
+PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
+# Skip downloading Supabase CLI (not needed for build/deploy)
+# The Supabase CLI is only needed for local development
+ignore-scripts=false
+
+# Performance optimizations for CI
+audit=false
+fund=false
+progress=false
+
+# Use package-lock.json strictly
+package-lock=true
