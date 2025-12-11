@@ -1,0 +1,390 @@
+2025-12-10T19:21:53.923Z	Initializing build environment...
+2025-12-10T19:22:13.393Z	Success: Finished initializing build environment
+2025-12-10T19:22:14.209Z	Cloning repository...
+2025-12-10T19:22:15.797Z	Restoring from dependencies cache
+2025-12-10T19:22:15.799Z	Restoring from build output cache
+2025-12-10T19:22:17.260Z	Detected the following tools from environment: nodejs@22.14.0, npm@10.9.2
+2025-12-10T19:22:17.263Z	Installing nodejs 22.14.0
+2025-12-10T19:22:22.478Z	Installing project dependencies: npm clean-install --progress=false
+2025-12-10T19:22:24.039Z	npm warn ERESOLVE overriding peer dependency
+2025-12-10T19:22:24.040Z	npm warn While resolving: @typescript-eslint/utils@7.18.0
+2025-12-10T19:22:24.040Z	npm warn Found: eslint@9.23.0
+2025-12-10T19:22:24.040Z	npm warn node_modules/eslint
+2025-12-10T19:22:24.040Z	npm warn   dev eslint@"9.23.0" from the root project
+2025-12-10T19:22:24.040Z	npm warn   19 more (@eslint-community/eslint-utils, @eslint/compat, ...)
+2025-12-10T19:22:24.040Z	npm warn
+2025-12-10T19:22:24.040Z	npm warn Could not resolve dependency:
+2025-12-10T19:22:24.040Z	npm warn peer eslint@"^8.56.0" from @typescript-eslint/utils@7.18.0
+2025-12-10T19:22:24.040Z	npm warn node_modules/eslint-plugin-vitest/node_modules/@typescript-eslint/utils
+2025-12-10T19:22:24.040Z	npm warn   @typescript-eslint/utils@"^7.7.1" from eslint-plugin-vitest@0.5.4
+2025-12-10T19:22:24.040Z	npm warn   node_modules/eslint-plugin-vitest
+2025-12-10T19:22:24.040Z	npm warn
+2025-12-10T19:22:24.040Z	npm warn Conflicting peer dependency: eslint@8.57.1
+2025-12-10T19:22:24.040Z	npm warn node_modules/eslint
+2025-12-10T19:22:24.040Z	npm warn   peer eslint@"^8.56.0" from @typescript-eslint/utils@7.18.0
+2025-12-10T19:22:24.040Z	npm warn   node_modules/eslint-plugin-vitest/node_modules/@typescript-eslint/utils
+2025-12-10T19:22:24.040Z	npm warn     @typescript-eslint/utils@"^7.7.1" from eslint-plugin-vitest@0.5.4
+2025-12-10T19:22:24.041Z	npm warn     node_modules/eslint-plugin-vitest
+2025-12-10T19:22:34.369Z	npm warn deprecated @babel/plugin-proposal-private-methods@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-methods instead.
+2025-12-10T19:22:34.945Z	npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+2025-12-10T19:22:46.584Z	
+2025-12-10T19:22:46.584Z	added 983 packages, and audited 984 packages in 24s
+2025-12-10T19:22:46.590Z	
+2025-12-10T19:22:46.590Z	345 packages are looking for funding
+2025-12-10T19:22:46.590Z	  run `npm fund` for details
+2025-12-10T19:22:46.609Z	
+2025-12-10T19:22:46.610Z	6 vulnerabilities (2 low, 3 moderate, 1 high)
+2025-12-10T19:22:46.610Z	
+2025-12-10T19:22:46.610Z	To address issues that do not require attention, run:
+2025-12-10T19:22:46.610Z	  npm audit fix
+2025-12-10T19:22:46.611Z	
+2025-12-10T19:22:46.611Z	To address all issues, run:
+2025-12-10T19:22:46.611Z	  npm audit fix --force
+2025-12-10T19:22:46.611Z	
+2025-12-10T19:22:46.611Z	Run `npm audit` for details.
+2025-12-10T19:22:46.906Z	Executing user build command: npm run build
+2025-12-10T19:22:47.180Z	
+2025-12-10T19:22:47.180Z	> ShopMate@0.0.1 build
+2025-12-10T19:22:47.180Z	> astro build
+2025-12-10T19:22:47.180Z	
+2025-12-10T19:23:04.285Z	19:23:04 [@astrojs/node] Enabling sessions with filesystem storage
+2025-12-10T19:23:04.654Z	19:23:04 [content] Syncing content
+2025-12-10T19:23:04.662Z	19:23:04 [content] Synced content
+2025-12-10T19:23:04.662Z	19:23:04 [types] Generated 333ms
+2025-12-10T19:23:04.664Z	19:23:04 [build] output: "server"
+2025-12-10T19:23:04.665Z	19:23:04 [build] mode: "server"
+2025-12-10T19:23:04.665Z	19:23:04 [build] directory: /opt/buildhome/repo/dist/
+2025-12-10T19:23:04.665Z	19:23:04 [build] adapter: @astrojs/node
+2025-12-10T19:23:04.665Z	19:23:04 [build] Collecting build info...
+2025-12-10T19:23:04.681Z	19:23:04 [build] ✓ Completed in 384ms.
+2025-12-10T19:23:04.682Z	19:23:04 [build] Building server entrypoints...
+2025-12-10T19:23:06.950Z	19:23:06 [vite] ✓ built in 2.24s
+2025-12-10T19:23:06.952Z	19:23:06 [build] ✓ Completed in 2.28s.
+2025-12-10T19:23:06.952Z	
+2025-12-10T19:23:06.952Z	 building client (vite) 
+2025-12-10T19:23:06.961Z	19:23:06 [vite] transforming...
+2025-12-10T19:23:14.755Z	19:23:14 [vite] ✓ 3000 modules transformed.
+2025-12-10T19:23:15.253Z	19:23:15 [vite] rendering chunks...
+2025-12-10T19:23:15.952Z	19:23:15 [vite] computing gzip size...
+2025-12-10T19:23:16.021Z	19:23:16 [vite] dist/client/_astro/index.BdQq_4o_.js                                0.06 kB │ gzip:   0.08 kB
+2025-12-10T19:23:16.022Z	19:23:16 [vite] dist/client/_astro/text.Dj5jgO-W.js                                 0.08 kB │ gzip:   0.10 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/useQuery.DVkW76RN.js                             0.10 kB │ gzip:   0.11 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/index.2cBekwQn.js                                0.13 kB │ gzip:   0.12 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/QueryProvider.afksnUbH.js                        0.23 kB │ gzip:   0.17 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/loader-circle.DnQQijvQ.js                        0.32 kB │ gzip:   0.26 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/plus.bldRcQK_.js                                 0.34 kB │ gzip:   0.26 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/arrow-left.Sus575MR.js                           0.35 kB │ gzip:   0.27 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/clock.DGN9P8KL.js                                0.36 kB │ gzip:   0.28 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/toaster.BC-VpQou.js                              0.38 kB │ gzip:   0.27 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/circle-alert.By5mnmnW.js                         0.43 kB │ gzip:   0.30 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/calendar.B0sKItxZ.js                             0.44 kB │ gzip:   0.31 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/trash-2.DSFGtdsf.js                              0.54 kB │ gzip:   0.36 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/jsx-runtime.D_zvdyIk.js                          0.73 kB │ gzip:   0.46 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/SearchBar.MgAZT1f5.js                            0.74 kB │ gzip:   0.49 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/auth.schema.Dg5c5HRQ.js                          0.75 kB │ gzip:   0.39 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/DeleteConfirmationDialog.BVVai9WD.js             0.80 kB │ gzip:   0.48 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/meal-plan.BFZa7GrA.js                            0.87 kB │ gzip:   0.33 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/input.8-91wDjD.js                                0.87 kB │ gzip:   0.48 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/label.DPSz9X68.js                                1.07 kB │ gzip:   0.63 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/recipes.DDnuqcDV.js                              1.09 kB │ gzip:   0.44 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/alert.CsI7H3vl.js                                1.10 kB │ gzip:   0.56 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/useInfiniteQuery.KxxRp5Xt.js                     1.16 kB │ gzip:   0.50 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/badge.Dw1kBIgE.js                                1.22 kB │ gzip:   0.60 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/ErrorMessage.CiqMm_xD.js                         1.23 kB │ gzip:   0.71 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/useResetPasswordMutation.BGPSLgKO.js             1.41 kB │ gzip:   0.65 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/breadcrumb.BIvpT2VQ.js                           1.46 kB │ gzip:   0.70 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/types.DngnFx8S.js                                1.47 kB │ gzip:   0.83 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/createLucideIcon.Bvwv0sB_.js                     1.74 kB │ gzip:   0.73 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/RecipeDetailsSkeleton.CAaJI5sY.js                1.98 kB │ gzip:   0.64 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/UpdatePassword.DRuOfRNW.js                       1.99 kB │ gzip:   0.84 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/index.CT9hjjQB.js                                2.10 kB │ gzip:   0.94 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/useMutation.Ccn1Xyil.js                          2.15 kB │ gzip:   0.92 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/index.PKNhjYBi.js                                2.31 kB │ gzip:   1.03 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/ResetPasswordRequest.CQ6rI1f3.js                 2.43 kB │ gzip:   1.16 kB
+2025-12-10T19:23:16.028Z	19:23:16 [vite] dist/client/_astro/LoginView.Ccl7dZEB.js                            2.59 kB │ gzip:   1.20 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/index.C5AuFTvk.js                                2.73 kB │ gzip:   1.24 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/RecipeCreateView.DhcWVUOp.js                     2.92 kB │ gzip:   1.52 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/RecipePreviewModal.5EG2XuCo.js                   3.00 kB │ gzip:   1.37 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/mutation.vkmFsEXh.js                             3.27 kB │ gzip:   1.12 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/Navigation.Cv6Ijr0n.js                           3.48 kB │ gzip:   1.21 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/index.C0ISY0os.js                                3.89 kB │ gzip:   1.52 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RegisterView.B-D-uw7m.js                         3.94 kB │ gzip:   1.58 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RecipePickerModal.Bz4rfxfW.js                    3.97 kB │ gzip:   1.85 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/chevron-down.CAF_ApIy.js                         4.09 kB │ gzip:   1.74 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/checkbox.Dm_rAn0U.js                             4.20 kB │ gzip:   1.82 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/accordion.BnkYaIt4.js                            4.95 kB │ gzip:   1.97 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RecipeEditViewWrapper.BUM263K5.js                5.90 kB │ gzip:   2.46 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/query.D-h7MqdY.js                                6.16 kB │ gzip:   2.10 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/ShoppingListsHistoryViewWrapper.B7WJ581V.js      7.26 kB │ gzip:   2.89 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/QueryClientProvider.CguQ-QpH.js                  7.45 kB │ gzip:   2.96 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RecipeDetailsViewWrapper.CRVOEr22.js             8.17 kB │ gzip:   3.07 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/QueryProvider.5kHOf7wU.js                        8.56 kB │ gzip:   2.90 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/dialog.C8f2CmoC.js                               8.64 kB │ gzip:   3.17 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/index.Clm6KcYe.js                                9.02 kB │ gzip:   3.46 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/recipe.schema.CuluYT6F.js                        9.93 kB │ gzip:   3.51 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/scroll-area.DWKSL6s7.js                         12.76 kB │ gzip:   4.03 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/skeleton.Ds610Mdj.js                            13.44 kB │ gzip:   5.07 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/RecipesListViewWrapper.Dd3viibG.js              13.62 kB │ gzip:   4.90 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/Calendar.Dk3HBsJI.js                            16.54 kB │ gzip:   5.54 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/index.Dt1ZbaG1.js                               21.20 kB │ gzip:   7.77 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/pl.-OOTsMlm.js                                  28.37 kB │ gzip:   7.86 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/button.B0okOMif.js                              29.19 kB │ gzip:   9.65 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/index.LC8-6G8R.js                               33.46 kB │ gzip:   9.55 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/zod.CocbNboq.js                                 35.51 kB │ gzip:  12.70 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/ShoppingListGenerateView.MPKTp3t7.js            40.16 kB │ gzip:  12.52 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/select.a_kp-F3Z.js                              50.20 kB │ gzip:  17.96 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/types.TpWV9CBr.js                               53.21 kB │ gzip:  12.17 kB
+2025-12-10T19:23:16.033Z	19:23:16 [vite] dist/client/_astro/client.BXyFNITo.js                             175.55 kB │ gzip:  55.67 kB
+2025-12-10T19:23:16.033Z	19:23:16 [vite] dist/client/_astro/ShoppingListDetailsViewWrapper.8KfT3K0P.js   1,499.95 kB │ gzip: 501.50 kB
+2025-12-10T19:23:16.033Z	19:23:16 [WARN] [vite] 
+2025-12-10T19:23:16.033Z	(!) Some chunks are larger than 500 kB after minification. Consider:
+2025-12-10T19:23:16.033Z	- Using dynamic import() to code-split the application
+2025-12-10T19:23:16.033Z	- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2025-12-10T19:23:16.033Z	- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2025-12-10T19:23:16.033Z	19:23:16 [vite] ✓ built in 9.07s
+2025-12-10T19:23:16.088Z	
+2025-12-10T19:23:16.088Z	 prerendering static routes 
+2025-12-10T19:23:16.088Z	19:23:16 ✓ Completed in 52ms.
+2025-12-10T19:23:16.088Z	
+2025-12-10T19:23:16.088Z	19:23:16 [build] Rearranging server assets...
+2025-12-10T19:23:16.096Z	19:23:16 [WARN] [@astrojs/sitemap] The Sitemap integration requires the `site` astro.config option. Skipping.
+2025-12-10T19:23:16.096Z	19:23:16 [build] Server built in 11.81s
+2025-12-10T19:23:16.096Z	19:23:16 [build] Complete!
+2025-12-10T19:23:16.175Z	Success: Build command completed
+2025-12-10T19:23:16.360Z	Executing user deploy command: npx wrangler deploy
+2025-12-10T19:23:17.921Z	npm warn exec The following package was not found and will be installed: wrangler@4.53.0
+2025-12-10T19:23:27.698Z	
+2025-12-10T19:23:27.698Z	 ⛅️ wrangler 4.53.0
+2025-12-10T19:23:27.699Z	───────────────────
+2025-12-10T19:23:27.710Z	
+2025-12-10T19:23:27.759Z	✘ [ERROR] Missing entry-point to Worker script or to assets directory
+2025-12-10T19:23:27.759Z	
+2025-12-10T19:23:27.759Z	  
+2025-12-10T19:23:27.759Z	  If there is code to deploy, you can either:
+2025-12-10T19:23:27.759Z	  - Specify an entry-point to your Worker script via the command line (ex: `npx wrangler deploy src/index.ts`)
+2025-12-10T19:23:27.761Z	  - Or create a "wrangler.jsonc" file containing:
+2025-12-10T19:23:27.762Z	  
+2025-12-10T19:23:27.762Z	  ```
+2025-12-10T19:23:27.764Z	  {
+2025-12-10T19:23:27.764Z	    "name": "worker-name",
+2025-12-10T19:23:27.765Z	    "compatibility_date": "2025-12-10",
+2025-12-10T19:23:27.765Z	    "main": "src/index.ts"
+2025-12-10T19:23:27.766Z	  }
+2025-12-10T19:23:27.766Z	  ```
+2025-12-10T19:23:27.767Z	  
+2025-12-10T19:23:27.767Z	  
+2025-12-10T19:23:27.767Z	  If are uploading a directory of assets, you can either:
+2025-12-10T19:23:27.768Z	  - Specify the path to the directory of assets via the command line: (ex: `npx wrangler deploy --assets=./dist`)
+2025-12-10T19:23:27.768Z	  - Or create a "wrangler.jsonc" file containing:
+2025-12-10T19:23:27.769Z	  
+2025-12-10T19:23:27.769Z	  ```
+2025-12-10T19:23:27.769Z	  {
+2025-12-10T19:23:27.770Z	    "name": "worker-name",
+2025-12-10T19:23:27.770Z	    "compatibility_date": "2025-12-10",
+2025-12-10T19:23:27.770Z	    "assets": {
+2025-12-10T19:23:27.770Z	      "directory": "./dist"
+2025-12-10T19:23:27.771Z	    }
+2025-12-10T19:23:27.771Z	  }
+2025-12-10T19:23:27.772Z	  ```
+2025-12-10T19:23:29.308Z	  
+2025-12-10T19:23:29.308Z	
+2025-12-10T19:23:29.308Z	
+2025-12-10T19:23:29.310Z	🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2025-12-10_19-23-27_142.log"
+2025-12-10T19:23:29.311Z	
+2025-12-10T19:23:29.311Z	Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+2025-12-10T19:23:30.831Z	Failed: error occurred while running deploy command
+2025-12-10T19:21:53.923Z	Initializing build environment...
+2025-12-10T19:22:13.393Z	Success: Finished initializing build environment
+2025-12-10T19:22:14.209Z	Cloning repository...
+2025-12-10T19:22:15.797Z	Restoring from dependencies cache
+2025-12-10T19:22:15.799Z	Restoring from build output cache
+2025-12-10T19:22:17.260Z	Detected the following tools from environment: nodejs@22.14.0, npm@10.9.2
+2025-12-10T19:22:17.263Z	Installing nodejs 22.14.0
+2025-12-10T19:22:22.478Z	Installing project dependencies: npm clean-install --progress=false
+2025-12-10T19:22:24.039Z	npm warn ERESOLVE overriding peer dependency
+2025-12-10T19:22:24.040Z	npm warn While resolving: @typescript-eslint/utils@7.18.0
+2025-12-10T19:22:24.040Z	npm warn Found: eslint@9.23.0
+2025-12-10T19:22:24.040Z	npm warn node_modules/eslint
+2025-12-10T19:22:24.040Z	npm warn   dev eslint@"9.23.0" from the root project
+2025-12-10T19:22:24.040Z	npm warn   19 more (@eslint-community/eslint-utils, @eslint/compat, ...)
+2025-12-10T19:22:24.040Z	npm warn
+2025-12-10T19:22:24.040Z	npm warn Could not resolve dependency:
+2025-12-10T19:22:24.040Z	npm warn peer eslint@"^8.56.0" from @typescript-eslint/utils@7.18.0
+2025-12-10T19:22:24.040Z	npm warn node_modules/eslint-plugin-vitest/node_modules/@typescript-eslint/utils
+2025-12-10T19:22:24.040Z	npm warn   @typescript-eslint/utils@"^7.7.1" from eslint-plugin-vitest@0.5.4
+2025-12-10T19:22:24.040Z	npm warn   node_modules/eslint-plugin-vitest
+2025-12-10T19:22:24.040Z	npm warn
+2025-12-10T19:22:24.040Z	npm warn Conflicting peer dependency: eslint@8.57.1
+2025-12-10T19:22:24.040Z	npm warn node_modules/eslint
+2025-12-10T19:22:24.040Z	npm warn   peer eslint@"^8.56.0" from @typescript-eslint/utils@7.18.0
+2025-12-10T19:22:24.040Z	npm warn   node_modules/eslint-plugin-vitest/node_modules/@typescript-eslint/utils
+2025-12-10T19:22:24.040Z	npm warn     @typescript-eslint/utils@"^7.7.1" from eslint-plugin-vitest@0.5.4
+2025-12-10T19:22:24.041Z	npm warn     node_modules/eslint-plugin-vitest
+2025-12-10T19:22:34.369Z	npm warn deprecated @babel/plugin-proposal-private-methods@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-methods instead.
+2025-12-10T19:22:34.945Z	npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+2025-12-10T19:22:46.584Z	
+2025-12-10T19:22:46.584Z	added 983 packages, and audited 984 packages in 24s
+2025-12-10T19:22:46.590Z	
+2025-12-10T19:22:46.590Z	345 packages are looking for funding
+2025-12-10T19:22:46.590Z	  run `npm fund` for details
+2025-12-10T19:22:46.609Z	
+2025-12-10T19:22:46.610Z	6 vulnerabilities (2 low, 3 moderate, 1 high)
+2025-12-10T19:22:46.610Z	
+2025-12-10T19:22:46.610Z	To address issues that do not require attention, run:
+2025-12-10T19:22:46.610Z	  npm audit fix
+2025-12-10T19:22:46.611Z	
+2025-12-10T19:22:46.611Z	To address all issues, run:
+2025-12-10T19:22:46.611Z	  npm audit fix --force
+2025-12-10T19:22:46.611Z	
+2025-12-10T19:22:46.611Z	Run `npm audit` for details.
+2025-12-10T19:22:46.906Z	Executing user build command: npm run build
+2025-12-10T19:22:47.180Z	
+2025-12-10T19:22:47.180Z	> ShopMate@0.0.1 build
+2025-12-10T19:22:47.180Z	> astro build
+2025-12-10T19:22:47.180Z	
+2025-12-10T19:23:04.285Z	19:23:04 [@astrojs/node] Enabling sessions with filesystem storage
+2025-12-10T19:23:04.654Z	19:23:04 [content] Syncing content
+2025-12-10T19:23:04.662Z	19:23:04 [content] Synced content
+2025-12-10T19:23:04.662Z	19:23:04 [types] Generated 333ms
+2025-12-10T19:23:04.664Z	19:23:04 [build] output: "server"
+2025-12-10T19:23:04.665Z	19:23:04 [build] mode: "server"
+2025-12-10T19:23:04.665Z	19:23:04 [build] directory: /opt/buildhome/repo/dist/
+2025-12-10T19:23:04.665Z	19:23:04 [build] adapter: @astrojs/node
+2025-12-10T19:23:04.665Z	19:23:04 [build] Collecting build info...
+2025-12-10T19:23:04.681Z	19:23:04 [build] ✓ Completed in 384ms.
+2025-12-10T19:23:04.682Z	19:23:04 [build] Building server entrypoints...
+2025-12-10T19:23:06.950Z	19:23:06 [vite] ✓ built in 2.24s
+2025-12-10T19:23:06.952Z	19:23:06 [build] ✓ Completed in 2.28s.
+2025-12-10T19:23:06.952Z	
+2025-12-10T19:23:06.952Z	 building client (vite) 
+2025-12-10T19:23:06.961Z	19:23:06 [vite] transforming...
+2025-12-10T19:23:14.755Z	19:23:14 [vite] ✓ 3000 modules transformed.
+2025-12-10T19:23:15.253Z	19:23:15 [vite] rendering chunks...
+2025-12-10T19:23:15.952Z	19:23:15 [vite] computing gzip size...
+2025-12-10T19:23:16.021Z	19:23:16 [vite] dist/client/_astro/index.BdQq_4o_.js                                0.06 kB │ gzip:   0.08 kB
+2025-12-10T19:23:16.022Z	19:23:16 [vite] dist/client/_astro/text.Dj5jgO-W.js                                 0.08 kB │ gzip:   0.10 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/useQuery.DVkW76RN.js                             0.10 kB │ gzip:   0.11 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/index.2cBekwQn.js                                0.13 kB │ gzip:   0.12 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/QueryProvider.afksnUbH.js                        0.23 kB │ gzip:   0.17 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/loader-circle.DnQQijvQ.js                        0.32 kB │ gzip:   0.26 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/plus.bldRcQK_.js                                 0.34 kB │ gzip:   0.26 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/arrow-left.Sus575MR.js                           0.35 kB │ gzip:   0.27 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/clock.DGN9P8KL.js                                0.36 kB │ gzip:   0.28 kB
+2025-12-10T19:23:16.024Z	19:23:16 [vite] dist/client/_astro/toaster.BC-VpQou.js                              0.38 kB │ gzip:   0.27 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/circle-alert.By5mnmnW.js                         0.43 kB │ gzip:   0.30 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/calendar.B0sKItxZ.js                             0.44 kB │ gzip:   0.31 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/trash-2.DSFGtdsf.js                              0.54 kB │ gzip:   0.36 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/jsx-runtime.D_zvdyIk.js                          0.73 kB │ gzip:   0.46 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/SearchBar.MgAZT1f5.js                            0.74 kB │ gzip:   0.49 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/auth.schema.Dg5c5HRQ.js                          0.75 kB │ gzip:   0.39 kB
+2025-12-10T19:23:16.025Z	19:23:16 [vite] dist/client/_astro/DeleteConfirmationDialog.BVVai9WD.js             0.80 kB │ gzip:   0.48 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/meal-plan.BFZa7GrA.js                            0.87 kB │ gzip:   0.33 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/input.8-91wDjD.js                                0.87 kB │ gzip:   0.48 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/label.DPSz9X68.js                                1.07 kB │ gzip:   0.63 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/recipes.DDnuqcDV.js                              1.09 kB │ gzip:   0.44 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/alert.CsI7H3vl.js                                1.10 kB │ gzip:   0.56 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/useInfiniteQuery.KxxRp5Xt.js                     1.16 kB │ gzip:   0.50 kB
+2025-12-10T19:23:16.026Z	19:23:16 [vite] dist/client/_astro/badge.Dw1kBIgE.js                                1.22 kB │ gzip:   0.60 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/ErrorMessage.CiqMm_xD.js                         1.23 kB │ gzip:   0.71 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/useResetPasswordMutation.BGPSLgKO.js             1.41 kB │ gzip:   0.65 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/breadcrumb.BIvpT2VQ.js                           1.46 kB │ gzip:   0.70 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/types.DngnFx8S.js                                1.47 kB │ gzip:   0.83 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/createLucideIcon.Bvwv0sB_.js                     1.74 kB │ gzip:   0.73 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/RecipeDetailsSkeleton.CAaJI5sY.js                1.98 kB │ gzip:   0.64 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/UpdatePassword.DRuOfRNW.js                       1.99 kB │ gzip:   0.84 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/index.CT9hjjQB.js                                2.10 kB │ gzip:   0.94 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/useMutation.Ccn1Xyil.js                          2.15 kB │ gzip:   0.92 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/index.PKNhjYBi.js                                2.31 kB │ gzip:   1.03 kB
+2025-12-10T19:23:16.027Z	19:23:16 [vite] dist/client/_astro/ResetPasswordRequest.CQ6rI1f3.js                 2.43 kB │ gzip:   1.16 kB
+2025-12-10T19:23:16.028Z	19:23:16 [vite] dist/client/_astro/LoginView.Ccl7dZEB.js                            2.59 kB │ gzip:   1.20 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/index.C5AuFTvk.js                                2.73 kB │ gzip:   1.24 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/RecipeCreateView.DhcWVUOp.js                     2.92 kB │ gzip:   1.52 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/RecipePreviewModal.5EG2XuCo.js                   3.00 kB │ gzip:   1.37 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/mutation.vkmFsEXh.js                             3.27 kB │ gzip:   1.12 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/Navigation.Cv6Ijr0n.js                           3.48 kB │ gzip:   1.21 kB
+2025-12-10T19:23:16.030Z	19:23:16 [vite] dist/client/_astro/index.C0ISY0os.js                                3.89 kB │ gzip:   1.52 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RegisterView.B-D-uw7m.js                         3.94 kB │ gzip:   1.58 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RecipePickerModal.Bz4rfxfW.js                    3.97 kB │ gzip:   1.85 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/chevron-down.CAF_ApIy.js                         4.09 kB │ gzip:   1.74 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/checkbox.Dm_rAn0U.js                             4.20 kB │ gzip:   1.82 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/accordion.BnkYaIt4.js                            4.95 kB │ gzip:   1.97 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RecipeEditViewWrapper.BUM263K5.js                5.90 kB │ gzip:   2.46 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/query.D-h7MqdY.js                                6.16 kB │ gzip:   2.10 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/ShoppingListsHistoryViewWrapper.B7WJ581V.js      7.26 kB │ gzip:   2.89 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/QueryClientProvider.CguQ-QpH.js                  7.45 kB │ gzip:   2.96 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/RecipeDetailsViewWrapper.CRVOEr22.js             8.17 kB │ gzip:   3.07 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/QueryProvider.5kHOf7wU.js                        8.56 kB │ gzip:   2.90 kB
+2025-12-10T19:23:16.031Z	19:23:16 [vite] dist/client/_astro/dialog.C8f2CmoC.js                               8.64 kB │ gzip:   3.17 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/index.Clm6KcYe.js                                9.02 kB │ gzip:   3.46 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/recipe.schema.CuluYT6F.js                        9.93 kB │ gzip:   3.51 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/scroll-area.DWKSL6s7.js                         12.76 kB │ gzip:   4.03 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/skeleton.Ds610Mdj.js                            13.44 kB │ gzip:   5.07 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/RecipesListViewWrapper.Dd3viibG.js              13.62 kB │ gzip:   4.90 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/Calendar.Dk3HBsJI.js                            16.54 kB │ gzip:   5.54 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/index.Dt1ZbaG1.js                               21.20 kB │ gzip:   7.77 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/pl.-OOTsMlm.js                                  28.37 kB │ gzip:   7.86 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/button.B0okOMif.js                              29.19 kB │ gzip:   9.65 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/index.LC8-6G8R.js                               33.46 kB │ gzip:   9.55 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/zod.CocbNboq.js                                 35.51 kB │ gzip:  12.70 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/ShoppingListGenerateView.MPKTp3t7.js            40.16 kB │ gzip:  12.52 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/select.a_kp-F3Z.js                              50.20 kB │ gzip:  17.96 kB
+2025-12-10T19:23:16.032Z	19:23:16 [vite] dist/client/_astro/types.TpWV9CBr.js                               53.21 kB │ gzip:  12.17 kB
+2025-12-10T19:23:16.033Z	19:23:16 [vite] dist/client/_astro/client.BXyFNITo.js                             175.55 kB │ gzip:  55.67 kB
+2025-12-10T19:23:16.033Z	19:23:16 [vite] dist/client/_astro/ShoppingListDetailsViewWrapper.8KfT3K0P.js   1,499.95 kB │ gzip: 501.50 kB
+2025-12-10T19:23:16.033Z	19:23:16 [WARN] [vite] 
+2025-12-10T19:23:16.033Z	(!) Some chunks are larger than 500 kB after minification. Consider:
+2025-12-10T19:23:16.033Z	- Using dynamic import() to code-split the application
+2025-12-10T19:23:16.033Z	- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+2025-12-10T19:23:16.033Z	- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+2025-12-10T19:23:16.033Z	19:23:16 [vite] ✓ built in 9.07s
+2025-12-10T19:23:16.088Z	
+2025-12-10T19:23:16.088Z	 prerendering static routes 
+2025-12-10T19:23:16.088Z	19:23:16 ✓ Completed in 52ms.
+2025-12-10T19:23:16.088Z	
+2025-12-10T19:23:16.088Z	19:23:16 [build] Rearranging server assets...
+2025-12-10T19:23:16.096Z	19:23:16 [WARN] [@astrojs/sitemap] The Sitemap integration requires the `site` astro.config option. Skipping.
+2025-12-10T19:23:16.096Z	19:23:16 [build] Server built in 11.81s
+2025-12-10T19:23:16.096Z	19:23:16 [build] Complete!
+2025-12-10T19:23:16.175Z	Success: Build command completed
+2025-12-10T19:23:16.360Z	Executing user deploy command: npx wrangler deploy
+2025-12-10T19:23:17.921Z	npm warn exec The following package was not found and will be installed: wrangler@4.53.0
+2025-12-10T19:23:27.698Z	
+2025-12-10T19:23:27.698Z	 ⛅️ wrangler 4.53.0
+2025-12-10T19:23:27.699Z	───────────────────
+2025-12-10T19:23:27.710Z	
+2025-12-10T19:23:27.759Z	✘ [ERROR] Missing entry-point to Worker script or to assets directory
+2025-12-10T19:23:27.759Z	
+2025-12-10T19:23:27.759Z	  
+2025-12-10T19:23:27.759Z	  If there is code to deploy, you can either:
+2025-12-10T19:23:27.759Z	  - Specify an entry-point to your Worker script via the command line (ex: `npx wrangler deploy src/index.ts`)
+2025-12-10T19:23:27.761Z	  - Or create a "wrangler.jsonc" file containing:
+2025-12-10T19:23:27.762Z	  
+2025-12-10T19:23:27.762Z	  ```
+2025-12-10T19:23:27.764Z	  {
+2025-12-10T19:23:27.764Z	    "name": "worker-name",
+2025-12-10T19:23:27.765Z	    "compatibility_date": "2025-12-10",
+2025-12-10T19:23:27.765Z	    "main": "src/index.ts"
+2025-12-10T19:23:27.766Z	  }
+2025-12-10T19:23:27.766Z	  ```
+2025-12-10T19:23:27.767Z	  
+2025-12-10T19:23:27.767Z	  
+2025-12-10T19:23:27.767Z	  If are uploading a directory of assets, you can either:
+2025-12-10T19:23:27.768Z	  - Specify the path to the directory of assets via the command line: (ex: `npx wrangler deploy --assets=./dist`)
+2025-12-10T19:23:27.768Z	  - Or create a "wrangler.jsonc" file containing:
+2025-12-10T19:23:27.769Z	  
+2025-12-10T19:23:27.769Z	  ```
+2025-12-10T19:23:27.769Z	  {
+2025-12-10T19:23:27.770Z	    "name": "worker-name",
+2025-12-10T19:23:27.770Z	    "compatibility_date": "2025-12-10",
+2025-12-10T19:23:27.770Z	    "assets": {
+2025-12-10T19:23:27.770Z	      "directory": "./dist"
+2025-12-10T19:23:27.771Z	    }
+2025-12-10T19:23:27.771Z	  }
+2025-12-10T19:23:27.772Z	  ```
+2025-12-10T19:23:29.308Z	  
+2025-12-10T19:23:29.308Z	
+2025-12-10T19:23:29.308Z	
+2025-12-10T19:23:29.310Z	🪵  Logs were written to "/opt/buildhome/.config/.wrangler/logs/wrangler-2025-12-10_19-23-27_142.log"
+2025-12-10T19:23:29.311Z	
+2025-12-10T19:23:29.311Z	Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+2025-12-10T19:23:30.831Z	Failed: error occurred while running deploy command

@@ -175,15 +175,11 @@ Dla MVP kategoryzacja składników jest **mission-critical** - bez niej listy za
   - Łatwe CI/CD pipelines (test → build → deploy)
   - Marketplace z ready-to-use actions
 
-- **DigitalOcean:**
-  - Prosty, przejrzysty pricing ($12/miesiąc App Platform dla basic app)
-  - Automatic SSL, CDN, scaling
-  - One-click Astro deployment
-  - Good European datacenter options (GDPR compliance)
+- **Cloudflare Pages:**
+  
 
 **Potencjalne problemy i lepsze alternatywy:**
 
-⚠️ **PROBLEM: DigitalOcean App Platform NIE jest optymalny dla Astro + Supabase combo**
 
 | Hosting                       | Pros                                                                                    | Cons                                                      | Koszty MVP                                | Rekomendacja             |
 | ----------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------- | ------------------------ |
@@ -206,7 +202,7 @@ Dla MVP kategoryzacja składników jest **mission-critical** - bez niej listy za
 
 ```diff
 - CI/CD i Hosting: GitHub Actions + DigitalOcean
-+ CI/CD i Hosting: GitHub Actions + Vercel (lub Netlify jako backup)
++ CI/CD i Hosting: GitHub Actions + Cloudflare Pages
 ```
 
 **Deployment flow:**
@@ -438,7 +434,7 @@ To jest **ekstremalnie niskie** i pozwala na profitable business model nawet z f
 Frontend: Next.js 14 (App Router) + React 18 + TypeScript + Tailwind + Chakra UI
 Backend: Supabase
 AI: OpenAI API (direct)
-Hosting: Vercel
+Hosting: Cloudflare Pages
 ```
 
 **Porównanie:**
@@ -490,7 +486,7 @@ Single framework: Next.js Full-Stack (App Router + Route Handlers)
 Database: PostgreSQL (Supabase lub Neon)
 Auth: NextAuth.js
 AI: OpenAI API direct
-Hosting: Vercel
+Hosting: Cloudflare Pages
 ```
 
 **Dlaczego prostsze:**
@@ -587,7 +583,7 @@ Frontend: Astro 5 (lub Next.js 14) + React 18 + TypeScript 5 + Tailwind 4 + Shad
 Backend: Supabase (PostgreSQL + Auth + RLS)
 AI: OpenAI API (direct, nie OpenRouter)
 CI/CD: GitHub Actions
-Hosting: Vercel (lub Netlify)
+Hosting: Cloudflare Pages
 Monitoring: Sentry + Plausible Analytics
 ```
 
@@ -595,7 +591,7 @@ Monitoring: Sentry + Plausible Analytics
 
 ## 6. Czy technologie pozwolą nam zadbać o odpowiednie bezpieczeństwo?
 
-### ✅ **OCENA: TAK** - Stack zapewnia solid security foundation
+### ✅ **Cloudflare Pages: TAK** - Stack zapewnia solid security foundation
 
 #### Security assessment per technologia
 
@@ -686,23 +682,6 @@ Monitoring: Sentry + Plausible Analytics
 
 **Verdict:** ✅ OpenAI security jest **good** IF API key jest w backend, NIE w browser.
 
----
-
-**Hosting (Vercel/Netlify):**
-
-✅ **Built-in security features:**
-
-- Automatic SSL/TLS certificates (HTTPS everywhere)
-- DDoS protection (edge network)
-- Automatic security headers (CSP, X-Frame-Options, itp.)
-- Firewall rules (block malicious IPs)
-
-⚠️ **Configuration needed:**
-
-- Environment variables for secrets (OpenAI key, Supabase keys)
-- Proper CORS configuration (tylko allow trusted domains)
-
-**Verdict:** ✅ Vercel/Netlify security jest **excellent** out-of-the-box.
 
 ---
 
@@ -777,9 +756,8 @@ Monitoring: Sentry + Plausible Analytics
 
 ### 🔴 **CRITICAL CHANGES (highly recommended):**
 
-1. **DigitalOcean → Vercel (lub Netlify)**
-   - Powód: Better Astro support, cheaper dla MVP, preview deployments
-   - Impact: Zaoszczędzi 1-2 dni setup time + $12/miesiąc w MVP phase
+1. **DigitalOcean → *Cloudflare Pages*
+  
 
 2. **OpenRouter.ai → OpenAI API (direct)**
    - Powód: Mission-critical feature, mniej failure points
@@ -821,13 +799,12 @@ Komunikacja z modelami AI:
 
 CI/CD i Hosting:
   - CI/CD: GitHub Actions (tests, linting, TypeScript checks)
-  - Hosting: Vercel (lub Netlify jako alternative)
-  - CDN: Automatic via Vercel Edge Network
+  - Hosting: Cloudflare Pages
+  
 
 Monitoring i Analytics:
   - Error tracking: Sentry (free tier)
   - Analytics: Plausible (privacy-focused) lub Google Analytics 4
-  - Performance: Web Vitals (built-in Vercel)
 
 Testing i Quality Assurance:
   - Unit & Integration Testing: Vitest (kompatybilny z Vite/Astro)
