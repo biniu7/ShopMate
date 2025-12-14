@@ -7,10 +7,6 @@ pages_build_output_dir = "./dist"
 # Node.js compatibility for server-side code
 compatibility_flags = ["nodejs_compat"]
 
-# Build configuration
-[build]
-command = "npm run build"
-
 # KV namespace for session storage (required by @astrojs/cloudflare)
 # You need to create this KV namespace in Cloudflare dashboard first
 # Then replace the id below with your actual KV namespace ID
