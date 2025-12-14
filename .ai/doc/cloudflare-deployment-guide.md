@@ -14,6 +14,7 @@ Projekt ShopMate został skonfigurowany do automatycznego wdrożenia na Cloudfla
 **Trigger:** Push do gałęzi `master`
 
 **Jobs:**
+
 1. **Lint** - Sprawdzenie jakości kodu (ESLint)
 2. **Unit Tests** - Testy jednostkowe z pokryciem kodu
 3. **Build** - Budowanie aplikacji Astro
@@ -21,6 +22,7 @@ Projekt ShopMate został skonfigurowany do automatycznego wdrożenia na Cloudfla
 5. **Deployment Status** - Raport statusu wdrożenia
 
 **Różnice względem `pull-request.yml`:**
+
 - ❌ Brak testów E2E (aby przyspieszyć deployment)
 - ✅ Dodany job Build (przygotowanie artefaktów)
 - ✅ Dodany job Deploy (wdrożenie na Cloudflare)
@@ -32,18 +34,19 @@ Projekt ShopMate został skonfigurowany do automatycznego wdrożenia na Cloudfla
 
 W ustawieniach repozytorium GitHub (`Settings > Secrets and variables > Actions`) dodaj następujące sekrety:
 
-| Nazwa sekretu | Opis | Gdzie znaleźć |
-|--------------|------|---------------|
+| Nazwa sekretu          | Opis                                                     | Gdzie znaleźć                                                                                                                |
+| ---------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `CLOUDFLARE_API_TOKEN` | Token API Cloudflare z uprawnieniami do Cloudflare Pages | [Cloudflare Dashboard](https://dash.cloudflare.com/profile/api-tokens) → "Create Token" → "Edit Cloudflare Workers" template |
-| `SUPABASE_URL` | URL projektu Supabase | [Supabase Dashboard](https://supabase.com/dashboard) → Twój projekt → Settings → API → Project URL |
-| `SUPABASE_KEY` | Klucz publiczny (anon key) Supabase | Supabase Dashboard → Settings → API → Project API keys → `anon` `public` |
-| `OPENAI_API_KEY` | Klucz API OpenAI | [OpenAI Platform](https://platform.openai.com/api-keys) |
-| `E2E_USERNAME` | Email użytkownika testowego (dla E2E w PR) | Konto testowe w Supabase |
-| `E2E_PASSWORD` | Hasło użytkownika testowego (dla E2E w PR) | Konto testowe w Supabase |
+| `SUPABASE_URL`         | URL projektu Supabase                                    | [Supabase Dashboard](https://supabase.com/dashboard) → Twój projekt → Settings → API → Project URL                           |
+| `SUPABASE_KEY`         | Klucz publiczny (anon key) Supabase                      | Supabase Dashboard → Settings → API → Project API keys → `anon` `public`                                                     |
+| `OPENAI_API_KEY`       | Klucz API OpenAI                                         | [OpenAI Platform](https://platform.openai.com/api-keys)                                                                      |
+| `E2E_USERNAME`         | Email użytkownika testowego (dla E2E w PR)               | Konto testowe w Supabase                                                                                                     |
+| `E2E_PASSWORD`         | Hasło użytkownika testowego (dla E2E w PR)               | Konto testowe w Supabase                                                                                                     |
 
 ### 2. GitHub Environments
 
 Utwórz environment `production` w GitHub:
+
 1. Przejdź do `Settings > Environments`
 2. Kliknij `New environment`
 3. Nazwa: `production`
@@ -72,11 +75,13 @@ W ustawieniach projektu Cloudflare Pages (`Settings > Environment variables`) do
 | `OPENAI_API_KEY` | Twój klucz OpenAI | Encrypted |
 
 **Preview (opcjonalnie):**
+
 - Możesz dodać te same zmienne dla środowiska preview (używane dla PR)
 
 #### 3.3. Utworzenie KV Namespace (opcjonalne - dla sesji)
 
 Jeśli planujesz używać KV dla sesji:
+
 1. Przejdź do `Workers & Pages` → `KV`
 2. Kliknij `Create namespace`
 3. Nazwa: `shopmate-sessions` (production) i `shopmate-sessions-preview` (preview)
@@ -124,6 +129,7 @@ wrangler pages deploy dist --project-name=shopmate --branch=main
 ### 1. Status deploymentu w GitHub
 
 Po każdym pushu do `master`:
+
 - Przejdź do zakładki `Actions` w repozytorium
 - Znajdź najnowszy workflow `Production Deployment`
 - Sprawdź status każdego job'a
@@ -139,6 +145,7 @@ Po każdym pushu do `master`:
 ### 3. Weryfikacja aplikacji
 
 Po pomyślnym wdrożeniu:
+
 - URL produkcyjny: `https://shopmate.pages.dev` (lub Twoja custom domena)
 - Sprawdź czy aplikacja działa poprawnie
 - Zweryfikuj integrację z Supabase (login, rejestracja)
@@ -149,6 +156,7 @@ Po pomyślnym wdrożeniu:
 ### Problem: Błąd "incorrect header check" podczas npm ci w GitHub Actions
 
 **Symptomy:**
+
 ```
 npm error Error: incorrect header check
 npm error code Z_DATA_ERROR
@@ -156,6 +164,7 @@ npm error path /home/runner/work/ShopMate/ShopMate/node_modules/supabase
 ```
 
 **Przyczyna:**
+
 - Pakiet `supabase` (w devDependencies) próbuje pobrać Supabase CLI binary podczas postinstall
 - Pobieranie kończy się błędem dekompresji w środowisku CI
 - Supabase CLI nie jest potrzebny do buildu - służy tylko do lokalnego developmentu
@@ -171,6 +180,7 @@ W workflows używamy `npm ci --ignore-scripts` aby pominąć postinstall scripts
 ```
 
 To ignoruje:
+
 - ✅ Supabase CLI download (nie jest potrzebny w CI)
 - ✅ Playwright browsers download (instalowane osobno dla E2E testów)
 
@@ -179,6 +189,7 @@ To ignoruje:
 ### Problem: Deployment kończy się błędem "Authentication error"
 
 **Rozwiązanie:**
+
 - Sprawdź czy `CLOUDFLARE_API_TOKEN` jest poprawnie skonfigurowany w GitHub Secrets
 - Upewnij się, że token ma uprawnienia do Cloudflare Pages
 - Wygeneruj nowy token jeśli obecny wygasł
@@ -186,12 +197,14 @@ To ignoruje:
 ### Problem: Aplikacja nie łączy się z Supabase
 
 **Rozwiązanie:**
+
 - Sprawdź czy zmienne `SUPABASE_URL` i `SUPABASE_KEY` są ustawione w Cloudflare Pages (Settings → Environment variables)
 - NIE ustawiaj tych zmiennych w GitHub Secrets jako `env:` w workflow - one muszą być w Cloudflare
 
 ### Problem: Build kończy się błędem
 
 **Rozwiązanie:**
+
 - Sprawdź logi w GitHub Actions
 - Uruchom `npm run build` lokalnie aby zreplikować błąd
 - Upewnij się, że wszystkie zależności są zainstalowane (`npm ci`)
@@ -199,6 +212,7 @@ To ignoruje:
 ### Problem: Testy jednostkowe nie przechodzą
 
 **Rozwiązanie:**
+
 - Workflow zatrzyma deployment jeśli testy failują
 - Sprawdź logi testów w GitHub Actions job `unit-test`
 - Napraw testy lokalnie (`npm run test`) przed ponownym pushem
@@ -249,6 +263,7 @@ git push origin master
 ### 4. Custom domena (produkcja)
 
 Po testach możesz dodać custom domenę:
+
 1. Cloudflare Pages → `shopmate` → `Custom domains`
 2. Kliknij `Set up a custom domain`
 3. Wprowadź swoją domenę (np. `shopmate.pl`)
@@ -258,15 +273,15 @@ Po testach możesz dodać custom domenę:
 
 Wszystkie akcje używają najnowszych wersji (stan na 2025-12-11):
 
-| Akcja | Wersja | Uwagi |
-|-------|--------|-------|
-| `actions/checkout` | v6 | |
-| `actions/setup-node` | v6 | |
-| `actions/upload-artifact` | v5 | |
-| `actions/download-artifact` | v6 | |
-| `codecov/codecov-action` | v5 | |
-| `actions/github-script` | v8 | |
-| `cloudflare/wrangler-action` | v3 | wranglerVersion: "3.90.0" |
+| Akcja                        | Wersja | Uwagi                     |
+| ---------------------------- | ------ | ------------------------- |
+| `actions/checkout`           | v6     |                           |
+| `actions/setup-node`         | v6     |                           |
+| `actions/upload-artifact`    | v5     |                           |
+| `actions/download-artifact`  | v6     |                           |
+| `codecov/codecov-action`     | v5     |                           |
+| `actions/github-script`      | v8     |                           |
+| `cloudflare/wrangler-action` | v3     | wranglerVersion: "3.90.0" |
 
 ## Następne kroki
 

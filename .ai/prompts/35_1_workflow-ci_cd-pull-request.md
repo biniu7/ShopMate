@@ -1,4 +1,4 @@
-Jesteś specjalistą GitHub Actions w stacku @.ai/doc/tech-stack.md   @package.json
+Jesteś specjalistą GitHub Actions w stacku @.ai/doc/tech-stack.md @package.json
 
 Utwórz scenariusz "pull-request.yml" na podstawie @.ai/doc/github-action.mdc
 
@@ -10,6 +10,7 @@ Scenariusz "pull-request.yml" powinien działać następująco:
 - Finalnie - status-comment (komentarz do PRa o statusie całości)
 
 Dodatkowe uwagi:
+
 - status-comment uruchamia się tylko kiedy poprzedni zestaw 3 przejdzie poprawnie
 - w jobie e2e pobieraj przeglądarki wg @playwright.config.ts
 - w jobie e2e ustaw środowisko "integration" i zmienne z sekretów wg @.env.test

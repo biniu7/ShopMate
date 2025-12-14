@@ -44,6 +44,7 @@ npm error command sh -c node scripts/postinstall.js
 Dodałem flagę `--ignore-scripts` do `npm ci` w obu workflows:
 
 **W `.github/workflows/master.yml`:**
+
 ```yaml
 # Job: Build
 - name: Install dependencies (skip postinstall scripts)
@@ -53,6 +54,7 @@ Dodałem flagę `--ignore-scripts` do `npm ci` w obu workflows:
 ```
 
 **W `.github/workflows/pull-request.yml`:**
+
 ```yaml
 # Job: Lint
 - name: Install dependencies
@@ -75,6 +77,7 @@ Dodałem flagę `--ignore-scripts` do `npm ci` w obu workflows:
 ### 2. Co robi `--ignore-scripts`?
 
 Flag `--ignore-scripts` pomija wykonanie wszystkich npm lifecycle scripts podczas instalacji:
+
 - ✅ `preinstall`
 - ✅ `install`
 - ✅ `postinstall`
@@ -82,12 +85,14 @@ Flag `--ignore-scripts` pomija wykonanie wszystkich npm lifecycle scripts podcza
 - ✅ `prepare`
 
 **W naszym przypadku ignoruje:**
+
 - ❌ Supabase CLI download (niepotrzebny w CI)
 - ❌ Playwright browsers download (instalowane osobno dla E2E)
 
 ### 3. Dlaczego to jest bezpieczne?
 
 **Projekt nie wymaga postinstall scripts do działania:**
+
 - ✅ Astro - buduje się bez postinstall
 - ✅ React - nie wymaga postinstall
 - ✅ TypeScript - kompiluje się bez postinstall
@@ -95,6 +100,7 @@ Flag `--ignore-scripts` pomija wykonanie wszystkich npm lifecycle scripts podcza
 - ✅ Wszystkie inne runtime dependencies - nie wymagają postinstall
 
 **Pakiety z postinstall w projekcie:**
+
 1. `supabase` (devDependencies) - **NIE** potrzebny w CI
 2. `@playwright/test` (devDependencies) - instalowany osobno dla E2E testów
 
@@ -122,12 +128,14 @@ package-lock=true
 Po zastosowaniu rozwiązania:
 
 ✅ **Workflow `master.yml`:**
+
 - Lint - działa
 - Unit Tests - działają
 - Build - działa (pominięto postinstall scripts)
 - Deploy - działa (nie ma konfliktu z instalacją wrangler)
 
 ✅ **Workflow `pull-request.yml`:**
+
 - Lint - działa
 - Unit Tests - działają
 - E2E Tests - działają (Playwright instalowany osobno)
@@ -139,6 +147,7 @@ Po zastosowaniu rozwiązania:
 Jeśli w przyszłości dodasz pakiet który **wymaga** postinstall script do działania (np. pakiet z native bindings):
 
 **Rozwiązanie:**
+
 1. Zidentyfikuj pakiet który wymaga postinstall
 2. Usuń flagę `--ignore-scripts` z workflow
 3. Dodaj selective ignore dla problematycznych pakietów:
@@ -149,7 +158,7 @@ Jeśli w przyszłości dodasz pakiet który **wymaga** postinstall script do dzi
     npm ci
     # Opcja: użyj npm_config_ignore_scripts tylko dla supabase
   env:
-    SUPABASE_SKIP_DOWNLOAD: 1  # jeśli pakiet to wspiera
+    SUPABASE_SKIP_DOWNLOAD: 1 # jeśli pakiet to wspiera
 ```
 
 4. Lub przenieś `supabase` do `optionalDependencies`:
@@ -167,10 +176,12 @@ Jeśli w przyszłości dodasz pakiet który **wymaga** postinstall script do dzi
 Jeśli okaże się, że build wymaga jakiegoś postinstall script:
 
 **Symptomy:**
+
 - Build job pada z błędem "command not found" lub "module not found"
 - Lokalnie działa, w CI nie działa
 
 **Rozwiązanie:**
+
 1. Zidentyfikuj który pakiet wymaga postinstall
 2. Użyj selective approach:
 

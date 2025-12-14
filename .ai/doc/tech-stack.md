@@ -176,10 +176,8 @@ Dla MVP kategoryzacja składników jest **mission-critical** - bez niej listy za
   - Marketplace z ready-to-use actions
 
 - **Cloudflare Pages:**
-  
 
 **Potencjalne problemy i lepsze alternatywy:**
-
 
 | Hosting                       | Pros                                                                                    | Cons                                                      | Koszty MVP                                | Rekomendacja             |
 | ----------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------- | ------------------------ |
@@ -682,7 +680,6 @@ Monitoring: Sentry + Plausible Analytics
 
 **Verdict:** ✅ OpenAI security jest **good** IF API key jest w backend, NIE w browser.
 
-
 ---
 
 #### Security checklist dla MVP
@@ -756,8 +753,7 @@ Monitoring: Sentry + Plausible Analytics
 
 ### 🔴 **CRITICAL CHANGES (highly recommended):**
 
-1. **DigitalOcean → *Cloudflare Pages*
-  
+1. \**DigitalOcean → *Cloudflare Pages\*
 
 2. **OpenRouter.ai → OpenAI API (direct)**
    - Powód: Mission-critical feature, mniej failure points
@@ -800,7 +796,6 @@ Komunikacja z modelami AI:
 CI/CD i Hosting:
   - CI/CD: GitHub Actions (tests, linting, TypeScript checks)
   - Hosting: Cloudflare Pages
-  
 
 Monitoring i Analytics:
   - Error tracking: Sentry (free tier)

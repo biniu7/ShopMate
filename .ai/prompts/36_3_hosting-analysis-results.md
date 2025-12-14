@@ -3,11 +3,13 @@
 ## 1. Analiza Głównego Frameworka
 
 **Astro 5** jest głównym frameworkiem tej aplikacji. Astro działa w oparciu o **hybrydowy model renderowania**, który łączy:
+
 - **Statyczne Generowanie Strony (SSG)** dla większości stron z treścią
 - **Renderowanie Po Stronie Serwera (SSR)** dla dynamicznych tras API i stron z uwierzytelnianiem
 - **Architekturę Wysp** dla selektywnej hydracji po stronie klienta (komponenty React z `client:load|idle|visible`)
 
 Kluczowe charakterystyki operacyjne:
+
 - Wymaga **środowiska uruchomieniowego Node.js** dla funkcjonalności SSR
 - Wspiera funkcje serverless/edge dla tras API (`src/pages/api/*` z `prerender=false`)
 - Domyślnie minimalna ilość JavaScript wysyłana do klienta
@@ -35,6 +37,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ## 4. Krytyka Rozwiązań
 
 ### **Vercel** (Obecnie skonfigurowany)
+
 - **a) Złożoność wdrożenia**: ★★★★★ Doskonała. Zero konfiguracji z integracją Git, automatyczny SSL, globalny CDN
 - **b) Kompatybilność ze stosem technologicznym**: ★★★★★ Perfekcyjna. Oficjalny adapter Astro (`@astrojs/vercel`), bezproblemowe wsparcie Node.js
 - **c) Wiele równoległych środowisk**: ★★★★☆ Dobra. Wdrożenia podglądowe dla PR-ów, gałęzie produkcyjne/stagingowe, zmienne środowiskowe na środowisko
@@ -48,6 +51,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ---
 
 ### **Netlify**
+
 - **a) Złożoność wdrożenia**: ★★★★★ Doskonała. Podobnie jak Vercel, workflow oparty o Git, automatyczne wdrożenia
 - **b) Kompatybilność ze stosem technologicznym**: ★★★★☆ Bardzo dobra. Oficjalny adapter Astro, ale funkcje serverless mają problemy z zimnym startem
 - **c) Wiele równoległych środowisk**: ★★★★☆ Dobra. Podglądy wdrożeń, wdrożenia gałęzi, zmienne środowiskowe na kontekst
@@ -61,6 +65,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ---
 
 ### **Cloudflare Pages**
+
 - **a) Złożoność wdrożenia**: ★★★☆☆ Umiarkowana. Wymaga konfiguracji adaptera Cloudflare, różni się od środowiska Node.js
 - **b) Kompatybilność ze stosem technologicznym**: ★★★☆☆ Umiarkowana. Adapter Astro dostępny, ale **środowisko Workers różni się od Node.js** - niektóre biblioteki mogą nie działać (np. niektóre API Node.js)
 - **c) Wiele równoległych środowisk**: ★★★★☆ Dobra. Podglądy wdrożeń, niestandardowe domeny na gałąź
@@ -74,6 +79,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ---
 
 ### **Railway**
+
 - **a) Złożoność wdrożenia**: ★★★☆☆ Umiarkowana. Wymaga konfiguracji Dockerfile lub Nixpacks. Bardziej praktyczne niż Vercel
 - **b) Kompatybilność ze stosem technologicznym**: ★★★★★ Doskonała. Pełne środowisko Node.js, brak ograniczeń. Może hostować PostgreSQL obok aplikacji
 - **c) Wiele równoległych środowisk**: ★★★☆☆ Uczciwa. Wspiera wiele środowisk, ale wymaga ręcznej konfiguracji na środowisko
@@ -88,6 +94,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ---
 
 ### **Render**
+
 - **a) Złożoność wdrożenia**: ★★★★☆ Dobra. Wdrożenie oparte o Git, dockerfile opcjonalny, konfiguracja YAML dla infrastruktury jako kod
 - **b) Kompatybilność ze stosem technologicznym**: ★★★★★ Doskonała. Pełne środowisko Node.js, dostępny natywny hosting PostgreSQL
 - **c) Wiele równoległych środowisk**: ★★★☆☆ Uczciwa. Wspiera środowiska, ale środowiska podglądowe wymagają płatnego planu ($7/mc)
@@ -114,6 +121,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ## **Rekomendacja**
 
 **Zostań przy Vercel** w fazie MVP. Gdy użycie komercyjne wymaga płatnego planu:
+
 - **Ścieżka A** (Rekomendowana): Upgrade do Vercel Pro ($20/mc) - najprostsza migracja
 - **Ścieżka B** (Optymalizacja kosztów): Oceń Netlify Pro ($19/mc), jeśli przepustowość stanie się głównym czynnikiem kosztowym
 - **Ścieżka C** (Zaawansowana): Rozważ Railway/Render tylko jeśli potrzebujesz samodzielnie hostować PostgreSQL ze względów kosztowych (mało prawdopodobne do 10k+ użytkowników)
@@ -125,6 +133,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 ## Szczegółowa Analiza Kosztów (Prognozy)
 
 ### Scenariusz 1: Projekt hobbystyczny (0-100 użytkowników/miesiąc)
+
 - **Vercel Hobby (Darmowy)**: $0/mc - Wystarczający
 - **Netlify Starter (Darmowy)**: $0/mc - Wystarczający
 - **Cloudflare Pages (Darmowy)**: $0/mc - Wystarczający, ale ryzyko techniczne
@@ -134,6 +143,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 **Rekomendacja**: Vercel Hobby
 
 ### Scenariusz 2: Wczesny startup (100-1000 użytkowników/miesiąc)
+
 - **Vercel Pro**: $20/mc - Wystarczający dla 90% przypadków
 - **Netlify Pro**: $19/mc - Może wymagać dokupienia minut budowania
 - **Cloudflare Pages Free**: $0/mc - Nadal darmowy, ale ryzyko techniczne
@@ -143,6 +153,7 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 **Rekomendacja**: Vercel Pro ($20/mc)
 
 ### Scenariusz 3: Rosnący startup (1000-10000 użytkowników/miesiąc)
+
 - **Vercel Pro**: $20-50/mc (z dodatkowymi opłatami za bandwidth)
 - **Netlify Pro**: $19-40/mc
 - **Cloudflare Pages Pro**: $20/mc - Jeśli przeprowadzono refaktoring
@@ -152,7 +163,9 @@ Zespół Astro rekomenduje i zapewnia wsparcie pierwszej klasy dla:
 **Rekomendacja**: Vercel Pro lub rozważ dedykowany VPS (DigitalOcean/Hetzner) + CDN przy >$100/mc
 
 ### Scenariusz 4: Dojrzały produkt (10000+ użytkowników/miesiąc)
+
 W tym punkcie rozważ:
+
 - **Własną infrastrukturę**: Kubernetes na AWS/GCP/Azure
 - **Hybrid**: Statyczne assety na CDN, dynamiczne API na dedykowanych serwerach
 - **Konsultację ze specjalistą DevOps** dla optymalizacji kosztów
@@ -162,14 +175,17 @@ W tym punkcie rozważ:
 ## Analiza Ryzyk Migracji
 
 ### Ryzyko Wysokie ⚠️
+
 - **Cloudflare Pages**: Runtime Workers może zepsuć @react-pdf/renderer, wymaga testów
 - **Railway/Render z self-hosted DB**: Utrata zarządzanej bazy Supabase, dodatkowa odpowiedzialność
 
 ### Ryzyko Średnie ⚡
+
 - **Netlify**: Limity minut budowania mogą zaskoczyć przy częstych deployment'ach
 - **Railway**: Kredytowy model cenowy może spowodować nieoczekiwane koszty
 
 ### Ryzyko Niskie ✅
+
 - **Vercel Pro upgrade**: Zero zmian kodu, płynna migracja z Hobby do Pro
 - **Pozostanie na Vercel**: Najmniejsze ryzyko techniczne i biznesowe
 
@@ -178,6 +194,7 @@ W tym punkcie rozważ:
 ## Wnioski Końcowe
 
 **ShopMate powinien pozostać na Vercel** ze względu na:
+
 1. **Perfekcyjną kompatybilność** z Astro 5
 2. **Zero konfiguracji** - zespół może się skupić na produkcie, nie na infrastrukturze
 3. **Przewidywalny cennik** - $0 dla MVP, $20/mc dla komercyjnego startupu
@@ -185,6 +202,7 @@ W tym punkcie rozważ:
 5. **Minimalne ryzyko migracji** - jeśli coś się zmieni, migracja z Vercel jest łatwiejsza niż z platform z vendor lock-in
 
 Migracja ma sens dopiero gdy:
+
 - Miesięczne koszty Vercel przekroczą $200-300/mc
 - Potrzebujesz specyficznych funkcji niedostępnych na Vercel
 - Masz dedykowany zespół DevOps do zarządzania infrastrukturą

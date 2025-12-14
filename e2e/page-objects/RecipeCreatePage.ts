@@ -42,6 +42,8 @@ export class RecipeCreatePage {
     await this.page.goto("/recipes/new", { waitUntil: "domcontentloaded", timeout: 30000 });
     // Wait for the form to be rendered (indicates React has hydrated)
     await this.recipeForm.waitFor({ state: "visible", timeout: 15000 });
+    // Wait extra time for React hydration to complete
+    await this.page.waitForTimeout(2000);
   }
 
   /**
@@ -55,14 +57,26 @@ export class RecipeCreatePage {
    * Fill recipe name
    */
   async fillName(name: string) {
+    await this.nameInput.click();
+    await this.page.waitForTimeout(100);
     await this.nameInput.fill(name);
+    // Trigger onChange by pressing Tab
+    await this.nameInput.press("Tab");
+    // Wait for React to update state
+    await this.page.waitForTimeout(500);
   }
 
   /**
    * Fill recipe instructions
    */
   async fillInstructions(instructions: string) {
+    await this.instructionsTextarea.click();
+    await this.page.waitForTimeout(100);
     await this.instructionsTextarea.fill(instructions);
+    // Trigger onChange by pressing Tab
+    await this.instructionsTextarea.press("Tab");
+    // Wait for React to update state
+    await this.page.waitForTimeout(500);
   }
 
   /**
@@ -86,16 +100,28 @@ export class RecipeCreatePage {
     // Wait for fields to be visible before filling
     await ingredientFields.name.waitFor({ state: "visible", timeout: 10000 });
 
-    // Name is required
+    // Name is required - use fill() after hydration
+    await ingredientFields.name.click();
+    await this.page.waitForTimeout(100);
     await ingredientFields.name.fill(ingredient.name);
+    await ingredientFields.name.press("Tab");
 
     // Quantity and unit are optional
     if (ingredient.quantity) {
+      await ingredientFields.quantity.click();
+      await this.page.waitForTimeout(50);
       await ingredientFields.quantity.fill(ingredient.quantity);
+      await ingredientFields.quantity.press("Tab");
     }
     if (ingredient.unit) {
+      await ingredientFields.unit.click();
+      await this.page.waitForTimeout(50);
       await ingredientFields.unit.fill(ingredient.unit);
+      await ingredientFields.unit.press("Tab");
     }
+
+    // Wait for React to update state
+    await this.page.waitForTimeout(300);
   }
 
   /**
@@ -155,12 +181,27 @@ export class RecipeCreatePage {
    * Act: Submits the form
    */
   async clickSubmit() {
-    // Wait for button to be visible and enabled (form validation)
+    // Wait for button to be visible
     await this.submitButton.waitFor({ state: "visible", timeout: 10000 });
 
-    // Playwright's click() automatically waits for the element to be enabled
-    // but we can explicitly check if needed for debugging
-    await this.submitButton.click({ timeout: 10000 });
+    // Wait for form validation to complete and button to be enabled
+    // This is critical for React Hook Form - validation happens asynchronously
+    await this.page.waitForTimeout(1000); // Give React time to validate
+
+    // Now wait for button to be enabled (disabled attribute removed)
+    await this.submitButton.waitFor({ state: "attached", timeout: 10000 });
+
+    // Double-check it's enabled before clicking
+    const isDisabled = await this.submitButton.isDisabled();
+    if (isDisabled) {
+      console.error("Submit button is still disabled after waiting!");
+      // Take screenshot for debugging
+      await this.page.screenshot({ path: "test-results/submit-disabled-debug.png" });
+      throw new Error("Submit button is disabled - form validation failed");
+    }
+
+    // Click the enabled button
+    await this.submitButton.click();
   }
 
   /**
