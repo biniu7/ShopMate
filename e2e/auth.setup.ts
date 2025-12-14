@@ -22,11 +22,25 @@ setup("authenticate", async ({ page }) => {
 
   console.log(`Attempting to login as: ${email}`);
 
-  // Listen to console messages to debug
+  // Listen to console messages and errors to debug
   page.on("console", (msg) => console.log("Browser console:", msg.text()));
+  page.on("pageerror", (err) => console.error("Browser error:", err.message));
 
-  // Navigate to login page
-  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  // Log all network requests to debug
+  page.on("request", (request) => {
+    if (request.url().includes("api")) {
+      console.log(">>", request.method(), request.url());
+    }
+  });
+
+  page.on("response", (response) => {
+    if (response.url().includes("api")) {
+      console.log("<<", response.status(), response.url());
+    }
+  });
+
+  // Navigate to login page and wait for full load
+  await page.goto("/login", { waitUntil: "networkidle" });
   console.log("Current URL after goto:", page.url());
 
   // Wait for form to be ready and interactive
@@ -35,20 +49,57 @@ setup("authenticate", async ({ page }) => {
 
   await emailInput.waitFor({ state: "visible" });
 
-  // Fill in login form
-  await emailInput.fill(email);
-  await passwordInput.fill(password);
-  console.log("Form filled, clicking submit");
+  // Wait for React hydration to complete (wait for hydration error or timeout)
+  await page.waitForTimeout(2000);
+
+  // Fill in login form using type() for better React compatibility
+  await emailInput.click();
+  await emailInput.clear();
+  await emailInput.type(email, { delay: 50 });
+
+  await passwordInput.click();
+  await passwordInput.clear();
+  await passwordInput.type(password, { delay: 50 });
+
+  console.log("Form filled");
+
+  // Wait a bit for React state to update
+  await page.waitForTimeout(500);
+
+  // Check if submit button is enabled
+  const submitButton = page.locator('button[type="submit"]');
+  const isDisabled = await submitButton.isDisabled();
+  console.log("Submit button disabled:", isDisabled);
 
   // Take screenshot before submit
   await page.screenshot({ path: "test-results/before-submit.png" });
 
-  // Click login button and wait for navigation
-  const submitButton = page.locator('button[type="submit"]');
-  await submitButton.click();
+  console.log("Clicking submit button");
 
-  // Wait for redirect to home or recipes page (not login page)
-  await page.waitForURL(/\/(recipes|dashboard|home)?$/, { timeout: 10000 });
+  // Setup API response listener BEFORE clicking submit - wait for ANY status
+  const loginResponsePromise = page.waitForResponse(
+    (response) => response.url().includes("/api/auth/login"),
+    { timeout: 10000 }
+  );
+
+  // Click login button (already defined above)
+  await submitButton.click();
+  console.log("Submit button clicked");
+
+  // Wait for API response and check status
+  const loginResponse = await loginResponsePromise;
+  console.log("Login API URL:", loginResponse.url());
+  console.log("Login API status:", loginResponse.status());
+
+  // Verify successful login - just check status (body may not be available after redirect)
+  if (loginResponse.status() !== 200) {
+    throw new Error(`Login failed with status: ${loginResponse.status()}`);
+  }
+
+  console.log("Login API returned 200, waiting for redirect");
+
+  // Wait for redirect to dashboard (default redirect after login)
+  await page.waitForURL(/\/(recipes|dashboard)/, { timeout: 15000 });
   console.log("Current URL after clicking submit:", page.url());
 
   // Take screenshot after submit
