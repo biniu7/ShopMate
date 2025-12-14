@@ -34,11 +34,14 @@ export class RecipesListPage {
    * Click "Add Recipe" button (desktop version)
    */
   async clickAddRecipeButton() {
-    // Wait for link to be visible and clickable
+    // Wait for link to be visible
     await this.addRecipeLink.waitFor({ state: "visible", timeout: 10000 });
 
-    // Click the link and wait for navigation (Astro View Transitions compatible)
-    await Promise.all([this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }), this.addRecipeLink.click()]);
+    // Click and handle View Transitions by waiting for load state
+    await this.addRecipeLink.click();
+
+    // Wait for page load - networkidle works better with View Transitions
+    await this.page.waitForLoadState("networkidle", { timeout: 15000 });
 
     // Wait for the form to be rendered (indicates React has hydrated)
     const recipeForm = this.page.getByTestId("recipe-form");
@@ -49,11 +52,14 @@ export class RecipesListPage {
    * Click "Add Recipe" FAB button (mobile version)
    */
   async clickAddRecipeButtonFab() {
-    // Wait for FAB link to be visible and clickable
+    // Wait for FAB link to be visible
     await this.addRecipeLinkFab.waitFor({ state: "visible", timeout: 10000 });
 
-    // Click the FAB link and wait for navigation (Astro View Transitions compatible)
-    await Promise.all([this.page.waitForURL(/\/recipes\/new/, { timeout: 10000 }), this.addRecipeLinkFab.click()]);
+    // Click and handle View Transitions by waiting for load state
+    await this.addRecipeLinkFab.click();
+
+    // Wait for page load - networkidle works better with View Transitions
+    await this.page.waitForLoadState("networkidle", { timeout: 15000 });
 
     // Wait for the form to be rendered (indicates React has hydrated)
     const recipeForm = this.page.getByTestId("recipe-form");
