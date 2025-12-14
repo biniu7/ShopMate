@@ -121,7 +121,7 @@ wrangler login
 npm run build
 
 # Wdróż na Cloudflare Pages
-wrangler pages deploy dist --project-name=shopmate --branch=main
+wrangler pages deploy dist --project-name=shopmate
 ```
 
 ## Monitorowanie i weryfikacja
