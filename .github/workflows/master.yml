@@ -131,7 +131,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ShopMate
+          command: pages deploy dist --project-name=shopmate
 
   # Job 5: Deployment Status - runs after deployment completes
   deployment-status:
