@@ -16,17 +16,17 @@ jobs:
   lint:
     name: Lint Code
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci --ignore-scripts
         env:
@@ -40,17 +40,17 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     needs: lint
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci --ignore-scripts
         env:
@@ -58,7 +58,7 @@ jobs:
 
       - name: Run unit tests with coverage
         run: npm run test:coverage
-      
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -66,7 +66,7 @@ jobs:
           flags: unit
           name: unit-tests
           fail_ci_if_error: false
-      
+
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v5
         if: always()
@@ -81,23 +81,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     environment: integration
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-      
+          node-version-file: ".nvmrc"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
-      
+
       - name: Run E2E tests
         run: npx playwright test
         env:
@@ -107,7 +107,7 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
-      
+
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v5
         if: always()
@@ -115,7 +115,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
-      
+
       - name: Upload test results
         uses: actions/upload-artifact@v5
         if: always()
@@ -132,22 +132,22 @@ jobs:
     if: always()
     permissions:
       pull-requests: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      
+
       - name: Determine overall status
         id: status
         run: |
           LINT_STATUS="${{ needs.lint.result }}"
           UNIT_STATUS="${{ needs.unit-test.result }}"
           E2E_STATUS="${{ needs.e2e-test.result }}"
-          
+
           echo "lint_status=$LINT_STATUS" >> $GITHUB_OUTPUT
           echo "unit_status=$UNIT_STATUS" >> $GITHUB_OUTPUT
           echo "e2e_status=$E2E_STATUS" >> $GITHUB_OUTPUT
-          
+
           if [[ "$LINT_STATUS" == "success" && "$UNIT_STATUS" == "success" && "$E2E_STATUS" == "success" ]]; then
             echo "overall_status=success" >> $GITHUB_OUTPUT
             echo "emoji=✅" >> $GITHUB_OUTPUT
@@ -155,7 +155,7 @@ jobs:
             echo "overall_status=failure" >> $GITHUB_OUTPUT
             echo "emoji=❌" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Create status badge
         id: badges
         run: |
@@ -164,19 +164,19 @@ jobs:
           else
             echo "lint_badge=❌ Failed" >> $GITHUB_OUTPUT
           fi
-          
+
           if [[ "${{ steps.status.outputs.unit_status }}" == "success" ]]; then
             echo "unit_badge=✅ Passed" >> $GITHUB_OUTPUT
           else
             echo "unit_badge=❌ Failed" >> $GITHUB_OUTPUT
           fi
-          
+
           if [[ "${{ steps.status.outputs.e2e_status }}" == "success" ]]; then
             echo "e2e_badge=✅ Passed" >> $GITHUB_OUTPUT
           else
             echo "e2e_badge=❌ Failed" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Comment PR
         uses: actions/github-script@v8
         with:
@@ -187,31 +187,31 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
+
             const botComment = comments.find(comment => 
               comment.user.type === 'Bot' && 
               comment.body.includes('## 🔍 Pull Request CI/CD Status')
             );
-            
+
             const output = `## 🔍 Pull Request CI/CD Status
-            
+
             ${{ steps.status.outputs.emoji }} **Overall Status: ${{ steps.status.outputs.overall_status }}**
-            
+
             ### Test Results
-            
+
             | Job | Status |
             |-----|--------|
             | 🔍 Lint | ${{ steps.badges.outputs.lint_badge }} |
             | 🧪 Unit Tests | ${{ steps.badges.outputs.unit_badge }} |
             | 🎭 E2E Tests | ${{ steps.badges.outputs.e2e_badge }} |
-            
+
             ---
-            
+
             **Commit:** \`${{ github.event.pull_request.head.sha }}\`
             **Workflow run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-            
+
             <sub>Updated at: ${new Date().toISOString()}</sub>`;
-            
+
             if (botComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,

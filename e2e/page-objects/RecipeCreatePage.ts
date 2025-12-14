@@ -61,7 +61,7 @@ export class RecipeCreatePage {
     await this.page.waitForTimeout(100);
     await this.nameInput.fill(name);
     // Trigger onChange by pressing Tab
-    await this.nameInput.press('Tab');
+    await this.nameInput.press("Tab");
     // Wait for React to update state
     await this.page.waitForTimeout(500);
   }
@@ -74,7 +74,7 @@ export class RecipeCreatePage {
     await this.page.waitForTimeout(100);
     await this.instructionsTextarea.fill(instructions);
     // Trigger onChange by pressing Tab
-    await this.instructionsTextarea.press('Tab');
+    await this.instructionsTextarea.press("Tab");
     // Wait for React to update state
     await this.page.waitForTimeout(500);
   }
@@ -104,20 +104,20 @@ export class RecipeCreatePage {
     await ingredientFields.name.click();
     await this.page.waitForTimeout(100);
     await ingredientFields.name.fill(ingredient.name);
-    await ingredientFields.name.press('Tab');
+    await ingredientFields.name.press("Tab");
 
     // Quantity and unit are optional
     if (ingredient.quantity) {
       await ingredientFields.quantity.click();
       await this.page.waitForTimeout(50);
       await ingredientFields.quantity.fill(ingredient.quantity);
-      await ingredientFields.quantity.press('Tab');
+      await ingredientFields.quantity.press("Tab");
     }
     if (ingredient.unit) {
       await ingredientFields.unit.click();
       await this.page.waitForTimeout(50);
       await ingredientFields.unit.fill(ingredient.unit);
-      await ingredientFields.unit.press('Tab');
+      await ingredientFields.unit.press("Tab");
     }
 
     // Wait for React to update state

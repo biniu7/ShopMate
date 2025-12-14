@@ -77,10 +77,9 @@ setup("authenticate", async ({ page }) => {
   console.log("Clicking submit button");
 
   // Setup API response listener BEFORE clicking submit - wait for ANY status
-  const loginResponsePromise = page.waitForResponse(
-    (response) => response.url().includes("/api/auth/login"),
-    { timeout: 10000 }
-  );
+  const loginResponsePromise = page.waitForResponse((response) => response.url().includes("/api/auth/login"), {
+    timeout: 10000,
+  });
 
   // Click login button (already defined above)
   await submitButton.click();
